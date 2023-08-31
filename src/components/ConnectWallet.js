@@ -1,68 +1,55 @@
-import React, { Component } from 'react';
-import VOTE_FACTORY_ADDRESS from '../assets/addresses.js';
+import React, { Component, useState, useEffect } from 'react';
 import Web3 from 'web3';
 
 class ConnectWalletComponent extends Component {
     constructor(props) {
-        // Read the abi and contract address from the config file
-        let abi = require('../assets/VoteFactory.abi.json');
-
         super(props);
         this.state = {
             connected: false,
-            addresses: [],
-            factory: new Web3.eth.Contract(abi, VOTE_FACTORY_ADDRESS),
-            w3: new Web3("https://api.node.glif.io")
+            addresses: []
         };
     }
 
-    async votes() {
-        let votes = await this.state.factory.methods.deployedVotes().call();
-        return votes;
+    connectWallet = async () => {
+        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+        // Get the current chain ID
+        const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+        if (chainId !== 314) {
+            // Request to change to chain Id 314
+            await window.ethereum.request({
+                method: 'wallet_switchEthereumChain',
+                params: [{ chainId: '0x13a' }],
+            });
+        }
+        return accounts;
     }
 
-    async getVoteAddress(fip) {
-        let address = await this.state.factory.methods.FIPnumToAddress(fip).call();
-        return address;
-    }
-
-    async registerVoter(voteTrackerAddress, glifPoolAddress, minerIds) {
-        let voteTracker = new this.state.w3.eth.Contract(require('../assets/VoteTracker.abi.json'), voteTrackerAddress);
-        let tx = await voteTracker.methods.registerVoter(glifPoolAddress, minerIds).send();
-        return tx;
-    }
-
-    async castVote(voteTrackerAddress, vote) {
-        let voteTracker = new this.state.w3.eth.Contract(require('../assets/VoteTracker.abi.json'), voteTrackerAddress);
-        let tx = await voteTracker.methods.castVote(vote).send();
-        return tx;
-    }
-
-    async connectWallet() {
+    handleConnect = async () => {
+        let accounts = [];
         try {
-            const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-            this.setState({ addresses: accounts });
-            this.setState({ connected: true });
-            window.ethereum.connected = true;
-            console.log(accounts);
+            accounts = await this.connectWallet();
         } catch (error) {
             console.error(error);
         }
-        // Do something with accounts[0]
-        console.log(window.ethereum.connected)
+        this.setState({ 
+            connected: true,
+            addresses: accounts
+        });
+        
     }
 
-    async disconnectWallet() {
-        window.ethereum.connected = false;
-        this.setState({ connected: false });
-        this.setState({ addresses: [] });
+    handleDisconnect = async () => {
+        this.setState({ 
+            connected: false,
+            addresses: []
+        });
     }
 
     render() {
         if (this.state.connected) {
             return (
                 <div>
-                    <button onClick={() => this.setState(this.disconnectWallet)}>
+                    <button onClick={this.handleDisconnect}>
                         Disconnect
                     </button>
                 </div>
@@ -70,7 +57,7 @@ class ConnectWalletComponent extends Component {
         } else {
             return (
                 <div>
-                    <button onClick={() => this.setState(this.connectWallet)}>
+                    <button onClick={this.handleConnect}>
                         Connect Wallet
                     </button>
                 </div>
