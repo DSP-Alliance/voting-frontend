@@ -3,37 +3,28 @@ import Web3 from 'web3';
 
 class VoteTrackerComponent extends Component {
     constructor(props) {
-        // Read the abi and contract address from the config file
-        let abi = require('../assets/VoteFactory.abi.json');
-
         super(props);
         this.state = {
             FIP: 0,
-            contract: null,
+            address: null,
         };
     }
 
     async registerVoter(voteTrackerAddress, glifPoolAddress, minerIds) {
-        if (this.state.FIP == null || this.state.contract == null) {
-            throw new Error("FIP and contract must be set before registering a voter");
-        }
-        let voteTracker = new this.state.w3.eth.Contract(require('../assets/VoteTracker.abi.json'), voteTrackerAddress);
+        let voteTracker = new w3.eth.Contract(require('../assets/VoteTracker.abi.json'), voteTrackerAddress);
         let tx = await voteTracker.methods.registerVoter(glifPoolAddress, minerIds).send();
         return tx;
     }
 
     async castVote(voteTrackerAddress, vote) {
-        if (this.state.FIP == null || this.state.contract == null) {
-            throw new Error("FIP and contract must be set before registering a voter");
-        }
-        let voteTracker = new this.state.w3.eth.Contract(require('../assets/VoteTracker.abi.json'), voteTrackerAddress);
-        let tx = await this.state.contract.methods.castVote(vote).send();
+        let voteTracker = new w3.eth.Contract(require('../assets/VoteTracker.abi.json'), voteTrackerAddress);
+        let tx = await voteTracker.methods.castVote(vote).send();
         return tx;
     }
 
     componentDidUpdate(prevProps) {
         if (this.props.FIP !== prevProps.FIP && this.props.address !== prevProps.address) {
-            this.setState({ FIP: this.props.FIP });
+            this.setState({ FIP: this.props.FIP, address: this.props.address });
             let w3 = new Web3(window.ethereum);
 
         }
@@ -43,6 +34,7 @@ class VoteTrackerComponent extends Component {
         let _FIP = event.target.value;
         this.setState({ FIP: event.target.value });
         let tracker = await this.getVoteTracker(_FIP).call();
+        this.setState({ address: tracker })
         this.props.handleFIPInput(_FIP);
     }
 

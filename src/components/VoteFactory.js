@@ -22,13 +22,17 @@ class VoteFactoryComponent extends Component {
         };
     }
 
+    userIsOwner = async (owner) => {
+        let factory = new this.state.provider.eth.Contract(this.state.abi, this.state.contract);
+        let _owner = factory.methods.owner().call();
+        return _owner === owner; 
+    }
+
     getVoteTracker = async (FIP) => {
         try {
             let contract = new this.state.provider.eth.Contract(this.state.abi, this.state.contract)
-            let req = contract.methods.FIPnumToAddress(FIP);
+            let tracker = await contract.methods.FIPnumToAddress(FIP).call();
             
-            let tracker = await req.call();
-            console.log(tracker)
             return tracker;
         } catch (error) {
             this.setState({ tracker: "0x0000000000000000000000000000000000000000" });
