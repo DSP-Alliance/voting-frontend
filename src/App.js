@@ -8,8 +8,6 @@ import ParentComponent from './components/Parent';
 function App() {
   return (
     <div className="App">
-      <ConnectWalletComponent />
-      <MinerIdInputComponent />
       <ParentComponent />
     </div>
   );

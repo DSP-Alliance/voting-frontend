@@ -10,7 +10,6 @@ class VoteFactoryComponent extends Component {
         let provider = new Web3.providers.HttpProvider("https://api.node.glif.io");
         let w3 = new Web3(provider);
         let address = VOTE_FACTORY_ADDRESS;
-        console.log(address.toString())
 
         super(props);
         this.state = {

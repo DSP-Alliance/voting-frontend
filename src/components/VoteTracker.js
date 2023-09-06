@@ -4,20 +4,23 @@ import Web3 from 'web3';
 class VoteTrackerComponent extends Component {
     constructor(props) {
         super(props);
+        let provider = new Web3.providers.HttpProvider("https://api.node.glif.io");
+        let w3 = new Web3(provider);
         this.state = {
             FIP: 0,
             address: null,
+            w3: w3
         };
     }
 
     async registerVoter(voteTrackerAddress, glifPoolAddress, minerIds) {
-        let voteTracker = new w3.eth.Contract(require('../assets/VoteTracker.abi.json'), voteTrackerAddress);
+        let voteTracker = new this.state.w3.eth.Contract(require('../assets/VoteTracker.abi.json'), voteTrackerAddress);
         let tx = await voteTracker.methods.registerVoter(glifPoolAddress, minerIds).send();
         return tx;
     }
 
     async castVote(voteTrackerAddress, vote) {
-        let voteTracker = new w3.eth.Contract(require('../assets/VoteTracker.abi.json'), voteTrackerAddress);
+        let voteTracker = new this.state.w3.eth.Contract(require('../assets/VoteTracker.abi.json'), voteTrackerAddress);
         let tx = await voteTracker.methods.castVote(vote).send();
         return tx;
     }
