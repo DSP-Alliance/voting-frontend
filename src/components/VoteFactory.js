@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import Web3 from 'web3';
+import { Contract, Web3 } from 'web3';
 
 const VOTE_FACTORY_ADDRESS = '0xf109f754cdea239d2811d1f285471e0dc25d918e'
 
@@ -21,6 +21,12 @@ class VoteFactoryComponent extends Component {
         };
     }
 
+    startVote= async (fipNum, length, doubleYesOption, lsdTokens) => {
+        let factory = new this.state.provider.eth.Contract(this.state.abi, this.state.contract);
+        let _startVote = factory.methods.startVote(fipNum, length, doubleYesOption, lsdTokens).send();
+        return _startVote;
+    }
+
     userIsOwner = async (owner) => {
         let factory = new this.state.provider.eth.Contract(this.state.abi, this.state.contract);
         let _owner = factory.methods.owner().call();
@@ -29,7 +35,7 @@ class VoteFactoryComponent extends Component {
 
     getVoteTracker = async (FIP) => {
         try {
-            let contract = new this.state.provider.eth.Contract(this.state.abi, this.state.contract)
+            let contract = new Contract(this.state.abi, this.state.contract, this.state.provider)
             let tracker = await contract.methods.FIPnumToAddress(FIP).call();
             
             return tracker;

@@ -12,34 +12,6 @@ class ParentComponent extends Component {
         };
     }
 
-    connectWallet = async () => {
-        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-        // Get the current chain ID
-        const chainId = await window.ethereum.request({ method: 'eth_chainId' });
-        if (chainId !== 314) {
-            // Request to change to chain Id 314
-            await window.ethereum.request({
-                method: 'wallet_switchEthereumChain',
-                params: [{ chainId: '0x13a' }],
-            });
-        }
-        return accounts;
-    }
-
-    handleConnect = async () => {
-        let accounts = [];
-        try {
-            accounts = await this.connectWallet();
-        } catch (error) {
-            console.error(error);
-        }
-        this.setState({ 
-            connected: true,
-            addresses: accounts
-        });
-        
-    }
-
     handleFIPInput = async (_FIP) => {
         this.setState({ FIP: _FIP });
     }
