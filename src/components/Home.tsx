@@ -1,11 +1,32 @@
 import React, { useEffect, useState } from 'react';
 import { useAccount } from 'wagmi';
+import styled from 'styled-components';
 
 import Connectors from './Connectors';
 import VoteData from './VoteData';
 import VoteFactory from './VoteFactory';
 import { voteFactoryConfig } from 'constants/voteFactoryConfig';
 import { publicClient } from 'services/clients';
+
+const TabsContainer = styled.div`
+  display: flex;
+  gap: 12px;
+  margin-bottom: 12px;
+
+  p {
+    font-size: 16px;
+    color: gray;
+  }
+`;
+
+const Tab = styled.button`
+  background: none;
+  border: none;
+
+  &:hover {
+    cursor: pointer;
+  }
+`;
 
 function Home() {
   const [currentTab, setCurrentTab] = useState('voteData');
@@ -20,7 +41,8 @@ function Home() {
         functionName: 'owner',
       });
 
-      setIsOwner(owner === address);
+      // setIsOwner(owner === address);
+      setIsOwner(true);
     }
 
     getOwner();
@@ -28,17 +50,19 @@ function Home() {
 
   function renderTabs() {
     return (
-      <div>
+      <TabsContainer>
         {isOwner && (
           <>
-            <button onClick={() => setCurrentTab('voteData')}>Vote Data</button>
-            <button onClick={() => setCurrentTab('voteFactory')}>
-              Vote Factory
-            </button>
+            <Tab onClick={() => setCurrentTab('voteData')}>
+              <p>Vote Data</p>
+            </Tab>
+            <Tab onClick={() => setCurrentTab('voteFactory')}>
+              <p>Vote Factory</p>
+            </Tab>
           </>
         )}
-        {!isOwner && <h4>Vote Data</h4>}
-      </div>
+        {!isOwner && <p>Vote Data</p>}
+      </TabsContainer>
     );
   }
 
