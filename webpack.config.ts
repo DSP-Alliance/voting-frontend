@@ -1,3 +1,4 @@
+const path = require('path');
 const prod = process.env.NODE_ENV === 'production';
 
 const HtmlWebpackPlugin = require('html-webpack-plugin');
@@ -24,6 +25,13 @@ module.exports = {
         use: [MiniCssExtractPlugin.loader, 'css-loader'],
       },
     ],
+  },
+  resolve: {
+    alias: {
+      components: path.resolve(__dirname, 'src/components/'),
+      constants: path.resolve(__dirname, 'src/constants/'),
+      services: path.resolve(__dirname, 'src/services/'),
+    },
   },
   devtool: prod ? undefined : 'cheap-module-source-map',
   plugins: [

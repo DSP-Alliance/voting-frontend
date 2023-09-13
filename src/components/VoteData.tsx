@@ -1,11 +1,7 @@
 import React from 'react';
 
 function VoteData() {
-  return (
-    <div>
-      <h1>Vote Data</h1>
-    </div>
-  );
+  return <div>vote data here la la la</div>;
 }
 
 export default VoteData;
