@@ -1,4 +1,4 @@
-export const voteFactory = {
+export const voteFactoryConfig = {
   address: '0xf109f754cdea239d2811d1f285471e0dc25d918e',
   abi: [
     {

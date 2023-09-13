@@ -36,7 +36,7 @@ const ErrorMessage = styled.div`
 `;
 
 export function Connectors() {
-  const { address, connector, isConnected } = useAccount();
+  const { connector, isConnected } = useAccount();
   const { connect, connectors, error, isLoading, pendingConnector } =
     useConnect();
   const { disconnect } = useDisconnect();
