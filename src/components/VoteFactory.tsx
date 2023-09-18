@@ -59,34 +59,16 @@ function VoteFactory({
   const [errorMessage, setErrorMessage] = useState('');
 
   const {
-    handleSubmit,
-    watch,
     formState: { errors },
     control,
     getValues,
+    trigger,
   } = useForm({ mode: 'onTouched' });
-
-  console.log('hi lisa errors ', errors);
 
   // const debouncedFipNum = useDebounce(watch('fipNum'), 500);
   // const debouncedLength = useDebounce(watch('length'), 500);
   // const debouncedDoubleYesOption = useDebounce(watch('doubleYesOption'), 500);
   // const debouncedLsdTokens = useDebounce(watch('lsdTokens'), 500);
-
-  async function startVote() {
-    const res = await walletClient.writeContract({
-      abi: voteFactoryConfig.abi,
-      address: voteFactoryConfig.address,
-      functionName: 'startVote',
-      account: address,
-      args: [
-        watch('fipNum'),
-        watch('length'),
-        watch('doubleYesOption'),
-        watch('lsdTokens'),
-      ],
-    });
-  }
 
   // const {
   //   config,
@@ -114,24 +96,23 @@ function VoteFactory({
   async function onSubmit() {
     setErrorMessage('');
     try {
-      const test = getValues();
-      console.log('hi lisa ', test);
-      // const { request } = await publicClient.simulateContract({
-      //   address: voteFactoryConfig.address,
-      //   abi: voteFactoryConfig.abi,
-      //   functionName: 'mint',
-      //   account: address,
-      //   args: [
-      //     watch('fipNum'),
-      //     watch('length'),
-      //     watch('doubleYesOption') * 60, // convert to seconds
-      //     watch('lsdTokens'),
-      //   ],
-      // });
+      trigger();
+      const { request } = await publicClient.simulateContract({
+        address: voteFactoryConfig.address,
+        abi: voteFactoryConfig.abi,
+        functionName: 'mint',
+        account: address,
+        args: [
+          getValues('fipNum'),
+          getValues('length'),
+          getValues('doubleYesOption') * 60, // convert to seconds
+          getValues('lsdTokens'),
+        ],
+      });
 
-      // await walletClient.writeContract(request);
+      await walletClient.writeContract(request);
 
-      // closeModal();
+      closeModal();
     } catch (err) {
       if (err instanceof BaseError) {
         const revertError = err.walk(
@@ -147,7 +128,7 @@ function VoteFactory({
 
   return (
     <>
-      <Form onSubmit={handleSubmit(onSubmit)}>
+      <Form>
         {/* TODO change this to a dropdown of all available FIPs */}
         <Controller
           name='fipNum'
@@ -161,6 +142,7 @@ function VoteFactory({
               size='small'
               error={!!error}
               onChange={onChange}
+              onBlur={() => trigger('fipNum')}
               value={value || ''}
               fullWidth
               label='FIP Number'
@@ -181,6 +163,7 @@ function VoteFactory({
               error={!!error}
               onChange={onChange}
               value={value || ''}
+              onBlur={() => trigger('length')}
               fullWidth
               label='Length of vote time (in minutes)'
               variant='outlined'
@@ -222,6 +205,7 @@ function VoteFactory({
               error={!!error}
               onChange={onChange}
               value={value || ''}
+              onBlur={() => trigger('lsdTokens')}
               fullWidth
               label='LSD Token'
               variant='outlined'
@@ -234,7 +218,7 @@ function VoteFactory({
         <button type='button' onClick={closeModal}>
           Cancel
         </button>
-        <button type='submit' onClick={handleSubmit(onSubmit)}>
+        <button type='submit' onClick={() => onSubmit()}>
           Start Vote
         </button>
       </DialogActions>
