@@ -199,7 +199,6 @@ function VoteFactory({
           render={({ field: { onChange, value }, fieldState: { error } }) => (
             <CustomTextField
               required
-              type='number'
               helperText={error ? 'Enter an token value' : null}
               size='small'
               error={!!error}
