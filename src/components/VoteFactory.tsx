@@ -59,17 +59,14 @@ function VoteFactory({
   const [errorMessage, setErrorMessage] = useState('');
 
   const {
-    register,
     handleSubmit,
     watch,
     formState: { errors },
     control,
-  } = useForm();
+    getValues,
+  } = useForm({ mode: 'onTouched' });
 
-  // const [fipNum, setFipNum] = useState('');
-  // const [length, setLength] = useState('');
-  // const [doubleYesOption, setDoubleYesOption] = useState(false);
-  // const [lsdTokens, setLsdTokens] = useState<string[]>([]);
+  console.log('hi lisa errors ', errors);
 
   // const debouncedFipNum = useDebounce(watch('fipNum'), 500);
   // const debouncedLength = useDebounce(watch('length'), 500);
@@ -117,22 +114,24 @@ function VoteFactory({
   async function onSubmit() {
     setErrorMessage('');
     try {
-      const { request } = await publicClient.simulateContract({
-        address: voteFactoryConfig.address,
-        abi: voteFactoryConfig.abi,
-        functionName: 'mint',
-        account: address,
-        args: [
-          watch('fipNum'),
-          watch('length'),
-          watch('doubleYesOption') * 60, // convert to seconds
-          watch('lsdTokens'),
-        ],
-      });
+      const test = getValues();
+      console.log('hi lisa ', test);
+      // const { request } = await publicClient.simulateContract({
+      //   address: voteFactoryConfig.address,
+      //   abi: voteFactoryConfig.abi,
+      //   functionName: 'mint',
+      //   account: address,
+      //   args: [
+      //     watch('fipNum'),
+      //     watch('length'),
+      //     watch('doubleYesOption') * 60, // convert to seconds
+      //     watch('lsdTokens'),
+      //   ],
+      // });
 
-      await walletClient.writeContract(request);
+      // await walletClient.writeContract(request);
 
-      closeModal();
+      // closeModal();
     } catch (err) {
       if (err instanceof BaseError) {
         const revertError = err.walk(
@@ -232,8 +231,10 @@ function VoteFactory({
       </Form>
       {errorMessage && <ErrorMessage>Error: {errorMessage}</ErrorMessage>}
       <DialogActions>
-        <button onClick={closeModal}>Cancel</button>
-        <button type='submit' disabled={Boolean(errors)}>
+        <button type='button' onClick={closeModal}>
+          Cancel
+        </button>
+        <button type='submit' onClick={handleSubmit(onSubmit)}>
           Start Vote
         </button>
       </DialogActions>
