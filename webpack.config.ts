@@ -24,6 +24,10 @@ module.exports = {
         test: /\.css$/,
         use: [MiniCssExtractPlugin.loader, 'css-loader'],
       },
+      {
+        test: /\.(woff|woff2|eot|ttf|otf)$/i,
+        type: 'asset/resource',
+      },
     ],
   },
   resolve: {
@@ -31,6 +35,7 @@ module.exports = {
       components: path.resolve(__dirname, 'src/components/'),
       constants: path.resolve(__dirname, 'src/constants/'),
       services: path.resolve(__dirname, 'src/services/'),
+      utilities: path.resolve(__dirname, 'src/utilities/'),
     },
   },
   devtool: prod ? undefined : 'cheap-module-source-map',

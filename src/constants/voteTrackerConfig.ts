@@ -1,4 +1,4 @@
-export const voteTracker = {
+export const voteTrackerConfig = {
   abi: [
     {
       inputs: [

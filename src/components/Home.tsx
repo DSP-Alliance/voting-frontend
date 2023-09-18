@@ -2,36 +2,35 @@ import React, { useEffect, useState } from 'react';
 import { useAccount } from 'wagmi';
 import styled from 'styled-components';
 
-import Connectors from './Connectors';
-import VoteData from './VoteData';
-import VoteFactory from './VoteFactory';
 import { voteFactoryConfig } from 'constants/voteFactoryConfig';
 import { publicClient } from 'services/clients';
+import Connectors from './Connectors';
+import VoteData from './VoteData';
+import VoteFactoryModal from './VoteFactoryModal';
 
-const TabsContainer = styled.div`
+export type Address = `0x${string}`;
+
+const HomeContainer = styled.div`
   display: flex;
-  gap: 12px;
-  margin-bottom: 12px;
-
-  p {
-    font-size: 16px;
-    color: gray;
-  }
+  flex-direction: column;
+  gap: 24px;
 `;
 
-const Tab = styled.button`
-  background: none;
-  border: none;
+const ButtonContainer = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+`;
 
-  &:hover {
-    cursor: pointer;
-  }
+const StartVoteButton = styled.button`
+  grid-column-start: 2;
+  width: 100px;
+  justify-self: center;
 `;
 
 function Home() {
-  const [currentTab, setCurrentTab] = useState('voteData');
+  const [showVoteFactory, setShowVoteFactory] = useState(false);
   const [isOwner, setIsOwner] = useState(false);
-  const { address } = useAccount();
+  const { address = `0x` } = useAccount();
 
   useEffect(() => {
     async function getOwner() {
@@ -48,31 +47,25 @@ function Home() {
     getOwner();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  function renderTabs() {
-    return (
-      <TabsContainer>
-        {isOwner && (
-          <>
-            <Tab onClick={() => setCurrentTab('voteData')}>
-              <p>Vote Data</p>
-            </Tab>
-            <Tab onClick={() => setCurrentTab('voteFactory')}>
-              <p>Vote Factory</p>
-            </Tab>
-          </>
-        )}
-        {!isOwner && <p>Vote Data</p>}
-      </TabsContainer>
-    );
-  }
-
   return (
-    <>
-      <Connectors />
-      {renderTabs()}
-      {currentTab === 'voteData' && <VoteData />}
-      {currentTab === 'voteFactory' && <VoteFactory />}
-    </>
+    <HomeContainer>
+      <ButtonContainer>
+        {isOwner && (
+          <StartVoteButton onClick={() => setShowVoteFactory(true)}>
+            Start Vote
+          </StartVoteButton>
+        )}
+        <Connectors />
+      </ButtonContainer>
+      {showVoteFactory && (
+        <VoteFactoryModal
+          address={address}
+          open={showVoteFactory}
+          closeModal={() => setShowVoteFactory(false)}
+        />
+      )}
+      <VoteData address={address} />
+    </HomeContainer>
   );
 }
 

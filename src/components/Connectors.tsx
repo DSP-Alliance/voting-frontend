@@ -7,6 +7,7 @@ const Container = styled.div`
   flex-direction: row;
   gap: 12px;
   justify-content: end;
+  grid-column-start: 3;
 `;
 
 const OptionsContainer = styled.div`
@@ -27,12 +28,12 @@ const ConnectedContainer = styled.div`
 `;
 
 const ConnectButton = styled.button`
-  padding: 12px;
   margin-right: 12px;
 `;
 
 const ErrorMessage = styled.div`
   align-self: center;
+  color: var(--portal2023-rederror);
 `;
 
 export function Connectors() {

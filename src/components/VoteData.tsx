@@ -1,11 +1,15 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
-const Container = styled.div`
+import VotePicker from 'components/VotePicker';
+import FIPInfo from 'components/FIPInfo';
+import type { Address } from './Home';
+
+const VoteDataContainer = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   gap: 12px;
-  margin: 0 12px;
+  margin: 24px;
 `;
 
 const VoteSection = styled.div`
@@ -14,20 +18,36 @@ const VoteSection = styled.div`
   padding: 12px;
 `;
 
-function VoteData() {
+function VoteData({ address }: { address: Address | undefined }) {
+  const [lastFipNum, setLastFipNum] = useState(75);
+  useEffect(() => {
+    // get vote data from the blockchain
+    // getVoteResults for latest deployedVotes FIP
+  }, []);
+
   return (
-    <Container>
+    <VoteDataContainer>
+      {/* Add countdown for time left on vote if one is active */}
       <VoteSection>
         <h5>Latest Vote FIP</h5>
-        <p>Hello</p>
+        <FIPInfo num={lastFipNum} />
       </VoteSection>
       <VoteSection>
-        <h5>Latest Vote Results</h5>
+        {/* if have already voted */}
+        {/* <h5>Latest Vote Results</h5> */}
+        <h5>Choose Vote</h5>
+        <VotePicker address={address} />
+        {/* https://github.com/0xpluto/fip-voting/blob/master/src/components/TotalVotes.tsx */}
       </VoteSection>
       <VoteSection>
-        <h5>Voting Power</h5>
+        {/* if have already voted */}
+        {/* <h5>Voting Power</h5> */}
+        <h5>Wallet Voting Power</h5>
+        {/* https://github.com/0xpluto/fip-voting/blob/e19da9798c2756fcc471a91b1ae03c4f492bb3c3/src/components/VotingPower.tsx */}
       </VoteSection>
-    </Container>
+    </VoteDataContainer>
+    // Previous votes chart
+    // https://github.com/0xpluto/fip-voting/blob/master/src/components/PreviousVotes.tsx */}
   );
 }
 
