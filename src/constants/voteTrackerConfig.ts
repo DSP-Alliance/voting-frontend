@@ -23,6 +23,11 @@ export const voteTrackerConfig = {
           type: 'address[]',
         },
         {
+          internalType: 'uint64',
+          name: '_FIP',
+          type: 'uint64'
+        },
+        {
           internalType: 'address',
           name: 'owner',
           type: 'address',
@@ -32,22 +37,6 @@ export const voteTrackerConfig = {
       type: 'constructor',
     },
     {
-      inputs: [
-        {
-          internalType: 'int256',
-          name: 'errorCode',
-          type: 'int256',
-        },
-      ],
-      name: 'ActorError',
-      type: 'error',
-    },
-    {
-      inputs: [],
-      name: 'ActorNotFound',
-      type: 'error',
-    },
-    {
       inputs: [],
       name: 'AlreadyRegistered',
       type: 'error',
@@ -55,54 +44,6 @@ export const voteTrackerConfig = {
     {
       inputs: [],
       name: 'AlreadyVoted',
-      type: 'error',
-    },
-    {
-      inputs: [],
-      name: 'FailToCallActor',
-      type: 'error',
-    },
-    {
-      inputs: [
-        {
-          internalType: 'CommonTypes.FilActorId',
-          name: 'actorId',
-          type: 'uint64',
-        },
-      ],
-      name: 'InvalidActorID',
-      type: 'error',
-    },
-    {
-      inputs: [
-        {
-          internalType: 'uint64',
-          name: '',
-          type: 'uint64',
-        },
-      ],
-      name: 'InvalidCodec',
-      type: 'error',
-    },
-    {
-      inputs: [],
-      name: 'InvalidResponseLength',
-      type: 'error',
-    },
-    {
-      inputs: [
-        {
-          internalType: 'uint256',
-          name: 'balance',
-          type: 'uint256',
-        },
-        {
-          internalType: 'uint256',
-          name: 'value',
-          type: 'uint256',
-        },
-      ],
-      name: 'NotEnoughBalance',
       type: 'error',
     },
     {
@@ -151,7 +92,13 @@ export const voteTrackerConfig = {
         {
           indexed: false,
           internalType: 'uint256',
-          name: 'weight',
+          name: 'weightRBP',
+          type: 'uint256',
+        },
+        {
+          indexed: false,
+          internalType: 'uint256',
+          name: 'weightToken',
           type: 'uint256',
         },
         {
@@ -182,7 +129,13 @@ export const voteTrackerConfig = {
         {
           indexed: false,
           internalType: 'uint256',
-          name: 'weight',
+          name: 'weightRBP',
+          type: 'uint256',
+        },
+        {
+          indexed: false,
+          internalType: 'uint256',
+          name: 'weightToken',
           type: 'uint256',
         },
       ],
@@ -217,7 +170,7 @@ export const voteTrackerConfig = {
     },
     {
       inputs: [],
-      name: 'getVoteResults',
+      name: 'getVoteResultsMinerToken',
       outputs: [
         {
           internalType: 'uint256',
@@ -242,6 +195,62 @@ export const voteTrackerConfig = {
       ],
       stateMutability: 'view',
       type: 'function',
+    },
+    {
+      inputs: [],
+      name: 'getVoteResultsRBP',
+      outputs: [
+        {
+          internalType: 'uint256',
+          name: '',
+          type: 'uint256',
+        },
+        {
+          internalType: 'uint256',
+          name: '',
+          type: 'uint256',
+        },
+        {
+          internalType: 'uint256',
+          name: '',
+          type: 'uint256',
+        },
+        {
+          internalType: 'uint256',
+          name: '',
+          type: 'uint256',
+        },
+      ],
+      stateMutability: 'view',
+      type: 'function'
+    },
+    {
+      inputs: [],
+      name: 'getVoteResultsToken',
+      outputs: [
+        {
+          internalType: 'uint256',
+          name: '',
+          type: 'uint256',
+        },
+        {
+          internalType: 'uint256',
+          name: '',
+          type: 'uint256',
+        },
+        {
+          internalType: 'uint256',
+          name: '',
+          type: 'uint256',
+        },
+        {
+          internalType: 'uint256',
+          name: '',
+          type: 'uint256',
+        },
+      ],
+      stateMutability: 'view',
+      type: 'function'
     },
     {
       inputs: [],
@@ -273,7 +282,12 @@ export const voteTrackerConfig = {
       outputs: [
         {
           internalType: 'uint256',
-          name: 'power',
+          name: 'powerRBP',
+          type: 'uint256',
+        },
+        {
+          internalType: 'uint256',
+          name: 'powerToken',
           type: 'uint256',
         },
       ],
@@ -328,7 +342,12 @@ export const voteTrackerConfig = {
       outputs: [
         {
           internalType: 'uint256',
-          name: 'voteWeight',
+          name: 'voteWeightRBP',
+          type: 'uint256',
+        },
+        {
+          internalType: 'uint256',
+          name: 'voteWeightToken',
           type: 'uint256',
         },
       ],
@@ -356,6 +375,19 @@ export const voteTrackerConfig = {
           internalType: 'uint32',
           name: '',
           type: 'uint32',
+        },
+      ],
+      stateMutability: 'view',
+      type: 'function',
+    },
+    {
+      inputs: [],
+      name: 'winningVote',
+      outputs: [
+        {
+          internalType: 'enum VoteTracker.Vote',
+          name: '',
+          type: 'uint8',
         },
       ],
       stateMutability: 'view',

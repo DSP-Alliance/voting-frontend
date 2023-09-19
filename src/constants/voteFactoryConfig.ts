@@ -15,6 +15,17 @@ export const voteFactoryConfig = {
     {
       inputs: [
         {
+          internalType: 'uint64',
+          name: 'fipNum',
+          type: 'uint64',
+        },
+      ],
+      name: 'VoteAlreadyExists',
+      type: 'error',
+    },
+    {
+      inputs: [
+        {
           internalType: 'address',
           name: 'user',
           type: 'address',
@@ -152,6 +163,7 @@ export const voteFactoryConfig = {
       stateMutability: 'nonpayable',
       type: 'function',
       name: 'transferOwnership',
+      outputs: [],
     },
   ],
 } as const;
