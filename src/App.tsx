@@ -8,14 +8,6 @@ import GlobalStyle from './globalStyles';
 import { publicClient } from './services/clients';
 import Home from './components/Home';
 
-const Header = styled.div`
-  display: flex;
-  justify-content: center;
-  font-size: 24px;
-  font-family: 'PP Formula';
-  margin: 24px 0;
-`;
-
 const config = createConfig({
   autoConnect: true,
   connectors: [
@@ -29,7 +21,6 @@ function App() {
   return (
     <>
       <GlobalStyle />
-      <Header>FIP WIP</Header>
       <WagmiConfig config={config}>
         <Home />
       </WagmiConfig>

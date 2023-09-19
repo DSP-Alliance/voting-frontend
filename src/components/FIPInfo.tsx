@@ -1,18 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
-import { getFip } from 'services/fipService';
-
-export interface FipData {
-  author?: string;
-  category?: string;
-  created?: string;
-  'discussions-to'?: string;
-  fip?: string;
-  status?: string;
-  title?: string;
-  type?: string;
-}
+import FipService from 'services/fipService';
+import type { FipData } from 'services/fipService';
 
 const InfoContainer = styled.div`
   display: flex;
@@ -25,9 +15,8 @@ function FIPInfo({ num }: { num: number }) {
 
   useEffect(() => {
     async function getFIPInfo() {
-      // get fip info from github api
       try {
-        const response = await getFip(num);
+        const response = await FipService.getFip(num);
         setFipData(response);
       } catch (error) {
         console.error(error);
@@ -35,12 +24,15 @@ function FIPInfo({ num }: { num: number }) {
     }
 
     getFIPInfo();
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <InfoContainer>
       <span>{fipData?.fip?.replace(/\"/g, '')}</span>
       <span>{fipData?.title}</span>
+      <span>{`Authors: ${fipData?.author?.replace(/\"/g, '')}`}</span>
+      <span>{`Status: ${fipData ? fipData.status : '-'}`}</span>
+      <span>{`Discussions: ${fipData ? fipData['discussions-to'] : '-'}`}</span>
     </InfoContainer>
   );
 }

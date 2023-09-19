@@ -16,9 +16,28 @@ const HomeContainer = styled.div`
   gap: 24px;
 `;
 
-const ButtonContainer = styled.div`
+const Header = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
+  justify-content: end;
+  align-items: center;
+  gap: 100px;
+  height: 100px;
+  font-size: 24px;
+  font-family: 'PP Formula';
+  margin-bottom: 24px;
+  background-color: var(--portal2023-black);
+  color: var(--portal2023-cream);
+`;
+
+const HeaderText = styled.div`
+  grid-column-start: 2;
+  justify-self: center;
+`;
+
+const ButtonContainer = styled.div`
+  display: flex;
+  justify-content: center;
 `;
 
 const StartVoteButton = styled.button`
@@ -40,8 +59,7 @@ function Home() {
         functionName: 'owner',
       });
 
-      // setIsOwner(owner === address);
-      setIsOwner(true);
+      setIsOwner(owner === address);
     }
 
     getOwner();
@@ -49,13 +67,16 @@ function Home() {
 
   return (
     <HomeContainer>
+      <Header>
+        <HeaderText>FIP WIP</HeaderText>
+        <Connectors />
+      </Header>
       <ButtonContainer>
         {isOwner && (
           <StartVoteButton onClick={() => setShowVoteFactory(true)}>
             Start Vote
           </StartVoteButton>
         )}
-        <Connectors />
       </ButtonContainer>
       {showVoteFactory && (
         <VoteFactoryModal

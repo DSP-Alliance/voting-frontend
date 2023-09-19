@@ -40,8 +40,9 @@ const GlobalStyle = createGlobalStyle`
   button {
     font-family: 'Inter Regular', Helvetica, Sans-Serif;
     background-color: var(--portal2023-green);
-    padding: 12px;
+    padding: 8px;
     border: 1px solid var(--portal2023-darkhover);
+    border-radius: 4px;
   }
 `;
 

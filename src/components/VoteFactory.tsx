@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import styled from 'styled-components';
 import {
@@ -19,6 +19,7 @@ import { BaseError, ContractFunctionRevertedError } from 'viem';
 
 import { voteFactoryConfig } from 'constants/voteFactoryConfig';
 import { publicClient, walletClient } from 'services/clients';
+import FipService from 'services/fipService';
 // import useDebounce from 'utilities/useDebounce';
 import type { Address } from './Home';
 
@@ -65,6 +66,16 @@ function VoteFactory({
     trigger,
   } = useForm({ mode: 'onTouched' });
 
+  useEffect(() => {
+    async function getAllFips() {
+      const response = await FipService.getFipList();
+      console.log('hi lisa response ', response);
+      // setFips()
+    }
+
+    getAllFips();
+  }, []);
+
   // const debouncedFipNum = useDebounce(watch('fipNum'), 500);
   // const debouncedLength = useDebounce(watch('length'), 500);
   // const debouncedDoubleYesOption = useDebounce(watch('doubleYesOption'), 500);
@@ -97,20 +108,24 @@ function VoteFactory({
     setErrorMessage('');
     try {
       trigger();
-      const { request } = await publicClient.simulateContract({
-        address: voteFactoryConfig.address,
-        abi: voteFactoryConfig.abi,
-        functionName: 'mint',
-        account: address,
-        args: [
-          getValues('fipNum'),
-          getValues('length'),
-          getValues('doubleYesOption') * 60, // convert to seconds
-          getValues('lsdTokens'),
-        ],
-      });
+      // const { request } = await publicClient.simulateContract({
+      //   address: voteFactoryConfig.address,
+      //   abi: voteFactoryConfig.abi,
+      //   functionName: 'mint',
+      //   account: address,
+      //   args: [
+      //     getValues('fipNum'),
+      //     getValues('length'),
+      //     getValues('doubleYesOption') * 60, // convert to seconds
+      //     getValues('lsdTokens'),
+      //   ],
+      // });
 
-      await walletClient.writeContract(request);
+      // await walletClient.writeContract(request);
+
+      // await walletClient.signMessage();
+
+      console.log('hi lisa submitted ', getValues());
 
       closeModal();
     } catch (err) {
@@ -192,6 +207,7 @@ function VoteFactory({
             )}
           />
         </FormControl>
+        {/* TODO make this dynamic to add more fields as user clicks add button */}
         <Controller
           name='lsdTokens'
           control={control}
@@ -211,16 +227,16 @@ function VoteFactory({
             />
           )}
         />
+        {errorMessage && <ErrorMessage>Error: {errorMessage}</ErrorMessage>}
+        <DialogActions>
+          <button type='button' onClick={closeModal}>
+            Cancel
+          </button>
+          <button type='submit' onClick={() => onSubmit}>
+            Start Vote
+          </button>
+        </DialogActions>
       </Form>
-      {errorMessage && <ErrorMessage>Error: {errorMessage}</ErrorMessage>}
-      <DialogActions>
-        <button type='button' onClick={closeModal}>
-          Cancel
-        </button>
-        <button type='submit' onClick={() => onSubmit()}>
-          Start Vote
-        </button>
-      </DialogActions>
     </>
   );
 }

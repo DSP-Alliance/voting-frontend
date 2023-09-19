@@ -1,9 +1,25 @@
 import axios from 'axios';
 import MarkdownIt from 'markdown-it';
+export interface FipData {
+  author?: string;
+  category?: string;
+  created?: string;
+  'discussions-to'?: string;
+  fip?: string;
+  status?: string;
+  title?: string;
+  type?: string;
+}
 
-import type { FipData } from 'components/FIPInfo';
+async function getFipList() {
+  const res = await axios.get(
+    `https://raw.githubusercontent.com/filecoin-project/FIPs/master/FIPS`,
+  );
 
-export async function getFip(num: number) {
+  console.log(res.data);
+}
+
+async function getFip(num: number) {
   const md = new MarkdownIt();
 
   const formatNum = num.toLocaleString(undefined, {
@@ -27,3 +43,7 @@ export async function getFip(num: number) {
 
   return fipData;
 }
+
+const fipService = { getFipList, getFip };
+
+export default fipService;

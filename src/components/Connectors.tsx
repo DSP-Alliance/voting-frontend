@@ -29,6 +29,7 @@ const ConnectedContainer = styled.div`
 
 const ConnectButton = styled.button`
   margin-right: 12px;
+  border: 1px solid var(--portal2023-green);
 `;
 
 const ErrorMessage = styled.div`

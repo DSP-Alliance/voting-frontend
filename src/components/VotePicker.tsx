@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { publicClient, walletClient } from 'services/clients';
+import { publicClient } from 'services/clients';
 import { voteTrackerConfig } from 'constants/voteTrackerConfig';
 import type { Address } from './Home';
 
@@ -19,7 +19,7 @@ function VotePicker({ address }: { address: Address | undefined }) {
       args: [BigInt(encodedVote), glifPool, minerIds],
     });
 
-    await walletClient.writeContract(request);
+    // await walletClient.writeContract(request);
   }
 
   function encodeVote(vote: number) {
