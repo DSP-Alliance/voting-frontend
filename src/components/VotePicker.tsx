@@ -10,14 +10,14 @@ function VotePicker({ address }: { address: Address | undefined }) {
 
   async function sendVote() {
     const encodedVote = encodeVote(vote);
-    // test request will succeed before sending
-    const { request } = await publicClient.simulateContract({
-      account: address,
-      address: '0xFBA3912Ca04dd458c843e2EE08967fC04f3579c2',
-      abi: voteTrackerConfig.abi,
-      functionName: 'voteAndRegister',
-      args: [BigInt(encodedVote), glifPool, minerIds],
-    });
+    // // test request will succeed before sending
+    // const { request } = await publicClient.simulateContract({
+    //   account: address,
+    //   address: voteTrackerConfig.address, // address supplied from deployedVotes call
+    //   abi: voteTrackerConfig.abi,
+    //   functionName: 'voteAndRegister',
+    //   args: [BigInt(encodedVote), glifPool, minerIds],
+    // });
 
     // await walletClient.writeContract(request);
   }

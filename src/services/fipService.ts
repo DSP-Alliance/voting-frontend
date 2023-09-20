@@ -11,15 +11,7 @@ export interface FipData {
   type?: string;
 }
 
-async function getFipList() {
-  const res = await axios.get(
-    `https://raw.githubusercontent.com/filecoin-project/FIPs/master/FIPS`,
-  );
-
-  console.log(res.data);
-}
-
-async function getFip(num: number) {
+export async function getFip(num: number) {
   const md = new MarkdownIt();
 
   const formatNum = num.toLocaleString(undefined, {
@@ -43,7 +35,3 @@ async function getFip(num: number) {
 
   return fipData;
 }
-
-const fipService = { getFipList, getFip };
-
-export default fipService;

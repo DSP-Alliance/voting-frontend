@@ -3,11 +3,9 @@ import { useAccount, useConnect, useDisconnect } from 'wagmi';
 import styled from 'styled-components';
 
 const Container = styled.div`
-  display: flex;
-  flex-direction: row;
-  gap: 12px;
-  justify-content: end;
   grid-column-start: 3;
+  justify-self: end;
+  display: flex;
 `;
 
 const OptionsContainer = styled.div`
@@ -21,10 +19,10 @@ const ConnectorsContainer = styled.div`
   justify-content: end;
 `;
 
-const ConnectedContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+const ConnectedText = styled.div`
+  font-family: 'Inter Regular';
+  font-size: 14px;
+  margin-right: 12px;
 `;
 
 const ConnectButton = styled.button`
@@ -46,8 +44,8 @@ export function Connectors() {
   function renderContent() {
     if (connector && isConnected) {
       return (
-        <ConnectedContainer>
-          <div>Connected to {connector.name}</div>
+        <OptionsContainer>
+          <ConnectedText>Connected to {connector.name}</ConnectedText>
           <ConnectButton
             onClick={(e) => {
               e.preventDefault();
@@ -56,7 +54,7 @@ export function Connectors() {
           >
             Disconnect
           </ConnectButton>
-        </ConnectedContainer>
+        </OptionsContainer>
       );
     }
 

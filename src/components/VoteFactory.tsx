@@ -10,17 +10,16 @@ import {
   RadioGroup,
   TextField,
 } from '@mui/material';
-import { BaseError, ContractFunctionRevertedError } from 'viem';
-// import {
-//   usePrepareContractWrite,
-//   useContractWrite,
-//   useWaitForTransaction,
-// } from 'wagmi';
+// import { BaseError, ContractFunctionRevertedError } from 'viem';
+import {
+  usePrepareContractWrite,
+  useContractWrite,
+  useWaitForTransaction,
+} from 'wagmi';
 
 import { voteFactoryConfig } from 'constants/voteFactoryConfig';
-import { publicClient, walletClient } from 'services/clients';
-import FipService from 'services/fipService';
-// import useDebounce from 'utilities/useDebounce';
+// import { publicClient, walletClient } from 'services/clients';
+import useDebounce from 'utilities/useDebounce';
 import type { Address } from './Home';
 
 const Form = styled.form`
@@ -46,6 +45,18 @@ const CustomTextField = styled(TextField)`
   }
 `;
 
+const CustomFormLabel = styled(FormLabel)`
+  &[class*='MuiFormLabel-root'].Mui-focused {
+    color: var(--portal2023-green);
+  }
+`;
+
+const CustomRadioButton = styled(Radio)`
+  &[class*='MuiRadio-root'].Mui-checked {
+    color: var(--portal2023-green);
+  }
+`;
+
 const ErrorMessage = styled.div`
   color: var(--portal2023-rederror);
 `;
@@ -57,94 +68,91 @@ function VoteFactory({
   address: Address;
   closeModal: () => void;
 }) {
-  const [errorMessage, setErrorMessage] = useState('');
+  // const [errorMessage, setErrorMessage] = useState('');
 
   const {
     formState: { errors },
     control,
     getValues,
     trigger,
+    watch,
   } = useForm({ mode: 'onTouched' });
 
-  useEffect(() => {
-    async function getAllFips() {
-      const response = await FipService.getFipList();
-      console.log('hi lisa response ', response);
-      // setFips()
-    }
+  const debouncedFipNum = useDebounce(watch('fipNum'), 500);
+  const debouncedLength = useDebounce(watch('length'), 500);
+  const debouncedLsdTokens = useDebounce(watch('lsdTokens'), 500);
 
-    getAllFips();
-  }, []);
+  const {
+    config,
+    error: prepareError,
+    isError: isPrepareError,
+  } = usePrepareContractWrite({
+    address: voteFactoryConfig.address,
+    abi: voteFactoryConfig.abi,
+    functionName: 'startVote',
+    args: [
+      parseInt(debouncedFipNum),
+      parseInt(debouncedLength) * 60,
+      watch('doubleYesOption'),
+      [debouncedLsdTokens],
+    ],
+    enabled:
+      Boolean(debouncedLength) &&
+      Boolean(debouncedFipNum) &&
+      debouncedLsdTokens?.length > 0,
+  });
 
-  // const debouncedFipNum = useDebounce(watch('fipNum'), 500);
-  // const debouncedLength = useDebounce(watch('length'), 500);
-  // const debouncedDoubleYesOption = useDebounce(watch('doubleYesOption'), 500);
-  // const debouncedLsdTokens = useDebounce(watch('lsdTokens'), 500);
+  const { data, error, isError, write } = useContractWrite(config);
 
-  // const {
-  //   config,
-  //   error: prepareError,
-  //   isError: isPrepareError,
-  // } = usePrepareContractWrite({
-  //   address: voteFactoryConfig.address, // or should this be the owner address?
-  //   abi: voteFactoryConfig.abi,
-  //   functionName: 'startVote',
-  //   args: [
-  //     parseInt(debouncedFipNum),
-  //     parseInt(debouncedLength),
-  //     debouncedDoubleYesOption,
-  //     [debouncedLsdTokens],
-  //   ],
-  //   // enabled: Boolean(length) && Boolean(fipNum) && lsdTokens.length > 0,
-  // });
+  const { isLoading, isSuccess } = useWaitForTransaction({
+    hash: data?.hash,
+  });
 
-  // const { data, error, isError, write } = useContractWrite(config);
+  // function addLsdTokensField() {
 
-  // const { isLoading, isSuccess } = useWaitForTransaction({
-  //   hash: data?.hash,
-  // });
+  // }
 
-  async function onSubmit() {
-    setErrorMessage('');
-    try {
-      trigger();
-      // const { request } = await publicClient.simulateContract({
-      //   address: voteFactoryConfig.address,
-      //   abi: voteFactoryConfig.abi,
-      //   functionName: 'mint',
-      //   account: address,
-      //   args: [
-      //     getValues('fipNum'),
-      //     getValues('length'),
-      //     getValues('doubleYesOption') * 60, // convert to seconds
-      //     getValues('lsdTokens'),
-      //   ],
-      // });
+  function onSubmit(e: React.MouseEvent) {
+    e.preventDefault();
+    console.log('hi lisa submitted ', getValues());
 
-      // await walletClient.writeContract(request);
+    // setErrorMessage('');
+    // try {
+    trigger();
+    write?.();
 
-      // await walletClient.signMessage();
+    // const { request } = await publicClient.simulateContract({
+    //   address: voteFactoryConfig.address,
+    //   abi: voteFactoryConfig.abi,
+    //   functionName: 'mint',
+    //   account: address,
+    //   args: [
+    //     getValues('fipNum'),
+    //     getValues('length'),
+    //     getValues('doubleYesOption') * 60, // convert to seconds
+    //     getValues('lsdTokens'),
+    //   ],
+    // });
 
-      console.log('hi lisa submitted ', getValues());
+    // await walletClient.writeContract(request);
 
-      closeModal();
-    } catch (err) {
-      if (err instanceof BaseError) {
-        const revertError = err.walk(
-          (err) => err instanceof ContractFunctionRevertedError,
-        );
-        if (revertError instanceof ContractFunctionRevertedError) {
-          const errorName = revertError.data?.errorName ?? '';
-          setErrorMessage(errorName);
-        }
-      }
-    }
+    // closeModal();
+    // } catch (err) {
+    //   if (err instanceof BaseError) {
+    //     const revertError = err.walk(
+    //       (err) => err instanceof ContractFunctionRevertedError,
+    //     );
+    //     if (revertError instanceof ContractFunctionRevertedError) {
+    //       const errorName = revertError.data?.errorName ?? '';
+    //       setErrorMessage(errorName);
+    //     }
+    //   }
+    // }
   }
 
   return (
     <>
       <Form>
-        {/* TODO change this to a dropdown of all available FIPs */}
         <Controller
           name='fipNum'
           control={control}
@@ -186,7 +194,7 @@ function VoteFactory({
           )}
         />
         <FormControl>
-          <FormLabel>Double yes option?</FormLabel>
+          <CustomFormLabel>Double yes option?</CustomFormLabel>
           <Controller
             rules={{ required: 'Required' }}
             name='doubleYesOption'
@@ -196,18 +204,17 @@ function VoteFactory({
                 <FormControlLabel
                   value={true}
                   label={'Yes'}
-                  control={<Radio />}
+                  control={<CustomRadioButton />}
                 />
                 <FormControlLabel
                   value={false}
                   label={'No'}
-                  control={<Radio />}
+                  control={<CustomRadioButton />}
                 />
               </RadioGroup>
             )}
           />
         </FormControl>
-        {/* TODO make this dynamic to add more fields as user clicks add button */}
         <Controller
           name='lsdTokens'
           control={control}
@@ -215,7 +222,8 @@ function VoteFactory({
           render={({ field: { onChange, value }, fieldState: { error } }) => (
             <CustomTextField
               required
-              helperText={error ? 'Enter an token value' : null}
+              placeholder='0x0000...0000'
+              helperText={error ? 'Enter a token value' : null}
               size='small'
               error={!!error}
               onChange={onChange}
@@ -227,16 +235,47 @@ function VoteFactory({
             />
           )}
         />
-        {errorMessage && <ErrorMessage>Error: {errorMessage}</ErrorMessage>}
+        <>
+          {/* <TextField
+            name={`sample${sampleMessages.length + 1}`}
+            label={`Message ${sampleMessages.length + 1}`}
+            minHeight='5rem'
+            value={currentSampleMessage}
+            onChange={(e) => setCurrentSampleMessage(e.target.value)}
+            textArea
+            required={sampleMessages.length === 0}
+            validate={[minLength20]}
+            maxLength={1024}
+          /> */}
+          {/* <button
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+
+              // change the formValue
+              // change(
+              //   `sample${sampleMessages.length + 1}`,
+              //   currentSampleMessage,
+              // );
+              // set currentValue
+              // setCurrentSampleMessage('');
+            }}
+            disabled={!currentSampleMessage || loading}
+          >
+            Add LSD Token {loading ? <SpinnerIcon /> : null}
+          </button> */}
+        </>
         <DialogActions>
-          <button type='button' onClick={closeModal}>
-            Cancel
-          </button>
-          <button type='submit' onClick={() => onSubmit}>
+          <button onClick={closeModal}>Cancel</button>
+          <button type='submit' disabled={isLoading} onClick={onSubmit}>
             Start Vote
           </button>
         </DialogActions>
       </Form>
+      {/* {errorMessage && <ErrorMessage>Error: {errorMessage}</ErrorMessage>} */}
+      {(isPrepareError || isError) && (
+        <ErrorMessage>Error: {(prepareError || error)?.message}</ErrorMessage>
+      )}
     </>
   );
 }

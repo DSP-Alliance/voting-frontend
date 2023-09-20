@@ -3,7 +3,9 @@ import styled from 'styled-components';
 
 import VotePicker from 'components/VotePicker';
 import FIPInfo from 'components/FIPInfo';
+import { publicClient } from 'services/clients';
 import type { Address } from './Home';
+import { voteFactoryConfig } from 'constants/voteFactoryConfig';
 
 const VoteDataContainer = styled.div`
   display: flex;
@@ -25,10 +27,21 @@ const VoteSection = styled.div`
 
 function VoteData({ address }: { address: Address | undefined }) {
   const [lastFipNum, setLastFipNum] = useState(75);
-  useEffect(() => {
-    // get vote data from the blockchain
-    // getVoteResults for latest deployedVotes FIP
-  }, []);
+  // useEffect(() => {
+  //   // get vote data from the blockchain
+  //   // getVoteResults for latest deployedVotes FIP
+  //   async function getLastVote() {
+  //     const data = await publicClient.readContract({
+  //       abi: voteFactoryConfig.abi,
+  //       address: voteFactoryConfig.address,
+  //       functionName: 'deployedVotes',
+  //     });
+
+  //     console.log('hi lisa data ', data);
+  //   }
+
+  //   getLastVote();
+  // }, []);
 
   return (
     <VoteDataContainer>
