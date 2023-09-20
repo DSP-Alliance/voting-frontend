@@ -15,9 +15,9 @@ export const voteFactoryConfig = {
     {
       inputs: [
         {
-          internalType: 'uint64',
+          internalType: 'uint32',
           name: 'fipNum',
-          type: 'uint64',
+          type: 'uint32',
         },
       ],
       name: 'VoteAlreadyExists',
@@ -51,9 +51,9 @@ export const voteFactoryConfig = {
           indexed: false,
         },
         {
-          internalType: 'uint64',
+          internalType: 'uint32',
           name: 'fipNum',
-          type: 'uint64',
+          type: 'uint32',
           indexed: false,
         },
         {
@@ -70,9 +70,9 @@ export const voteFactoryConfig = {
     {
       inputs: [
         {
-          internalType: 'uint64',
+          internalType: 'uint32',
           name: '',
-          type: 'uint64',
+          type: 'uint32',
         },
       ],
       stateMutability: 'view',
@@ -126,9 +126,9 @@ export const voteFactoryConfig = {
           type: 'uint32',
         },
         {
-          internalType: 'uint64',
+          internalType: 'uint32',
           name: 'fipNum',
-          type: 'uint64',
+          type: 'uint32',
         },
         {
           internalType: 'bool',

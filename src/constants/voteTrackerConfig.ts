@@ -23,9 +23,9 @@ export const voteTrackerConfig = {
           type: 'address[]',
         },
         {
-          internalType: 'uint64',
+          internalType: 'uint32',
           name: '_FIP',
-          type: 'uint64'
+          type: 'uint32',
         },
         {
           internalType: 'address',
@@ -141,6 +141,19 @@ export const voteTrackerConfig = {
       ],
       name: 'VoterRegistered',
       type: 'event',
+    },
+    {
+      inputs: [],
+      name: 'FIP',
+      outputs: [
+        {
+          internalType: 'uint32',
+          name: '',
+          type: 'uint32',
+        },
+      ],
+      stateMutability: 'view',
+      type: 'function',
     },
     {
       inputs: [
