@@ -1,7 +1,15 @@
 import axios from 'axios';
 import MarkdownIt from 'markdown-it';
-
-import type { FipData } from 'components/FIPInfo';
+export interface FipData {
+  author?: string;
+  category?: string;
+  created?: string;
+  'discussions-to'?: string;
+  fip?: string;
+  status?: string;
+  title?: string;
+  type?: string;
+}
 
 export async function getFip(num: number) {
   const md = new MarkdownIt();
