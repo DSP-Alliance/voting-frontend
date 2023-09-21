@@ -38,6 +38,7 @@ const HeaderText = styled.div`
 const ButtonContainer = styled.div`
   display: flex;
   justify-content: center;
+  height: 34px;
 `;
 
 const StartVoteButton = styled.button`

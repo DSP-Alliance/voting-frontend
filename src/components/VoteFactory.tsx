@@ -57,30 +57,46 @@ const CustomRadioButton = styled(Radio)`
   }
 `;
 
+const LsdTokensContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+`;
+
+const AddTokenButton = styled.button`
+  width: 150px;
+`;
+
+const DeleteTokenButton = styled.button`
+  background-color: var(--portal2023-cream);
+  border: none;
+  cursor: pointer;
+`;
+
 const ErrorMessage = styled.div`
   color: var(--portal2023-rederror);
 `;
 
 function VoteFactory({
-  address,
+  // address,
   closeModal,
 }: {
   address: Address;
   closeModal: () => void;
 }) {
   // const [errorMessage, setErrorMessage] = useState('');
+  const [allLsdTokens, setAllLsdTokens] = useState<Address[]>([]);
 
-  const {
-    formState: { errors },
-    control,
-    getValues,
-    trigger,
-    watch,
-  } = useForm({ mode: 'onTouched' });
+  const { control, getValues, setValue, trigger, watch } = useForm({
+    mode: 'onTouched',
+  });
 
-  const debouncedFipNum = useDebounce(watch('fipNum'), 500);
-  const debouncedLength = useDebounce(watch('length'), 500);
-  const debouncedLsdTokens = useDebounce(watch('lsdTokens'), 500);
+  const debouncedFipNum = useDebounce(getValues('fipNum'), 500);
+  const debouncedLength = useDebounce(getValues('length'), 500);
+  const debouncedLsdTokens = useDebounce(
+    getValues(`lsdToken${allLsdTokens.length + 1}`),
+    500,
+  );
 
   const {
     config,
@@ -91,15 +107,15 @@ function VoteFactory({
     abi: voteFactoryConfig.abi,
     functionName: 'startVote',
     args: [
-      parseInt(debouncedFipNum),
       parseInt(debouncedLength) * 60,
-      watch('doubleYesOption'),
-      [debouncedLsdTokens],
+      parseInt(debouncedFipNum),
+      watch('doubleYesOption') === 'true' ? true : false,
+      debouncedLsdTokens ? [...allLsdTokens, debouncedLsdTokens] : allLsdTokens,
     ],
     enabled:
       Boolean(debouncedLength) &&
       Boolean(debouncedFipNum) &&
-      debouncedLsdTokens?.length > 0,
+      allLsdTokens.length > 0,
   });
 
   const { data, error, isError, write } = useContractWrite(config);
@@ -108,18 +124,17 @@ function VoteFactory({
     hash: data?.hash,
   });
 
-  // function addLsdTokensField() {
-
-  // }
-
   function onSubmit(e: React.MouseEvent) {
     e.preventDefault();
-    console.log('hi lisa submitted ', getValues());
+
+    console.log('hi lisa get values ', getValues());
 
     // setErrorMessage('');
     // try {
     trigger();
     write?.();
+
+    // isSuccess && closeModal();
 
     // const { request } = await publicClient.simulateContract({
     //   address: voteFactoryConfig.address,
@@ -135,8 +150,6 @@ function VoteFactory({
     // });
 
     // await walletClient.writeContract(request);
-
-    // closeModal();
     // } catch (err) {
     //   if (err instanceof BaseError) {
     //     const revertError = err.walk(
@@ -148,6 +161,53 @@ function VoteFactory({
     //     }
     //   }
     // }
+  }
+
+  function renderAllLsdTokens() {
+    return allLsdTokens.map((token, i) => {
+      return (
+        <Controller
+          key={i}
+          name={`lsdToken${i}`}
+          control={control}
+          render={({ field }) => (
+            <CustomTextField
+              {...field}
+              value={token}
+              fullWidth
+              size='small'
+              margin='dense'
+              InputProps={{
+                readOnly: true,
+                endAdornment: (
+                  <DeleteTokenButton
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      setAllLsdTokens((prev) =>
+                        prev.slice(0, i).concat(prev.slice(i + 1)),
+                      );
+                    }}
+                  >
+                    X
+                  </DeleteTokenButton>
+                ),
+              }}
+            />
+          )}
+        />
+      );
+    });
+  }
+
+  function addLsdTokenField(e: React.MouseEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const currentLsdToken = getValues(`lsdToken${allLsdTokens.length + 1}`);
+
+    setAllLsdTokens((prev) => [...prev, currentLsdToken as Address]);
+    setValue(`lsdToken${allLsdTokens.length + 1}`, '');
   }
 
   return (
@@ -200,14 +260,14 @@ function VoteFactory({
             name='doubleYesOption'
             control={control}
             render={({ field: { onChange, value }, fieldState: { error } }) => (
-              <RadioGroup row value={value || false} onChange={onChange}>
+              <RadioGroup row value={value || 'false'} onChange={onChange}>
                 <FormControlLabel
-                  value={true}
+                  value={'true'}
                   label={'Yes'}
                   control={<CustomRadioButton />}
                 />
                 <FormControlLabel
-                  value={false}
+                  value={'false'}
                   label={'No'}
                   control={<CustomRadioButton />}
                 />
@@ -215,56 +275,38 @@ function VoteFactory({
             )}
           />
         </FormControl>
-        <Controller
-          name='lsdTokens'
-          control={control}
-          rules={{ required: 'Required' }}
-          render={({ field: { onChange, value }, fieldState: { error } }) => (
-            <CustomTextField
-              required
-              placeholder='0x0000...0000'
-              helperText={error ? 'Enter a token value' : null}
-              size='small'
-              error={!!error}
-              onChange={onChange}
-              value={value || ''}
-              onBlur={() => trigger('lsdTokens')}
-              fullWidth
-              label='LSD Token'
-              variant='outlined'
-            />
-          )}
-        />
-        <>
-          {/* <TextField
-            name={`sample${sampleMessages.length + 1}`}
-            label={`Message ${sampleMessages.length + 1}`}
-            minHeight='5rem'
-            value={currentSampleMessage}
-            onChange={(e) => setCurrentSampleMessage(e.target.value)}
-            textArea
-            required={sampleMessages.length === 0}
-            validate={[minLength20]}
-            maxLength={1024}
-          /> */}
-          {/* <button
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-
-              // change the formValue
-              // change(
-              //   `sample${sampleMessages.length + 1}`,
-              //   currentSampleMessage,
-              // );
-              // set currentValue
-              // setCurrentSampleMessage('');
-            }}
-            disabled={!currentSampleMessage || loading}
+        <LsdTokensContainer>
+          {renderAllLsdTokens()}
+          <Controller
+            name={`lsdToken${allLsdTokens.length + 1}`}
+            control={control}
+            render={({ field: { onChange, value }, fieldState: { error } }) => (
+              <CustomTextField
+                required
+                placeholder='0x0000...0000'
+                helperText={error ? 'Enter a token value' : null}
+                size='small'
+                error={!!error}
+                value={value || ''}
+                onChange={onChange}
+                onBlur={() => trigger(`lsdToken${allLsdTokens.length + 1}`)}
+                fullWidth
+                label='LSD Token'
+                variant='outlined'
+                margin='dense'
+              />
+            )}
+            {...(!allLsdTokens.length
+              ? { rules: { required: 'Required' } }
+              : {})}
+          />
+          <AddTokenButton
+            onClick={addLsdTokenField}
+            disabled={!watch(`lsdToken${allLsdTokens.length + 1}`)}
           >
-            Add LSD Token {loading ? <SpinnerIcon /> : null}
-          </button> */}
-        </>
+            Add LSD Token
+          </AddTokenButton>
+        </LsdTokensContainer>
         <DialogActions>
           <button onClick={closeModal}>Cancel</button>
           <button type='submit' disabled={isLoading} onClick={onSubmit}>

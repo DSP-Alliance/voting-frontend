@@ -235,7 +235,7 @@ export const voteTrackerConfig = {
         },
       ],
       stateMutability: 'view',
-      type: 'function'
+      type: 'function',
     },
     {
       inputs: [],
@@ -263,7 +263,7 @@ export const voteTrackerConfig = {
         },
       ],
       stateMutability: 'view',
-      type: 'function'
+      type: 'function',
     },
     {
       inputs: [],
