@@ -127,8 +127,6 @@ function VoteFactory({
   function onSubmit(e: React.MouseEvent) {
     e.preventDefault();
 
-    console.log('hi lisa get values ', getValues());
-
     // setErrorMessage('');
     // try {
     trigger();

@@ -60,8 +60,7 @@ function Home() {
         functionName: 'owner',
       });
 
-      // setIsOwner(owner === address);
-      setIsOwner(true);
+      setIsOwner(owner === address);
     }
 
     getOwner();
