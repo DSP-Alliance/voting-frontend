@@ -247,6 +247,19 @@ export const voteTrackerConfig = {
     },
     {
       inputs: [],
+      name: "doubleYesOption",
+      outputs: [
+        {
+          internalType: "bool",
+          name: "",
+          type: "bool"
+        }
+      ],
+      stateMutability: "view",
+      type: "function"
+    },
+    {
+      inputs: [],
       name: 'getVoteResultsMinerToken',
       outputs: [
         {
