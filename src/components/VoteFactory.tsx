@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import styled from 'styled-components';
 import {
@@ -10,7 +10,6 @@ import {
   RadioGroup,
   TextField,
 } from '@mui/material';
-// import { BaseError, ContractFunctionRevertedError } from 'viem';
 import {
   usePrepareContractWrite,
   useContractWrite,
@@ -18,7 +17,6 @@ import {
 } from 'wagmi';
 
 import { voteFactoryConfig } from 'constants/voteFactoryConfig';
-// import { publicClient, walletClient } from 'services/clients';
 import useDebounce from 'utilities/useDebounce';
 import type { Address } from './Home';
 
@@ -77,14 +75,7 @@ const ErrorMessage = styled.div`
   color: var(--portal2023-rederror);
 `;
 
-function VoteFactory({
-  // address,
-  closeModal,
-}: {
-  address: Address;
-  closeModal: () => void;
-}) {
-  // const [errorMessage, setErrorMessage] = useState('');
+function VoteFactory({ closeModal }: { closeModal: () => void }) {
   const [allLsdTokens, setAllLsdTokens] = useState<Address[]>([]);
 
   const { control, getValues, setValue, trigger, watch } = useForm({
@@ -127,38 +118,10 @@ function VoteFactory({
   function onSubmit(e: React.MouseEvent) {
     e.preventDefault();
 
-    // setErrorMessage('');
-    // try {
     trigger();
     write?.();
 
     // isSuccess && closeModal();
-
-    // const { request } = await publicClient.simulateContract({
-    //   address: voteFactoryConfig.address,
-    //   abi: voteFactoryConfig.abi,
-    //   functionName: 'mint',
-    //   account: address,
-    //   args: [
-    //     getValues('fipNum'),
-    //     getValues('length'),
-    //     getValues('doubleYesOption') * 60, // convert to seconds
-    //     getValues('lsdTokens'),
-    //   ],
-    // });
-
-    // await walletClient.writeContract(request);
-    // } catch (err) {
-    //   if (err instanceof BaseError) {
-    //     const revertError = err.walk(
-    //       (err) => err instanceof ContractFunctionRevertedError,
-    //     );
-    //     if (revertError instanceof ContractFunctionRevertedError) {
-    //       const errorName = revertError.data?.errorName ?? '';
-    //       setErrorMessage(errorName);
-    //     }
-    //   }
-    // }
   }
 
   function renderAllLsdTokens() {

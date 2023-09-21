@@ -44,6 +44,10 @@ const GlobalStyle = createGlobalStyle`
     border: 1px solid var(--portal2023-darkhover);
     border-radius: 4px;
   }
+
+  .MuiList-root {
+    background-color: var(--portal2023-cream);
+  }
 `;
 
 export default GlobalStyle;

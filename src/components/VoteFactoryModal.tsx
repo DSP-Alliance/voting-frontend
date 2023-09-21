@@ -24,7 +24,7 @@ function VoteFactoryModal({
     <CustomDialog open={open} onClose={closeModal} fullWidth maxWidth='sm'>
       <DialogTitle>Create Vote</DialogTitle>
       <DialogContent dividers>
-        <VoteFactory address={address} closeModal={closeModal} />
+        <VoteFactory closeModal={closeModal} />
       </DialogContent>
     </CustomDialog>
   );
