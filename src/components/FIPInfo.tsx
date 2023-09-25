@@ -11,7 +11,7 @@ const InfoContainer = styled.div`
 `;
 
 const Link = styled.a`
-  color: var(--portal2023-green);
+  color: var(--blue);
   word-break: break-all;
 `;
 

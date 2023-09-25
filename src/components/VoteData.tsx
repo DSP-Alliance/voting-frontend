@@ -22,7 +22,7 @@ const DataSections = styled.div`
 
 const VoteSection = styled.div`
   display: block;
-  border: 1px solid var(--portal2023-green);
+  border: 1px solid var(--blue);
   padding: 24px;
 `;
 

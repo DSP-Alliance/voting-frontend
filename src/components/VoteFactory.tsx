@@ -28,30 +28,30 @@ const Form = styled.form`
 
 const CustomTextField = styled(TextField)`
   & label.Mui-focused {
-    color: var(--portal2023-green);
+    color: var(--blue);
   }
   & .MuiOutlinedInput-root {
     & fieldset {
       border-color: black;
     }
     &:hover fieldset {
-      border-color: var(--portal2023-green);
+      border-color: var(--blue);
     }
     &.Mui-focused fieldset {
-      border-color: var(--portal2023-green);
+      border-color: var(--blue);
     }
   }
 `;
 
 const CustomFormLabel = styled(FormLabel)`
   &[class*='MuiFormLabel-root'].Mui-focused {
-    color: var(--portal2023-green);
+    color: var(--blue);
   }
 `;
 
 const CustomRadioButton = styled(Radio)`
   &[class*='MuiRadio-root'].Mui-checked {
-    color: var(--portal2023-green);
+    color: var(--blue);
   }
 `;
 
@@ -66,13 +66,12 @@ const AddTokenButton = styled.button`
 `;
 
 const DeleteTokenButton = styled.button`
-  background-color: var(--portal2023-cream);
   border: none;
   cursor: pointer;
 `;
 
 const ErrorMessage = styled.div`
-  color: var(--portal2023-rederror);
+  color: var(--rederror);
 `;
 
 function VoteFactory({ closeModal }: { closeModal: () => void }) {
@@ -89,11 +88,27 @@ function VoteFactory({ closeModal }: { closeModal: () => void }) {
     500,
   );
 
-  const {
-    config,
-    error: prepareError,
-    isError: isPrepareError,
-  } = usePrepareContractWrite({
+  // const {
+  //   config,
+  //   error: prepareError,
+  //   isError: isPrepareError,
+  // } = usePrepareContractWrite({
+  //   address: voteFactoryConfig.address,
+  //   abi: voteFactoryConfig.abi,
+  //   functionName: 'startVote',
+  //   args: [
+  //     parseInt(debouncedLength) * 60,
+  //     parseInt(debouncedFipNum),
+  //     watch('doubleYesOption') === 'true' ? true : false,
+  //     debouncedLsdTokens ? [...allLsdTokens, debouncedLsdTokens] : allLsdTokens,
+  //   ],
+  //   // enabled:
+  //   //   Boolean(debouncedLength) &&
+  //   //   Boolean(debouncedFipNum) &&
+  //   //   allLsdTokens.length > 0,
+  // });
+
+  const { data, error, isError, write } = useContractWrite({
     address: voteFactoryConfig.address,
     abi: voteFactoryConfig.abi,
     functionName: 'startVote',
@@ -103,13 +118,7 @@ function VoteFactory({ closeModal }: { closeModal: () => void }) {
       watch('doubleYesOption') === 'true' ? true : false,
       debouncedLsdTokens ? [...allLsdTokens, debouncedLsdTokens] : allLsdTokens,
     ],
-    enabled:
-      Boolean(debouncedLength) &&
-      Boolean(debouncedFipNum) &&
-      allLsdTokens.length > 0,
   });
-
-  const { data, error, isError, write } = useContractWrite(config);
 
   const { isLoading, isSuccess } = useWaitForTransaction({
     hash: data?.hash,
@@ -276,9 +285,10 @@ function VoteFactory({ closeModal }: { closeModal: () => void }) {
         </DialogActions>
       </Form>
       {/* {errorMessage && <ErrorMessage>Error: {errorMessage}</ErrorMessage>} */}
-      {(isPrepareError || isError) && (
+      {/* {(isPrepareError || isError) && (
         <ErrorMessage>Error: {(prepareError || error)?.message}</ErrorMessage>
-      )}
+      )} */}
+      {isError && <ErrorMessage>Error: {error?.message}</ErrorMessage>}
     </>
   );
 }

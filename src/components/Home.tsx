@@ -26,10 +26,9 @@ const Header = styled.div`
   gap: 100px;
   height: 100px;
   font-size: 24px;
-  font-family: 'PP Formula';
   margin-bottom: 24px;
-  background-color: var(--portal2023-black);
-  color: var(--portal2023-cream);
+  background-color: #000;
+  color: #fff;
 `;
 
 const HeaderText = styled.div`
@@ -70,7 +69,8 @@ function Home() {
       const owner = await publicClient.readContract({
         abi: voteFactoryConfig.abi,
         address: voteFactoryConfig.address,
-        functionName: 'owner',
+        functionName: 'starters',
+        args: [0],
       });
 
       setIsOwner(owner === address);

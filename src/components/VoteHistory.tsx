@@ -4,22 +4,16 @@ import { FormControl, InputLabel, MenuItem, Select } from '@mui/material';
 
 const CustomFormControl = styled(FormControl)`
   label.Mui-focused {
-    color: var(--portal2023-green);
+    color: var(--blue);
   }
 
   [class*='MuiSelect-root'].Mui-focused fieldset {
-    border-color: var(--portal2023-green);
+    border-color: var(--blue);
   }
 
   [class*='MenuItem-root'] {
-    background-color: var(--portal2023-black);
+    background-color: #000;
   }
-`;
-
-const CustomMenuItem = styled(MenuItem)`
-  /* &.MuiMenu-root {
-    background-color: var(--portal2023-black);
-  } */
 `;
 
 function VoteHistory({ fips }: { fips: string[] }) {
@@ -42,14 +36,14 @@ function VoteHistory({ fips }: { fips: string[] }) {
           {Boolean(fips.length) &&
             fips.map((fip) => {
               return (
-                <CustomMenuItem key={fip} value={fip}>
+                <MenuItem key={fip} value={fip}>
                   {fip}
-                </CustomMenuItem>
+                </MenuItem>
               );
             })}
-          <CustomMenuItem value={'10'}>Ten</CustomMenuItem>
-          <CustomMenuItem value={'20'}>Twenty</CustomMenuItem>
-          <CustomMenuItem value={'30'}>Thirty</CustomMenuItem>
+          <MenuItem value={'10'}>Ten</MenuItem>
+          <MenuItem value={'20'}>Twenty</MenuItem>
+          <MenuItem value={'30'}>Thirty</MenuItem>
         </Select>
       </CustomFormControl>
 

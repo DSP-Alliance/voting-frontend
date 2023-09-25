@@ -20,19 +20,17 @@ const ConnectorsContainer = styled.div`
 `;
 
 const ConnectedText = styled.div`
-  font-family: 'Inter Regular';
   font-size: 14px;
   margin-right: 12px;
 `;
 
 const ConnectButton = styled.button`
   margin-right: 12px;
-  border: 1px solid var(--portal2023-green);
 `;
 
 const ErrorMessage = styled.div`
   align-self: center;
-  color: var(--portal2023-rederror);
+  color: var(--rederror);
 `;
 
 export function Connectors() {
