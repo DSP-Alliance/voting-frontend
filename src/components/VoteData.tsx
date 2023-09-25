@@ -2,12 +2,13 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import Countdown from 'react-countdown';
 
-import VotePicker from 'components/VotePicker';
 import FIPInfo from 'components/FIPInfo';
+import VotePicker from 'components/VotePicker';
+import VotingPower from 'components/VotingPower';
 import { publicClient } from 'services/clients';
-import type { Address } from './Home';
 import { voteFactoryConfig } from 'constants/voteFactoryConfig';
 import { voteTrackerConfig } from 'constants/voteTrackerConfig';
+import type { Address } from './Home';
 
 const VoteDataContainer = styled.div`
   display: flex;
@@ -39,6 +40,12 @@ function VoteData({
   lastFipNum: number | undefined;
   countdownValue: number;
 }) {
+  const [hasVoted, setHasVoted] = useState(false);
+
+  useEffect(() => {
+    // get hasVoted from voteTracker
+  }, []);
+
   return (
     <VoteDataContainer>
       <div>
@@ -64,8 +71,9 @@ function VoteData({
         <VoteSection>
           {/* if have already voted */}
           {/* <h4>Voting Power</h4> */}
-          <h4>Wallet Voting Power</h4>
           {/* https://github.com/0xpluto/fip-voting/blob/e19da9798c2756fcc471a91b1ae03c4f492bb3c3/src/components/VotingPower.tsx */}
+          <h4>Wallet Voting Power</h4>
+          <VotingPower />
         </VoteSection>
       </DataSections>
     </VoteDataContainer>

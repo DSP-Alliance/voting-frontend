@@ -2,8 +2,9 @@ import { createGlobalStyle } from 'styled-components';
 
 const GlobalStyle = createGlobalStyle`
   body {
-    --blue: #007bff;
-    --rederror: #ff0000;
+    --blue: #1976d2;
+    --darkblue: #1976d2dd;
+    --rederror: #d32f2f;
     margin: 0;
     padding: 0;
     font-family: Roboto, Helvetica, Sans-Serif;
@@ -12,11 +13,17 @@ const GlobalStyle = createGlobalStyle`
   button {
     padding: 8px;
     border-radius: 4px;
-    border: 1px solid var(--blue);
+    border: none;
+    background-color: var(--blue);
+    color: #fff;
+
+    &:disabled {
+      background-color: #d9d9d9;
+    }
     
-    &:hover {
+    &:hover:enabled {
       cursor: pointer;
-      background-color: var(--blue);
+      background-color: var(--darkblue);
     }
   }
 `;

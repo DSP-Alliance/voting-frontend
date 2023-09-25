@@ -4,29 +4,29 @@ export const voteFactoryConfig = {
     {
       inputs: [],
       stateMutability: 'nonpayable',
-      type: 'constructor'
+      type: 'constructor',
     },
     {
       inputs: [
         {
           internalType: 'address',
           name: 'sender',
-          type: 'address'
-        }
+          type: 'address',
+        },
       ],
       name: 'NotAStarter',
-      type: 'error'
+      type: 'error',
     },
     {
       inputs: [
         {
           internalType: 'uint32',
           name: 'fipNum',
-          type: 'uint32'
-        }
+          type: 'uint32',
+        },
       ],
       name: 'VoteAlreadyExists',
-      type: 'error'
+      type: 'error',
     },
     {
       anonymous: false,
@@ -35,17 +35,17 @@ export const voteFactoryConfig = {
           indexed: true,
           internalType: 'address',
           name: 'user',
-          type: 'address'
+          type: 'address',
         },
         {
           indexed: true,
           internalType: 'address',
           name: 'newOwner',
-          type: 'address'
-        }
+          type: 'address',
+        },
       ],
       name: 'OwnershipTransferred',
-      type: 'event'
+      type: 'event',
     },
     {
       anonymous: false,
@@ -54,87 +54,87 @@ export const voteFactoryConfig = {
           indexed: false,
           internalType: 'address',
           name: 'vote',
-          type: 'address'
+          type: 'address',
         },
         {
           indexed: false,
           internalType: 'uint32',
           name: 'fipNum',
-          type: 'uint32'
+          type: 'uint32',
         },
         {
           indexed: false,
           internalType: 'uint32',
           name: 'length',
-          type: 'uint32'
-        }
+          type: 'uint32',
+        },
       ],
       name: 'VoteStarted',
-      type: 'event'
+      type: 'event',
     },
     {
       inputs: [
         {
           internalType: 'uint32',
           name: '',
-          type: 'uint32'
-        }
+          type: 'uint32',
+        },
       ],
       name: 'FIPnumToAddress',
       outputs: [
         {
           internalType: 'address',
           name: '',
-          type: 'address'
-        }
+          type: 'address',
+        },
       ],
       stateMutability: 'view',
-      type: 'function'
+      type: 'function',
     },
     {
       inputs: [
         {
           internalType: 'uint256',
           name: 'index',
-          type: 'uint256'
-        }
+          type: 'uint256',
+        },
       ],
       name: '_removeStarterIndex',
       outputs: [],
       stateMutability: 'nonpayable',
-      type: 'function'
+      type: 'function',
     },
     {
       inputs: [
         {
           internalType: 'address',
           name: 'starter',
-          type: 'address'
-        }
+          type: 'address',
+        },
       ],
       name: 'addStarter',
       outputs: [],
       stateMutability: 'nonpayable',
-      type: 'function'
+      type: 'function',
     },
     {
       inputs: [
         {
           internalType: 'uint256',
           name: '',
-          type: 'uint256'
-        }
+          type: 'uint256',
+        },
       ],
       name: 'deployedVotes',
       outputs: [
         {
           internalType: 'address',
           name: '',
-          type: 'address'
-        }
+          type: 'address',
+        },
       ],
       stateMutability: 'view',
-      type: 'function'
+      type: 'function',
     },
     {
       inputs: [],
@@ -143,31 +143,31 @@ export const voteFactoryConfig = {
         {
           internalType: 'address',
           name: '',
-          type: 'address'
-        }
+          type: 'address',
+        },
       ],
       stateMutability: 'view',
-      type: 'function'
+      type: 'function',
     },
     {
       inputs: [
         {
           internalType: 'address',
           name: 'starter',
-          type: 'address'
-        }
+          type: 'address',
+        },
       ],
       name: 'removeStarter',
       outputs: [],
       stateMutability: 'nonpayable',
-      type: 'function'
+      type: 'function',
     },
     {
       inputs: [
         {
-          internalType: 'uint32',
+          internalType: 'uint256',
           name: '',
-          type: 'uint32',
+          type: 'uint256',
         },
       ],
       stateMutability: 'view',
@@ -186,66 +186,66 @@ export const voteFactoryConfig = {
         {
           internalType: 'uint32',
           name: 'length',
-          type: 'uint32'
+          type: 'uint32',
         },
         {
           internalType: 'uint32',
           name: 'fipNum',
-          type: 'uint32'
+          type: 'uint32',
         },
         {
           internalType: 'bool',
           name: 'doubleYesOption',
-          type: 'bool'
+          type: 'bool',
         },
         {
           internalType: 'address[]',
           name: 'lsdTokens',
-          type: 'address[]'
-        }
+          type: 'address[]',
+        },
       ],
       name: 'startVote',
       outputs: [
         {
           internalType: 'address',
           name: 'vote',
-          type: 'address'
-        }
+          type: 'address',
+        },
       ],
       stateMutability: 'nonpayable',
-      type: 'function'
+      type: 'function',
     },
     {
       inputs: [
         {
           internalType: 'uint256',
           name: '',
-          type: 'uint256'
-        }
+          type: 'uint256',
+        },
       ],
       name: 'starters',
       outputs: [
         {
           internalType: 'address',
           name: '',
-          type: 'address'
-        }
+          type: 'address',
+        },
       ],
       stateMutability: 'view',
-      type: 'function'
+      type: 'function',
     },
     {
       inputs: [
         {
           internalType: 'address',
           name: 'newOwner',
-          type: 'address'
-        }
+          type: 'address',
+        },
       ],
       name: 'transferOwnership',
       outputs: [],
       stateMutability: 'nonpayable',
-      type: 'function'
-    }
+      type: 'function',
+    },
   ],
 } as const;

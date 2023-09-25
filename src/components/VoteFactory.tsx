@@ -10,49 +10,15 @@ import {
   RadioGroup,
   TextField,
 } from '@mui/material';
-import {
-  usePrepareContractWrite,
-  useContractWrite,
-  useWaitForTransaction,
-} from 'wagmi';
+import { useContractWrite, useWaitForTransaction } from 'wagmi';
 
 import { voteFactoryConfig } from 'constants/voteFactoryConfig';
-import useDebounce from 'utilities/useDebounce';
 import type { Address } from './Home';
 
 const Form = styled.form`
   display: flex;
   flex-direction: column;
   gap: 24px;
-`;
-
-const CustomTextField = styled(TextField)`
-  & label.Mui-focused {
-    color: var(--blue);
-  }
-  & .MuiOutlinedInput-root {
-    & fieldset {
-      border-color: black;
-    }
-    &:hover fieldset {
-      border-color: var(--blue);
-    }
-    &.Mui-focused fieldset {
-      border-color: var(--blue);
-    }
-  }
-`;
-
-const CustomFormLabel = styled(FormLabel)`
-  &[class*='MuiFormLabel-root'].Mui-focused {
-    color: var(--blue);
-  }
-`;
-
-const CustomRadioButton = styled(Radio)`
-  &[class*='MuiRadio-root'].Mui-checked {
-    color: var(--blue);
-  }
 `;
 
 const LsdTokensContainer = styled.div`
@@ -66,8 +32,13 @@ const AddTokenButton = styled.button`
 `;
 
 const DeleteTokenButton = styled.button`
-  border: none;
+  background-color: transparent;
   cursor: pointer;
+  color: #000;
+
+  &:hover:enabled {
+    background-color: transparent;
+  }
 `;
 
 const ErrorMessage = styled.div`
@@ -79,44 +50,29 @@ function VoteFactory({ closeModal }: { closeModal: () => void }) {
 
   const { control, getValues, setValue, trigger, watch } = useForm({
     mode: 'onTouched',
+    defaultValues: {
+      fipNum: '',
+      length: '',
+      doubleYesOption: 'false',
+      [`lsdToken${allLsdTokens.length + 1}`]:
+        '0x3C3501E6c353DbaEDDFA90376975Ce7aCe4Ac7a8',
+    },
   });
-
-  const debouncedFipNum = useDebounce(getValues('fipNum'), 500);
-  const debouncedLength = useDebounce(getValues('length'), 500);
-  const debouncedLsdTokens = useDebounce(
-    getValues(`lsdToken${allLsdTokens.length + 1}`),
-    500,
-  );
-
-  // const {
-  //   config,
-  //   error: prepareError,
-  //   isError: isPrepareError,
-  // } = usePrepareContractWrite({
-  //   address: voteFactoryConfig.address,
-  //   abi: voteFactoryConfig.abi,
-  //   functionName: 'startVote',
-  //   args: [
-  //     parseInt(debouncedLength) * 60,
-  //     parseInt(debouncedFipNum),
-  //     watch('doubleYesOption') === 'true' ? true : false,
-  //     debouncedLsdTokens ? [...allLsdTokens, debouncedLsdTokens] : allLsdTokens,
-  //   ],
-  //   // enabled:
-  //   //   Boolean(debouncedLength) &&
-  //   //   Boolean(debouncedFipNum) &&
-  //   //   allLsdTokens.length > 0,
-  // });
 
   const { data, error, isError, write } = useContractWrite({
     address: voteFactoryConfig.address,
     abi: voteFactoryConfig.abi,
     functionName: 'startVote',
     args: [
-      parseInt(debouncedLength) * 60,
-      parseInt(debouncedFipNum),
+      parseInt(watch('length')) * 60,
+      parseInt(watch('fipNum')),
       watch('doubleYesOption') === 'true' ? true : false,
-      debouncedLsdTokens ? [...allLsdTokens, debouncedLsdTokens] : allLsdTokens,
+      watch(`lsdToken${allLsdTokens.length + 1}`)
+        ? [
+            ...allLsdTokens,
+            watch(`lsdToken${allLsdTokens.length + 1}`) as Address,
+          ]
+        : allLsdTokens,
     ],
   });
 
@@ -130,7 +86,7 @@ function VoteFactory({ closeModal }: { closeModal: () => void }) {
     trigger();
     write?.();
 
-    // isSuccess && closeModal();
+    isSuccess && closeModal();
   }
 
   function renderAllLsdTokens() {
@@ -141,7 +97,7 @@ function VoteFactory({ closeModal }: { closeModal: () => void }) {
           name={`lsdToken${i}`}
           control={control}
           render={({ field }) => (
-            <CustomTextField
+            <TextField
               {...field}
               value={token}
               fullWidth
@@ -188,7 +144,7 @@ function VoteFactory({ closeModal }: { closeModal: () => void }) {
           control={control}
           rules={{ required: 'Required' }}
           render={({ field: { onChange, value }, fieldState: { error } }) => (
-            <CustomTextField
+            <TextField
               required
               type='number'
               helperText={error ? 'Enter the FIP number' : null}
@@ -208,7 +164,7 @@ function VoteFactory({ closeModal }: { closeModal: () => void }) {
           control={control}
           rules={{ required: 'Required' }}
           render={({ field: { onChange, value }, fieldState: { error } }) => (
-            <CustomTextField
+            <TextField
               required
               type='number'
               helperText={error ? 'Enter an amount' : null}
@@ -224,22 +180,22 @@ function VoteFactory({ closeModal }: { closeModal: () => void }) {
           )}
         />
         <FormControl>
-          <CustomFormLabel>Double yes option?</CustomFormLabel>
+          <FormLabel>Double yes option?</FormLabel>
           <Controller
             rules={{ required: 'Required' }}
             name='doubleYesOption'
             control={control}
-            render={({ field: { onChange, value }, fieldState: { error } }) => (
+            render={({ field: { onChange, value } }) => (
               <RadioGroup row value={value || 'false'} onChange={onChange}>
                 <FormControlLabel
                   value={'true'}
                   label={'Yes'}
-                  control={<CustomRadioButton />}
+                  control={<Radio />}
                 />
                 <FormControlLabel
                   value={'false'}
                   label={'No'}
-                  control={<CustomRadioButton />}
+                  control={<Radio />}
                 />
               </RadioGroup>
             )}
@@ -251,7 +207,7 @@ function VoteFactory({ closeModal }: { closeModal: () => void }) {
             name={`lsdToken${allLsdTokens.length + 1}`}
             control={control}
             render={({ field: { onChange, value }, fieldState: { error } }) => (
-              <CustomTextField
+              <TextField
                 required
                 placeholder='0x0000...0000'
                 helperText={error ? 'Enter a token value' : null}
@@ -284,10 +240,6 @@ function VoteFactory({ closeModal }: { closeModal: () => void }) {
           </button>
         </DialogActions>
       </Form>
-      {/* {errorMessage && <ErrorMessage>Error: {errorMessage}</ErrorMessage>} */}
-      {/* {(isPrepareError || isError) && (
-        <ErrorMessage>Error: {(prepareError || error)?.message}</ErrorMessage>
-      )} */}
       {isError && <ErrorMessage>Error: {error?.message}</ErrorMessage>}
     </>
   );

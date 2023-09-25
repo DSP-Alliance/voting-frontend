@@ -24,7 +24,7 @@ const Header = styled.div`
   justify-content: end;
   align-items: center;
   gap: 100px;
-  height: 100px;
+  height: 150px;
   font-size: 24px;
   margin-bottom: 24px;
   background-color: #000;
@@ -57,7 +57,7 @@ const VoteContent = styled.div`
 
 function Home() {
   const { address = `0x` } = useAccount();
-  const [countdownValue, setCountdownValue] = useState<number>(1000);
+  const [countdownValue, setCountdownValue] = useState<number>(0);
   const [fipAddresses, setFipAddresses] = useState<Address[]>([]);
   const [fipList, setFipList] = useState<string[]>([]);
   const [lastFipNum, setLastFipNum] = useState<number>();
@@ -65,23 +65,32 @@ function Home() {
   const [showVoteFactory, setShowVoteFactory] = useState(false);
 
   useEffect(() => {
+    let index = 0;
     async function getOwner() {
-      const owner = await publicClient.readContract({
-        abi: voteFactoryConfig.abi,
-        address: voteFactoryConfig.address,
-        functionName: 'starters',
-        args: [0],
-      });
+      try {
+        const owner = await publicClient.readContract({
+          abi: voteFactoryConfig.abi,
+          address: voteFactoryConfig.address,
+          functionName: 'starters',
+          args: [BigInt(index)],
+        });
 
-      setIsOwner(owner === address);
+        if (owner && owner !== address) {
+          index += 1;
+          getOwner();
+        }
+        if (owner === address) setIsOwner(true);
+      } catch (error) {
+        console.error(error);
+      }
     }
 
     getOwner();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
+    let index = 0;
     async function getVoteData() {
-      let index = 0;
       try {
         const data = await publicClient.readContract({
           abi: voteFactoryConfig.abi,
@@ -92,9 +101,9 @@ function Home() {
         console.log('hi lisa data ', data); // should be an Address
 
         setFipAddresses((prev) => [...prev, data]);
-        index += 1;
 
         while (data) {
+          index += 1;
           getVoteData();
         }
 
@@ -143,7 +152,7 @@ function Home() {
   return (
     <HomeContainer>
       <Header>
-        <HeaderText>FIP WIP</HeaderText>
+        <HeaderText>FIP Voting Dashboard</HeaderText>
         <Connectors />
       </Header>
       <ButtonContainer>
