@@ -166,6 +166,25 @@ export const voteFactoryConfig = {
       inputs: [
         {
           internalType: 'uint32',
+          name: '',
+          type: 'uint32',
+        },
+      ],
+      stateMutability: 'view',
+      type: 'function',
+      name: 'starters',
+      outputs: [
+        {
+          internalType: 'address',
+          name: '',
+          type: 'address',
+        },
+      ],
+    },
+    {
+      inputs: [
+        {
+          internalType: 'uint32',
           name: 'length',
           type: 'uint32'
         },

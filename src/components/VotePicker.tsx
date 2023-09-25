@@ -1,7 +1,15 @@
 import React, { useState } from 'react';
+import styled from 'styled-components';
+
 import { publicClient } from 'services/clients';
 import { voteTrackerConfig } from 'constants/voteTrackerConfig';
 import type { Address } from './Home';
+
+const VotePickerContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+`;
 
 function VotePicker({ address }: { address: Address | undefined }) {
   const [vote, setVote] = useState(0);
@@ -44,7 +52,13 @@ function VotePicker({ address }: { address: Address | undefined }) {
     // }
   }
 
-  return <p>hi</p>;
+  return (
+    <VotePickerContainer>
+      <button>Yes</button>
+      <button>No</button>
+      <button>Abstain</button>
+    </VotePickerContainer>
+  );
 }
 
 export default VotePicker;
