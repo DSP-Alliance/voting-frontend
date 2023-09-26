@@ -5,206 +5,221 @@ export const voteTrackerConfig = {
         {
           internalType: 'uint32',
           name: 'length',
-          type: 'uint32',
+          type: 'uint32'
         },
         {
           internalType: 'bool',
           name: '_doubleYesOption',
-          type: 'bool',
+          type: 'bool'
         },
         {
           internalType: 'address[]',
           name: '_lsdTokens',
-          type: 'address[]',
+          type: 'address[]'
         },
         {
           internalType: 'uint32',
           name: '_FIP',
-          type: 'uint32',
+          type: 'uint32'
         },
         {
           internalType: 'address',
           name: 'owner',
-          type: 'address',
+          type: 'address'
         },
+        {
+          internalType: 'string',
+          name: '_question',
+          type: 'string'
+        }
       ],
       stateMutability: 'nonpayable',
-      type: 'constructor',
+      type: 'constructor'
     },
     {
       inputs: [
         {
           internalType: 'int256',
           name: 'errorCode',
-          type: 'int256',
-        },
+          type: 'int256'
+        }
       ],
       name: 'ActorError',
-      type: 'error',
+      type: 'error'
     },
     {
       inputs: [],
       name: 'ActorNotFound',
-      type: 'error',
+      type: 'error'
     },
     {
       inputs: [],
       name: 'AlreadyRegistered',
-      type: 'error',
+      type: 'error'
     },
     {
       inputs: [],
       name: 'AlreadyVoted',
-      type: 'error',
+      type: 'error'
     },
     {
       inputs: [],
       name: 'FailToCallActor',
-      type: 'error',
+      type: 'error'
     },
     {
       inputs: [
         {
           internalType: 'CommonTypes.FilActorId',
           name: 'actorId',
-          type: 'uint64',
-        },
+          type: 'uint64'
+        }
       ],
       name: 'InvalidActorID',
-      type: 'error',
+      type: 'error'
     },
     {
       inputs: [
         {
           internalType: 'uint64',
           name: '',
-          type: 'uint64',
-        },
+          type: 'uint64'
+        }
       ],
       name: 'InvalidCodec',
-      type: 'error',
+      type: 'error'
     },
     {
       inputs: [],
       name: 'InvalidGlifPool',
-      type: 'error',
+      type: 'error'
+    },
+    {
+      inputs: [],
+      name: 'InvalidMiner',
+      type: 'error'
     },
     {
       inputs: [],
       name: 'InvalidResponseLength',
-      type: 'error',
+      type: 'error'
+    },
+    {
+      inputs: [],
+      name: 'MinerAlreadyRegistered',
+      type: 'error'
     },
     {
       inputs: [
         {
           internalType: 'uint256',
           name: 'balance',
-          type: 'uint256',
+          type: 'uint256'
         },
         {
           internalType: 'uint256',
           name: 'value',
-          type: 'uint256',
-        },
+          type: 'uint256'
+        }
       ],
       name: 'NotEnoughBalance',
-      type: 'error',
+      type: 'error'
     },
     {
       inputs: [],
       name: 'NotRegistered',
-      type: 'error',
+      type: 'error'
     },
     {
       inputs: [],
       name: 'VoteConcluded',
-      type: 'error',
+      type: 'error'
     },
     {
       inputs: [],
       name: 'VoteNotConcluded',
-      type: 'error',
+      type: 'error'
     },
     {
       anonymous: false,
       inputs: [
         {
-          indexed: true,
+          'indexed': true,
           internalType: 'address',
           name: 'user',
-          type: 'address',
+          type: 'address'
         },
         {
-          indexed: true,
+          'indexed': true,
           internalType: 'address',
           name: 'newOwner',
-          type: 'address',
-        },
+          type: 'address'
+        }
       ],
       name: 'OwnershipTransferred',
-      type: 'event',
+      type: 'event'
     },
     {
       anonymous: false,
       inputs: [
         {
-          indexed: false,
+          'indexed': false,
           internalType: 'address',
           name: 'voter',
-          type: 'address',
+          type: 'address'
         },
         {
-          indexed: false,
+          'indexed': false,
           internalType: 'uint256',
           name: 'weightRBP',
-          type: 'uint256',
+          type: 'uint256'
         },
         {
-          indexed: false,
+          'indexed': false,
           internalType: 'uint256',
           name: 'weightToken',
-          type: 'uint256',
+          type: 'uint256'
         },
         {
-          indexed: false,
+          'indexed': false,
           internalType: 'uint256',
           name: 'vote',
-          type: 'uint256',
-        },
+          type: 'uint256'
+        }
       ],
       name: 'VoteCast',
-      type: 'event',
+      type: 'event'
     },
     {
       anonymous: false,
       inputs: [
         {
-          indexed: false,
+          'indexed': false,
           internalType: 'address',
           name: 'voter',
-          type: 'address',
+          type: 'address'
         },
         {
-          indexed: false,
+          'indexed': false,
           internalType: 'uint64[]',
           name: 'minerIds',
-          type: 'uint64[]',
+          type: 'uint64[]'
         },
         {
-          indexed: false,
+          'indexed': false,
           internalType: 'uint256',
           name: 'weightRBP',
-          type: 'uint256',
+          type: 'uint256'
         },
         {
-          indexed: false,
+          'indexed': false,
           internalType: 'uint256',
           name: 'weightToken',
-          type: 'uint256',
-        },
+          type: 'uint256'
+        }
       ],
       name: 'VoterRegistered',
-      type: 'event',
+      type: 'event'
     },
     {
       inputs: [],
@@ -213,37 +228,37 @@ export const voteTrackerConfig = {
         {
           internalType: 'uint32',
           name: '',
-          type: 'uint32',
-        },
+          type: 'uint32'
+        }
       ],
       stateMutability: 'view',
-      type: 'function',
+      type: 'function'
     },
     {
       inputs: [
         {
           internalType: 'address',
           name: 'token',
-          type: 'address',
-        },
+          type: 'address'
+        }
       ],
       name: 'addLSDToken',
       outputs: [],
       stateMutability: 'nonpayable',
-      type: 'function',
+      type: 'function'
     },
     {
       inputs: [
         {
           internalType: 'uint256',
           name: 'vote',
-          type: 'uint256',
-        },
+          type: 'uint256'
+        }
       ],
       name: 'castVote',
       outputs: [],
       stateMutability: 'nonpayable',
-      type: 'function',
+      type: 'function'
     },
     {
       inputs: [],
@@ -252,11 +267,11 @@ export const voteTrackerConfig = {
         {
           internalType: 'bool',
           name: '',
-          type: 'bool',
-        },
+          type: 'bool'
+        }
       ],
       stateMutability: 'view',
-      type: 'function',
+      type: 'function'
     },
     {
       inputs: [],
@@ -265,26 +280,26 @@ export const voteTrackerConfig = {
         {
           internalType: 'uint256',
           name: '',
-          type: 'uint256',
+          type: 'uint256'
         },
         {
           internalType: 'uint256',
           name: '',
-          type: 'uint256',
+          type: 'uint256'
         },
         {
           internalType: 'uint256',
           name: '',
-          type: 'uint256',
+          type: 'uint256'
         },
         {
           internalType: 'uint256',
           name: '',
-          type: 'uint256',
-        },
+          type: 'uint256'
+        }
       ],
       stateMutability: 'view',
-      type: 'function',
+      type: 'function'
     },
     {
       inputs: [],
@@ -293,26 +308,26 @@ export const voteTrackerConfig = {
         {
           internalType: 'uint256',
           name: '',
-          type: 'uint256',
+          type: 'uint256'
         },
         {
           internalType: 'uint256',
           name: '',
-          type: 'uint256',
+          type: 'uint256'
         },
         {
           internalType: 'uint256',
           name: '',
-          type: 'uint256',
+          type: 'uint256'
         },
         {
           internalType: 'uint256',
           name: '',
-          type: 'uint256',
-        },
+          type: 'uint256'
+        }
       ],
       stateMutability: 'view',
-      type: 'function',
+      type: 'function'
     },
     {
       inputs: [],
@@ -321,64 +336,64 @@ export const voteTrackerConfig = {
         {
           internalType: 'uint256',
           name: '',
-          type: 'uint256',
+          type: 'uint256'
         },
         {
           internalType: 'uint256',
           name: '',
-          type: 'uint256',
+          type: 'uint256'
         },
         {
           internalType: 'uint256',
           name: '',
-          type: 'uint256',
+          type: 'uint256'
         },
         {
           internalType: 'uint256',
           name: '',
-          type: 'uint256',
-        },
+          type: 'uint256'
+        }
       ],
       stateMutability: 'view',
-      type: 'function',
+      type: 'function'
     },
     {
       inputs: [
         {
           internalType: 'address',
           name: '',
-          type: 'address',
-        },
+          type: 'address'
+        }
       ],
       name: 'hasVoted',
       outputs: [
         {
           internalType: 'bool',
           name: '',
-          type: 'bool',
-        },
+          type: 'bool'
+        }
       ],
       stateMutability: 'view',
-      type: 'function',
+      type: 'function'
     },
     {
       inputs: [
         {
           internalType: 'uint256',
           name: '',
-          type: 'uint256',
-        },
+          type: 'uint256'
+        }
       ],
       name: 'lsdTokens',
       outputs: [
         {
           internalType: 'address',
           name: '',
-          type: 'address',
-        },
+          type: 'address'
+        }
       ],
       stateMutability: 'view',
-      type: 'function',
+      type: 'function'
     },
     {
       inputs: [],
@@ -387,100 +402,132 @@ export const voteTrackerConfig = {
         {
           internalType: 'address',
           name: '',
-          type: 'address',
-        },
+          type: 'address'
+        }
       ],
       stateMutability: 'view',
-      type: 'function',
+      type: 'function'
+    },
+    {
+      inputs: [],
+      name: 'question',
+      outputs: [
+        {
+          internalType: 'string',
+          name: '',
+          type: 'string'
+        }
+      ],
+      stateMutability: 'view',
+      type: 'function'
     },
     {
       inputs: [
         {
           internalType: 'address',
           name: 'glifpool',
-          type: 'address',
+          type: 'address'
         },
         {
           internalType: 'uint64[]',
           name: 'minerIds',
-          type: 'uint64[]',
-        },
+          type: 'uint64[]'
+        }
       ],
       name: 'registerVoter',
       outputs: [
         {
           internalType: 'uint256',
           name: 'powerRBP',
-          type: 'uint256',
+          type: 'uint256'
         },
         {
           internalType: 'uint256',
           name: 'powerToken',
-          type: 'uint256',
-        },
+          type: 'uint256'
+        }
       ],
       stateMutability: 'nonpayable',
-      type: 'function',
+      type: 'function'
+    },
+    {
+      inputs: [
+        {
+          internalType: 'uint64',
+          name: '',
+          type: 'uint64'
+        }
+      ],
+      name: 'registeredMiner',
+      outputs: [
+        {
+          internalType: 'bool',
+          name: '',
+          type: 'bool'
+        }
+      ],
+      stateMutability: 'view',
+      type: 'function'
     },
     {
       inputs: [
         {
           internalType: 'uint256',
           name: 'index',
-          type: 'uint256',
-        },
+          type: 'uint256'
+        }
       ],
       name: 'removeLSDToken',
       outputs: [],
       stateMutability: 'nonpayable',
-      type: 'function',
+      type: 'function'
     },
     {
       inputs: [
         {
           internalType: 'address',
           name: 'newOwner',
-          type: 'address',
-        },
+          type: 'address'
+        }
       ],
       name: 'transferOwnership',
       outputs: [],
       stateMutability: 'nonpayable',
-      type: 'function',
+      type: 'function'
     },
     {
       inputs: [
         {
           internalType: 'uint256',
           name: 'vote',
-          type: 'uint256',
+          type: 'uint256'
         },
         {
           internalType: 'address',
           name: 'glifPool',
-          type: 'address',
+          type: 'address'
         },
         {
           internalType: 'uint64[]',
           name: 'minerIds',
-          type: 'uint64[]',
-        },
+          type: 'uint64[]'
+        }
       ],
       name: 'voteAndRegister',
       outputs: [
         {
           internalType: 'uint256',
           name: 'voteWeightRBP',
-          type: 'uint256',
+          type: 'uint256'
         },
         {
           internalType: 'uint256',
           name: 'voteWeightToken',
-          type: 'uint256',
-        },
+          type: 'uint256'
+        }
       ],
       stateMutability: 'nonpayable',
-      type: 'function',
+      type: 'function'
     },
     {
       inputs: [],
@@ -489,11 +536,11 @@ export const voteTrackerConfig = {
         {
           internalType: 'uint32',
           name: '',
-          type: 'uint32',
-        },
+          type: 'uint32'
+        }
       ],
       stateMutability: 'view',
-      type: 'function',
+      type: 'function'
     },
     {
       inputs: [],
@@ -502,68 +549,68 @@ export const voteTrackerConfig = {
         {
           internalType: 'uint32',
           name: '',
-          type: 'uint32',
-        },
+          type: 'uint32'
+        }
       ],
       stateMutability: 'view',
-      type: 'function',
+      type: 'function'
     },
     {
       inputs: [
         {
           internalType: 'address',
           name: '',
-          type: 'address',
-        },
+          type: 'address'
+        }
       ],
       name: 'voterWeightMinerToken',
       outputs: [
         {
           internalType: 'uint256',
           name: '',
-          type: 'uint256',
-        },
+          type: 'uint256'
+        }
       ],
       stateMutability: 'view',
-      type: 'function',
+      type: 'function'
     },
     {
       inputs: [
         {
           internalType: 'address',
           name: '',
-          type: 'address',
-        },
+          type: 'address'
+        }
       ],
       name: 'voterWeightRBP',
       outputs: [
         {
           internalType: 'uint256',
           name: '',
-          type: 'uint256',
-        },
+          type: 'uint256'
+        }
       ],
       stateMutability: 'view',
-      type: 'function',
+      type: 'function'
     },
     {
       inputs: [
         {
           internalType: 'address',
           name: '',
-          type: 'address',
-        },
+          type: 'address'
+        }
       ],
       name: 'voterWeightToken',
       outputs: [
         {
           internalType: 'uint256',
           name: '',
-          type: 'uint256',
-        },
+          type: 'uint256'
+        }
       ],
       stateMutability: 'view',
-      type: 'function',
+      type: 'function'
     },
     {
       inputs: [],
@@ -572,11 +619,11 @@ export const voteTrackerConfig = {
         {
           internalType: 'enum VoteTracker.Vote',
           name: '',
-          type: 'uint8',
-        },
+          type: 'uint8'
+        }
       ],
       stateMutability: 'view',
-      type: 'function',
-    },
+      type: 'function'
+    }
   ],
 } as const;
