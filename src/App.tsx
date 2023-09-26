@@ -12,7 +12,9 @@ const config = createConfig({
   autoConnect: true,
   connectors: [
     new MetaMaskConnector(),
-    new CoinbaseWalletConnector({ options: { appName: 'FIP Voting' } }),
+    new CoinbaseWalletConnector({
+      options: { appName: 'FIP Voting Dashboard' },
+    }),
   ],
   publicClient,
 });

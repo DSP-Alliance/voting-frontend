@@ -11,23 +11,18 @@ const VotePickerContainer = styled.div`
   gap: 12px;
 `;
 
-function VotePicker({ address }: { address: Address | undefined }) {
+function VotePicker({
+  address,
+  minerIds,
+}: {
+  address: Address | undefined;
+  minerIds: string[];
+}) {
   const [vote, setVote] = useState(0);
-  const [glifPool, setGlifPool] = useState<Address>(`0x`);
-  const [minerIds, setMinerIds] = useState([]);
+  const [glifPool, setGlifPool] = useState('0');
 
   async function sendVote() {
     const encodedVote = encodeVote(vote);
-    // // test request will succeed before sending
-    // const { request } = await publicClient.simulateContract({
-    //   account: address,
-    //   address: voteTrackerConfig.address, // address supplied from deployedVotes call
-    //   abi: voteTrackerConfig.abi,
-    //   functionName: 'voteAndRegister',
-    //   args: [BigInt(encodedVote), glifPool, minerIds],
-    // });
-
-    // await walletClient.writeContract(request);
   }
 
   function encodeVote(vote: number) {

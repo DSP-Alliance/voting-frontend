@@ -117,7 +117,8 @@ function Home() {
 
         setLastFipNum(fip);
       } catch (error) {
-        console.error(error);
+        // console.error(error);
+        setLastFipNum(undefined);
       }
     }
 

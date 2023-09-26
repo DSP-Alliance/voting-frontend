@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import styled from 'styled-components';
 import {
@@ -43,10 +43,12 @@ const DeleteTokenButton = styled.button`
 
 const ErrorMessage = styled.div`
   color: var(--rederror);
+  word-wrap: break-word;
 `;
 
 function VoteFactory({ closeModal }: { closeModal: () => void }) {
   const [allLsdTokens, setAllLsdTokens] = useState<Address[]>([]);
+  const [disableButton, setDisableButton] = useState(false);
 
   const { control, getValues, setValue, trigger, watch } = useForm({
     mode: 'onTouched',
@@ -80,13 +82,20 @@ function VoteFactory({ closeModal }: { closeModal: () => void }) {
     hash: data?.hash,
   });
 
+  useEffect(() => {
+    if (isSuccess) closeModal();
+  }, [isSuccess]);
+
+  useEffect(() => {
+    if (isError) setDisableButton(false);
+  }, [isError]);
+
   function onSubmit(e: React.MouseEvent) {
+    setDisableButton(true);
     e.preventDefault();
 
     trigger();
     write?.();
-
-    isSuccess && closeModal();
   }
 
   function renderAllLsdTokens() {
@@ -235,7 +244,11 @@ function VoteFactory({ closeModal }: { closeModal: () => void }) {
         </LsdTokensContainer>
         <DialogActions>
           <button onClick={closeModal}>Cancel</button>
-          <button type='submit' disabled={isLoading} onClick={onSubmit}>
+          <button
+            type='submit'
+            disabled={isLoading || disableButton}
+            onClick={onSubmit}
+          >
             Start Vote
           </button>
         </DialogActions>
