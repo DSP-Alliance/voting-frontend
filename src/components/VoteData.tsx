@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import Countdown from 'react-countdown';
+import { useContractWrite, useWaitForTransaction } from 'wagmi';
 import axios from 'axios';
 
 import FIPInfo from 'components/FIPInfo';
 import VotePicker from 'components/VotePicker';
 import VotingPower from 'components/VotingPower';
-import { publicClient, RPC_URL } from 'services/clients';
-import { voteFactoryConfig } from 'constants/voteFactoryConfig';
+import AddVotePower from 'components/AddVotePower';
+import { RPC_URL, publicClient } from 'services/clients';
 import { voteTrackerConfig } from 'constants/voteTrackerConfig';
 import type { Address } from './Home';
 
@@ -34,27 +35,49 @@ const InfoText = styled.span`
 
 function VoteData({
   address,
+  lastFipAddress = '0x',
   lastFipNum,
   countdownValue,
 }: {
   address: Address | undefined;
+  lastFipAddress: Address | undefined;
   lastFipNum: number | undefined;
   countdownValue: number;
 }) {
-  const [agentLoading, setAgentLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [hasVoted, setHasVoted] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [minerIds, setMinerIds] = useState<string[]>([]);
   const [rawBytePower, setRawBytePower] = useState('');
 
   useEffect(() => {
-    try {
-      // get hasVoted from voteTracker
-      // setHasVoted(result)
-    } catch {
-      setHasVoted(false);
+    async function getHasVoted() {
+      try {
+        const userHasVoted = await publicClient.readContract({
+          address: lastFipAddress,
+          abi: voteTrackerConfig.abi,
+          functionName: 'hasVoted',
+          args: [lastFipAddress],
+        });
+
+        setHasVoted(userHasVoted);
+      } catch {
+        setHasVoted(false);
+      }
     }
-  }, []);
+
+    getHasVoted();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const { data, error, isError, write } = useContractWrite({
+    abi: voteTrackerConfig.abi,
+    functionName: 'registerVoter',
+    // args: [address || `0x`, minerIds],
+  });
+
+  const { isLoading, isSuccess } = useWaitForTransaction({
+    hash: data?.hash,
+  });
 
   function formatBytes(bytes: number) {
     if (bytes == 0) {
@@ -80,41 +103,51 @@ function VoteData({
     );
   }
 
-  async function addAgent(agentAddress: string) {
-    setAgentLoading(true);
-
+  async function addVotingPower(agentAddress: string) {
+    setLoading(true);
     try {
-      const request = await axios.get(
-        `https://filfox.info/api/v1/address/${agentAddress}`,
-      );
-      const ownedMiners = request.data.ownedMiners;
-      setMinerIds(request.data.ownedMiners);
+      let rawBytes = 0;
 
-      const promises: Promise<any>[] = [];
-
-      ownedMiners.map((minerId: string) => {
-        promises.push(
-          axios.post(RPC_URL, {
-            headers: { 'Content-Type': 'application/json' },
-            jsonrpc: '2.0',
-            method: 'Filecoin.StateMinerPower',
-            params: [minerId, null],
-            id: 1,
-          }),
+      async function getMiners(address: string) {
+        const request = await axios.get(
+          `https://filfox.info/api/v1/address/${address}`,
         );
-      });
+        const ownedMiners = request.data.ownedMiners;
+        setMinerIds((prev) => [...prev, request.data.ownedMiners]);
 
-      const promiseArray = await Promise.all(promises);
-      const rawBytes = promiseArray.reduce(
-        (acc, result) =>
-          acc + parseInt(result.data.result.MinerPower.RawBytePower),
-        0,
-      );
+        const promises: Promise<any>[] = [];
+
+        ownedMiners.map((minerId: string) => {
+          promises.push(
+            axios.post(RPC_URL, {
+              headers: { 'Content-Type': 'application/json' },
+              jsonrpc: '2.0',
+              method: 'Filecoin.StateMinerPower',
+              params: [minerId, null],
+              id: 1,
+            }),
+          );
+        });
+
+        const promiseArray = await Promise.all(promises);
+        rawBytes = promiseArray.reduce(
+          (acc, result) =>
+            acc + parseInt(result.data.result.MinerPower.RawBytePower),
+          0,
+        );
+      }
+
+      await getMiners(address as string);
+
+      if (agentAddress) {
+        await getMiners(agentAddress);
+      }
+
       setRawBytePower(formatBytes(rawBytes));
     } catch (error) {
       setErrorMessage('Error adding Miner IDs');
     } finally {
-      setAgentLoading(false);
+      setLoading(false);
     }
   }
 
@@ -130,28 +163,37 @@ function VoteData({
           {!lastFipNum && <InfoText>Last vote data does not exist</InfoText>}
         </VoteSection>
         <VoteSection>
-          {/* if have already voted */}
-          {!Boolean(countdownValue) && <h4>Latest Vote Results</h4>}
-          {!lastFipNum && <InfoText>Last vote data does not exist</InfoText>}
-          {Boolean(countdownValue) && (
+          {!Boolean(countdownValue) && !hasVoted && (
             <>
-              <h4>Choose Vote</h4>
-              <VotePicker address={address} minerIds={minerIds} />
+              <h4>Latest Vote Results</h4>
+              {!lastFipNum && (
+                <InfoText>Last vote data does not exist</InfoText>
+              )}
             </>
           )}
+          {Boolean(countdownValue) && !hasVoted && (
+            <>
+              <h4>Choose Vote</h4>
+              {rawBytePower && (
+                <VotePicker address={address} minerIds={minerIds} />
+              )}
+              {!rawBytePower && (
+                <AddVotePower
+                  addVotingPower={addVotingPower}
+                  error={errorMessage}
+                  loading={loading}
+                />
+              )}
+            </>
+          )}
+
           {/* https://github.com/0xpluto/fip-voting/blob/master/src/components/TotalVotes.tsx */}
         </VoteSection>
         <VoteSection>
-          {/* if have already voted */}
-          {/* <h4>Voting Power</h4> */}
+          {/* {hasVoted && <h4>Voting Power</h4>} */}
           {/* https://github.com/0xpluto/fip-voting/blob/e19da9798c2756fcc471a91b1ae03c4f492bb3c3/src/components/VotingPower.tsx */}
           <h4>Wallet Voting Power</h4>
-          <VotingPower
-            addAgent={addAgent}
-            error={errorMessage}
-            loading={agentLoading}
-            rawBytePower={rawBytePower}
-          />
+          <VotingPower rawBytePower={rawBytePower} />
         </VoteSection>
       </DataSections>
     </VoteDataContainer>

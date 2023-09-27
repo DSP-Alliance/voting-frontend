@@ -26,6 +26,10 @@ const GlobalStyle = createGlobalStyle`
       background-color: var(--darkblue);
     }
   }
+
+  label.MuiInputLabel-root:not(.Mui-focused) {
+      font-size: 14px;
+  }
 `;
 
 export default GlobalStyle;

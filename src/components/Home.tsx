@@ -57,9 +57,9 @@ const VoteContent = styled.div`
 
 function Home() {
   const { address = `0x` } = useAccount();
-  const [countdownValue, setCountdownValue] = useState<number>(0);
+  const [countdownValue, setCountdownValue] = useState<number>(1000);
   const [fipAddresses, setFipAddresses] = useState<Address[]>([]);
-  const [fipList, setFipList] = useState<string[]>([]);
+  const [fipList, setFipList] = useState<number[]>([]);
   const [lastFipNum, setLastFipNum] = useState<number>();
   const [isOwner, setIsOwner] = useState(false);
   const [showVoteFactory, setShowVoteFactory] = useState(false);
@@ -92,32 +92,22 @@ function Home() {
     let index = 0;
     async function getVoteData() {
       try {
+        const addresses: Address[] = [];
         const data = await publicClient.readContract({
           abi: voteFactoryConfig.abi,
           address: voteFactoryConfig.address,
           functionName: 'deployedVotes',
-          args: [BigInt(index)], // does this need to be a BigInt??
+          args: [BigInt(index)],
         });
-        console.log('hi lisa data ', data); // should be an Address
-
-        setFipAddresses((prev) => [...prev, data]);
+        addresses.push(data);
 
         while (data) {
           index += 1;
           getVoteData();
         }
 
-        // get for all fips to setFipList();
-
-        const fip = await publicClient.readContract({
-          abi: voteTrackerConfig.abi,
-          address: fipAddresses[fipAddresses.length - 1],
-          functionName: 'FIP',
-        });
-
-        setLastFipNum(fip);
+        setFipAddresses(addresses);
       } catch (error) {
-        // console.error(error);
         setLastFipNum(undefined);
       }
     }
@@ -125,30 +115,52 @@ function Home() {
     getVoteData();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // useEffect(() => {
-  //   async function isLastVoteRunning() {
-  //     const voteStartTime = await publicClient.readContract({
-  //       abi: voteTrackerConfig.abi,
-  //       address: fipAddresses[fipAddresses.length - 1],
-  //       functionName: 'voteStart',
-  //     });
+  useEffect(() => {
+    async function getFipNums() {
+      try {
+        const fips = await Promise.all(
+          fipAddresses.map((fipAddress) => {
+            return publicClient.readContract({
+              abi: voteTrackerConfig.abi,
+              address: fipAddress,
+              functionName: 'FIP',
+            });
+          }),
+        );
+        setFipList(fips);
+        setLastFipNum(fips[fips.length - 1]);
+      } catch {
+        setLastFipNum(undefined);
+      }
+    }
 
-  //     const voteLength = await publicClient.readContract({
-  //       abi: voteTrackerConfig.abi,
-  //       address: fipAddresses[fipAddresses.length - 1],
-  //       functionName: 'voteLength',
-  //     });
+    if (fipAddresses) getFipNums();
+  }, [fipAddresses]);
 
-  //     const voteEndTime = voteStartTime + voteLength;
-  //     const currentTime = Date.now();
+  useEffect(() => {
+    async function isLastVoteRunning() {
+      const voteStartTime = await publicClient.readContract({
+        abi: voteTrackerConfig.abi,
+        address: fipAddresses[fipAddresses.length - 1],
+        functionName: 'voteStart',
+      });
 
-  //     if (currentTime < voteEndTime) {
-  //       setCountdownValue(voteEndTime - currentTime);
-  //     }
-  //   }
+      const voteLength = await publicClient.readContract({
+        abi: voteTrackerConfig.abi,
+        address: fipAddresses[fipAddresses.length - 1],
+        functionName: 'voteLength',
+      });
 
-  //   if (lastFipNum) isLastVoteRunning();
-  // }, [lastFipNum]);
+      const voteEndTime = voteStartTime + voteLength;
+      const currentTime = Date.now();
+
+      if (currentTime < voteEndTime) {
+        setCountdownValue(voteEndTime - currentTime);
+      }
+    }
+
+    if (lastFipNum) isLastVoteRunning();
+  }, [lastFipNum, fipAddresses]);
 
   return (
     <HomeContainer>
@@ -173,6 +185,7 @@ function Home() {
       <VoteContent>
         <VoteData
           address={address}
+          lastFipAddress={fipAddresses[fipAddresses.length - 1]}
           lastFipNum={lastFipNum}
           countdownValue={countdownValue}
         />
