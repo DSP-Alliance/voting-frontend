@@ -58,6 +58,7 @@ function VoteFactory({ closeModal }: { closeModal: () => void }) {
       doubleYesOption: 'false',
       [`lsdToken${allLsdTokens.length + 1}`]:
         '0x3C3501E6c353DbaEDDFA90376975Ce7aCe4Ac7a8',
+      question: ''
     },
   });
 
@@ -75,6 +76,7 @@ function VoteFactory({ closeModal }: { closeModal: () => void }) {
             watch(`lsdToken${allLsdTokens.length + 1}`) as Address,
           ]
         : allLsdTokens,
+      watch('question')
     ],
   });
 
