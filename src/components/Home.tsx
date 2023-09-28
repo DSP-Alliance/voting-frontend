@@ -57,7 +57,7 @@ const VoteContent = styled.div`
 
 function Home() {
   const { address = `0x` } = useAccount();
-  const [countdownValue, setCountdownValue] = useState<number>(1000);
+  const [countdownValue, setCountdownValue] = useState<number>(0);
   const [fipAddresses, setFipAddresses] = useState<Address[]>([]);
   const [fipList, setFipList] = useState<number[]>([]);
   const [lastFipNum, setLastFipNum] = useState<number>();
@@ -85,9 +85,10 @@ function Home() {
       }
     }
 
-    getOwner();
+    // getOwner();
+    setIsOwner(true);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
+  console.log('hi lisa isowner ', isOwner);
   useEffect(() => {
     let index = 0;
     async function getVoteData() {

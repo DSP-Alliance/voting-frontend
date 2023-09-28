@@ -5,12 +5,20 @@ import { TextField } from '@mui/material';
 const ActionArea = styled.div`
   display: flex;
   flex-direction: column;
+`;
+
+const AddressCheckbox = styled.div`
+  display: flex;
+  flex-direction: row;
   align-items: center;
+  gap: 4px;
+  margin-top: 4px;
 `;
 
 const ErrorMessage = styled.div`
   color: var(--rederror);
   word-wrap: break-word;
+  margin-top: 8px;
 `;
 
 function AddVotePower({
@@ -23,6 +31,7 @@ function AddVotePower({
   loading: boolean;
 }) {
   const [agentAddress, setAgentAddress] = useState('');
+  const [showAddressField, setShowAddressField] = useState(false);
 
   return (
     <div>
@@ -30,14 +39,25 @@ function AddVotePower({
         <button disabled={loading} onClick={() => addVotingPower(agentAddress)}>
           Register to Vote
         </button>
-        <TextField
-          size='small'
-          margin='normal'
-          label='Add Agent Address (optional)'
-          fullWidth
-          value={agentAddress}
-          onChange={(e) => setAgentAddress(e.target.value)}
-        />
+        <AddressCheckbox>
+          <input
+            type='checkbox'
+            id='addAgentAddress'
+            checked={showAddressField}
+            onChange={() => setShowAddressField(!showAddressField)}
+          />
+          <label htmlFor='addAgentAddress'>Add Agent Address?</label>
+        </AddressCheckbox>
+        {showAddressField && (
+          <TextField
+            size='small'
+            margin='normal'
+            label='Agent Address'
+            fullWidth
+            value={agentAddress}
+            onChange={(e) => setAgentAddress(e.target.value)}
+          />
+        )}
       </ActionArea>
       {error && <ErrorMessage>Error: {error}</ErrorMessage>}
     </div>
