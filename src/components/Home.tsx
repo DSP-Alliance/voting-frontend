@@ -65,21 +65,16 @@ function Home() {
   const [showVoteFactory, setShowVoteFactory] = useState(false);
 
   useEffect(() => {
-    let index = 0;
     async function getOwner() {
       try {
         const owner = await publicClient.readContract({
           abi: voteFactoryConfig.abi,
           address: voteFactoryConfig.address,
           functionName: 'starters',
-          args: [BigInt(index)],
+          args: [address],
         });
 
-        if (owner && owner !== address) {
-          index += 1;
-          getOwner();
-        }
-        if (owner === address) setIsOwner(true);
+        if (owner) setIsOwner(true);
       } catch (error) {
         console.error(error);
       }
