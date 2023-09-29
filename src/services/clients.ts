@@ -12,6 +12,9 @@ export const walletClient = window.ethereum
   : {};
 
 export const publicClient = createPublicClient({
+  batch: {
+    multicall: true, 
+  },
   chain: filecoin,
-  transport: http(RPC_URL),
+  transport: http(),
 });

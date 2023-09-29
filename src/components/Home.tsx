@@ -93,21 +93,24 @@ function Home() {
     let index = 0;
     async function getVoteData() {
       try {
-        const addresses: Address[] = [];
-        const data = await publicClient.readContract({
+        const deployedCount: number = await publicClient.readContract({
           abi: voteFactoryConfig.abi,
           address: voteFactoryConfig.address,
-          functionName: 'deployedVotes',
-          args: [BigInt(index)],
+          functionName: 'deployedVotesLength',
         });
-        addresses.push(data);
 
-        while (data) {
-          index += 1;
-          getVoteData();
+        const promises = [];
+        for (let i = 0; i < deployedCount; i++) {
+          promises.push(publicClient.readContract({
+            abi: voteFactoryConfig.abi,
+            address: voteFactoryConfig.address,
+            functionName: 'deployedVotes',
+            args: [BigInt(index)],
+          }));
         }
+        const voteAddresses: Address[] = await Promise.all(promises);
 
-        setFipAddresses(addresses);
+        setFipAddresses(voteAddresses);
       } catch (error) {
         setLastFipNum(undefined);
       }
