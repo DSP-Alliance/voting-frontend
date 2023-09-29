@@ -57,7 +57,7 @@ const VoteContent = styled.div`
 
 function Home() {
   const { address = `0x` } = useAccount();
-  const [countdownValue, setCountdownValue] = useState<number>(1000);
+  const [countdownValue, setCountdownValue] = useState<number>(0);
   const [fipAddresses, setFipAddresses] = useState<Address[]>([]);
   const [fipList, setFipList] = useState<number[]>([]);
   const [lastFipNum, setLastFipNum] = useState<number>();
@@ -65,48 +65,47 @@ function Home() {
   const [showVoteFactory, setShowVoteFactory] = useState(false);
 
   useEffect(() => {
-    let index = 0;
     async function getOwner() {
       try {
         const owner = await publicClient.readContract({
           abi: voteFactoryConfig.abi,
           address: voteFactoryConfig.address,
           functionName: 'starters',
-          args: [BigInt(index)],
+          args: [address],
         });
 
-        if (owner && owner !== address) {
-          index += 1;
-          getOwner();
-        }
-        if (owner === address) setIsOwner(true);
+        if (owner) setIsOwner(true);
       } catch (error) {
         console.error(error);
       }
     }
 
-    getOwner();
+    // getOwner();
+    setIsOwner(true);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
+  console.log('hi lisa isowner ', isOwner);
   useEffect(() => {
     let index = 0;
     async function getVoteData() {
       try {
-        const addresses: Address[] = [];
-        const data = await publicClient.readContract({
+        const deployedCount: number = await publicClient.readContract({
           abi: voteFactoryConfig.abi,
           address: voteFactoryConfig.address,
-          functionName: 'deployedVotes',
-          args: [BigInt(index)],
+          functionName: 'deployedVotesLength',
         });
-        addresses.push(data);
 
-        while (data) {
-          index += 1;
-          getVoteData();
+        const promises = [];
+        for (let i = 0; i < deployedCount; i++) {
+          promises.push(publicClient.readContract({
+            abi: voteFactoryConfig.abi,
+            address: voteFactoryConfig.address,
+            functionName: 'deployedVotes',
+            args: [BigInt(index)],
+          }));
         }
+        const voteAddresses: Address[] = await Promise.all(promises);
 
-        setFipAddresses(addresses);
+        setFipAddresses(voteAddresses);
       } catch (error) {
         setLastFipNum(undefined);
       }

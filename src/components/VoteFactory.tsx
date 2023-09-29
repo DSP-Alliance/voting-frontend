@@ -76,7 +76,7 @@ function VoteFactory({ closeModal }: { closeModal: () => void }) {
             watch(`lsdToken${allLsdTokens.length + 1}`) as Address,
           ]
         : allLsdTokens,
-      watch('question')
+      watch('question'),
     ],
   });
 
@@ -186,6 +186,26 @@ function VoteFactory({ closeModal }: { closeModal: () => void }) {
               onBlur={() => trigger('length')}
               fullWidth
               label='Length of vote time (in minutes)'
+              variant='outlined'
+            />
+          )}
+        />
+        <Controller
+          name='question'
+          control={control}
+          rules={{ required: 'Required' }}
+          render={({ field: { onChange, value }, fieldState: { error } }) => (
+            <TextField
+              required
+              type='text'
+              helperText={error ? 'Enter the question to ask' : null}
+              size='small'
+              error={!!error}
+              onChange={onChange}
+              onBlur={() => trigger('question')}
+              value={value || ''}
+              fullWidth
+              label='Question'
               variant='outlined'
             />
           )}
