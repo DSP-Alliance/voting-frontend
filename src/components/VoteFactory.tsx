@@ -55,7 +55,7 @@ function VoteFactory({ closeModal }: { closeModal: () => void }) {
     defaultValues: {
       fipNum: '',
       length: '',
-      doubleYesOption: 'false',
+      yesOptions: ['', ''],
       [`lsdToken${allLsdTokens.length + 1}`]:
         '0x3C3501E6c353DbaEDDFA90376975Ce7aCe4Ac7a8',
       question: ''
@@ -69,7 +69,9 @@ function VoteFactory({ closeModal }: { closeModal: () => void }) {
     args: [
       parseInt(watch('length')) * 60,
       parseInt(watch('fipNum')),
-      watch('doubleYesOption') === 'true' ? true : false,
+      // This needs to be changed, this value is now yesOptions which accepts string[2]
+      //watch('doubleYesOption') === 'true' ? true : false,
+      watch('yesOptions'),
       watch(`lsdToken${allLsdTokens.length + 1}`)
         ? [
             ...allLsdTokens,
