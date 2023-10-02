@@ -12,7 +12,6 @@ import { RPC_URL, publicClient, walletClient } from 'services/clients';
 import { voteTrackerConfig } from 'constants/voteTrackerConfig';
 import type { Address } from './Home';
 import { getAddress } from 'viem';
-import { filecoin } from 'viem/chains';
 
 const VoteDataContainer = styled.div`
   display: flex;
@@ -85,6 +84,8 @@ function VoteData({
             functionName: 'hasRegistered',
             args: [address || `0x`],
           });
+
+          console.log(userHasRegistered)
 
           setHasRegistered(userHasRegistered);
         } catch {
@@ -177,6 +178,7 @@ function VoteData({
 
       // Make sure to do this setState call when useWaitForTransaction.isSuccess is valid. useEffect maybe? will leave this up to you.
       setRawBytePower(formatBytes(rawBytes));
+      setHasRegistered(true);
     } catch (error) {
       setErrorMessage('Error adding Miner IDs');
     } finally {
@@ -207,10 +209,10 @@ function VoteData({
           {Boolean(countdownValue) && !hasVoted && (
             <>
               <h4>Choose Vote</h4>
-              {rawBytePower && (
+              {hasRegistered && (
                 <VotePicker address={address} minerIds={minerIds} />
               )}
-              {!rawBytePower && (
+              {!hasRegistered && (
                 <AddVotePower
                   addVotingPower={addVotingPower}
                   error={errorMessage}
