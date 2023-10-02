@@ -1,5 +1,5 @@
 export const voteFactoryConfig = {
-  address: '0x1ebefb51b6f12715dc5258ba0b03d927f030be07',
+  address: '0xF0eb63A84274Bfd3d0e9E9f366DCF7bA8C42b227',
   abi: [
     {
       inputs: [],
