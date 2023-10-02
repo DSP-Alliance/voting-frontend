@@ -10,6 +10,7 @@ import VotingPower from 'components/VotingPower';
 import AddVotePower from 'components/AddVotePower';
 import { RPC_URL, publicClient, walletClient } from 'services/clients';
 import { voteTrackerConfig } from 'constants/voteTrackerConfig';
+import { ownableConfig } from 'constants/ownableConfig';
 import type { Address } from './Home';
 import { getAddress } from 'viem';
 
@@ -51,6 +52,7 @@ function VoteData({
   const [loading, setLoading] = useState(false);
   const [minerIds, setMinerIds] = useState<bigint[]>([]);
   const [rawBytePower, setRawBytePower] = useState('');
+  const [tokenPower, setTokenPower] = useState<bigint>(BigInt(0));
   const [agentAddress, setAgentAddress] = useState<Address>('0x0000000000000000000000000000000000000000');
 
   useEffect(() => {
@@ -130,6 +132,38 @@ function VoteData({
     hash: data?.hash,
   });
 
+  useEffect(() => {
+    setHasRegistered(true);
+
+    async function getTokenPower() {
+      if (lastFipAddress) {
+        try {
+          let userTokenPower = await publicClient.readContract({
+            address: lastFipAddress,
+            abi: voteTrackerConfig.abi,
+            functionName: 'voterWeightToken',
+            args: [address || `0x`],
+          });
+
+          if (userTokenPower == BigInt(0)) {
+            userTokenPower = await publicClient.readContract({
+              address: lastFipAddress,
+              abi: voteTrackerConfig.abi,
+              functionName: 'voterWeightMinerToken',
+              args: [address || `0x`],
+            });
+          }
+
+          setTokenPower(userTokenPower);
+        } catch {
+          setTokenPower(BigInt(0));
+        }
+      }
+    }
+
+    getTokenPower()
+  }, [rawBytePower]);
+
   async function addVotingPower(agentAddress: string) {
     setLoading(true);
     setAgentAddress(getAddress(agentAddress || '0x0000000000000000000000000000000000000000'));
@@ -169,14 +203,21 @@ function VoteData({
       await getMiners(address as string);
 
       if (agentAddress) {
-        await getMiners(agentAddress);
+        const glifOwner = await publicClient.readContract({
+          address: getAddress(agentAddress || '0x0000000000000000000000000000000000000000'),
+          abi: ownableConfig.abi,
+          functionName: "owner"
+        });
+
+        if (glifOwner == address) {
+          console.log("get miners for glif pool")
+          await getMiners(agentAddress);
+        }
       }
 
       write?.()
 
-      // Make sure to do this setState call when useWaitForTransaction.isSuccess is valid. useEffect maybe? will leave this up to you.
       setRawBytePower(formatBytes(rawBytes));
-      setHasRegistered(true);
     } catch (error) {
       setErrorMessage('Error adding Miner IDs');
     } finally {
@@ -228,7 +269,7 @@ function VoteData({
           {!hasVoted && (
             <>
               <h4>Wallet Voting Power</h4>
-              <VotingPower rawBytePower={rawBytePower} />
+              <VotingPower rawBytePower={rawBytePower} tokenPower={tokenPower} />
             </>
           )}
         </VoteSection>
