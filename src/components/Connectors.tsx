@@ -63,7 +63,9 @@ export function Connectors() {
             <ConnectButton
               disabled={!connector.ready}
               key={connector.id}
-              onClick={() => connect({ connector })}
+              onClick={() => {
+                connect({ connector })
+              }}
             >
               Connect to {connector.name}
               {!connector.ready && ' (unsupported)'}

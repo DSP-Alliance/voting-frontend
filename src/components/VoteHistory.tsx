@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { FormControl, InputLabel, MenuItem, Select } from '@mui/material';
-import { getAddress } from 'viem';
+import { getAddress, Address } from 'viem';
 import { filecoin } from 'viem/chains';
 import {
   Bar,
@@ -15,6 +15,7 @@ import {
 
 import { voteTrackerConfig } from 'constants/voteTrackerConfig';
 import { publicClient } from 'services/clients';
+import { voteFactoryConfig } from 'constants/voteFactoryConfig';
 
 const Container = styled.div`
   display: grid;
@@ -42,65 +43,72 @@ function VoteHistory({ fips }: { fips: number[] }) {
     if (selectedFip) {
       // We use a promise here as multicall is enabled for this client
       // Meaning that we can reduce our load on the RPC URL and get data back faster.
-      Promise.all([
-        publicClient.readContract({
-          abi: voteTrackerConfig.abi,
-          address: getAddress(selectedFip, filecoin.id),
-          functionName: 'voteStart',
-        }),
-        publicClient.readContract({
-          abi: voteTrackerConfig.abi,
-          address: getAddress(selectedFip, filecoin.id),
-          functionName: 'voteLength',
-        }),
-        publicClient.readContract({
-          abi: voteTrackerConfig.abi,
-          address: getAddress(selectedFip, filecoin.id),
-          functionName: 'question',
-        }),
-        publicClient.readContract({
-          abi: voteTrackerConfig.abi,
-          address: getAddress(selectedFip, filecoin.id),
-          functionName: 'getVoteResultsRBP',
-        }),
-        publicClient.readContract({
-          abi: voteTrackerConfig.abi,
-          address: getAddress(selectedFip, filecoin.id),
-          functionName: 'getVoteResultsMinerToken',
-        }),
-        publicClient.readContract({
-          abi: voteTrackerConfig.abi,
-          address: getAddress(selectedFip, filecoin.id),
-          functionName: 'getVoteResultsToken',
-        }),
-        publicClient.readContract({
-          abi: voteTrackerConfig.abi,
-          address: getAddress(selectedFip, filecoin.id),
-          functionName: 'winningVote',
-        }),
-      ]).then(
-        ([
-          startTime,
-          length,
-          question,
-          rbpVotes,
-          minerTokenVotes,
-          tokenVotes,
-          winningVote, // This is quite ugly.
-        ]: [
-          number,
-          number,
-          string,
-          readonly [bigint, bigint, bigint, bigint],
-          readonly [bigint, bigint, bigint, bigint],
-          readonly [bigint, bigint, bigint, bigint],
-          number,
-        ]) => {
-          setQuestionText(question);
-          // setData();
-          // You can sum together all votes using the rbpVotes, minerTokenVotes, and tokenVotes to get a total vote count and calculate percentages
-        },
-      );
+      publicClient.readContract({
+        abi: voteFactoryConfig.abi,
+        address: voteFactoryConfig.address,
+        functionName: 'FIPnumToAddress',
+        args: [parseInt(selectedFip)]
+      }).then((addr) => {
+        Promise.all([
+          publicClient.readContract({
+            abi: voteTrackerConfig.abi,
+            address: addr,
+            functionName: 'voteStart',
+          }),
+          publicClient.readContract({
+            abi: voteTrackerConfig.abi,
+            address: addr,
+            functionName: 'voteLength',
+          }),
+          publicClient.readContract({
+            abi: voteTrackerConfig.abi,
+            address: addr,
+            functionName: 'question',
+          }),
+          publicClient.readContract({
+            abi: voteTrackerConfig.abi,
+            address: addr,
+            functionName: 'getVoteResultsRBP',
+          }),
+          publicClient.readContract({
+            abi: voteTrackerConfig.abi,
+            address: addr,
+            functionName: 'getVoteResultsMinerToken',
+          }),
+          publicClient.readContract({
+            abi: voteTrackerConfig.abi,
+            address: addr,
+            functionName: 'getVoteResultsToken',
+          }),
+          publicClient.readContract({
+            abi: voteTrackerConfig.abi,
+            address: addr,
+            functionName: 'winningVote',
+          }),
+        ]).then(
+          ([
+            startTime,
+            length,
+            question,
+            rbpVotes,
+            minerTokenVotes,
+            tokenVotes,
+            winningVote, // This is quite ugly.
+          ]: [
+            number,
+            number,
+            string,
+            readonly [bigint, bigint, bigint, bigint],
+            readonly [bigint, bigint, bigint, bigint],
+            readonly [bigint, bigint, bigint, bigint],
+            number,
+          ]) => {
+            setQuestionText(question);
+            // setData();
+            // You can sum together all votes using the rbpVotes, minerTokenVotes, and tokenVotes to get a total vote count and calculate percentages
+          },
+        );
+      });
     }
   }, [selectedFip]);
 

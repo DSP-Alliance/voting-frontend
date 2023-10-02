@@ -106,6 +106,8 @@ function Home() {
         }
         const voteAddresses: Address[] = await Promise.all(promises);
 
+        console.log(voteAddresses)
+
         setFipAddresses(voteAddresses);
       } catch (error) {
         setLastFipNum(undefined);
@@ -120,6 +122,7 @@ function Home() {
       try {
         const fips = await Promise.all(
           fipAddresses.map((fipAddress) => {
+            console.log(fipAddress)
             return publicClient.readContract({
               abi: voteTrackerConfig.abi,
               address: fipAddress,
@@ -127,6 +130,8 @@ function Home() {
             });
           }),
         );
+
+        console.log(fips)
         setFipList(fips);
         setLastFipNum(fips[fips.length - 1]);
       } catch {
@@ -151,10 +156,14 @@ function Home() {
         functionName: 'voteLength',
       });
 
+      console.log(voteStartTime, voteLength)
+
       const voteEndTime = voteStartTime + voteLength;
-      const currentTime = Date.now();
+      const currentTime = Math.floor(Date.now() / 1000);
+      console.log(currentTime)
 
       if (currentTime < voteEndTime) {
+        console.log("set countdown")
         setCountdownValue(voteEndTime - currentTime);
       }
     }

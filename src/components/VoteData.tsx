@@ -156,7 +156,7 @@ function VoteData({
   return (
     <VoteDataContainer>
       <div>
-        Time left: <Countdown date={Date.now() + countdownValue} />
+        Time left: <Countdown date={Date.now() + (countdownValue * 1000)} />
       </div>
       <DataSections>
         <VoteSection>

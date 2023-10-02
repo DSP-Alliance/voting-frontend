@@ -78,6 +78,7 @@ function VoteFactory({ closeModal }: { closeModal: () => void }) {
   });
 
   useEffect(() => {
+    console.log(data)
     if (isSuccess) closeModal();
   }, [isSuccess]); // eslint-disable-line react-hooks/exhaustive-deps
 
