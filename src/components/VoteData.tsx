@@ -8,9 +8,11 @@ import FIPInfo from 'components/FIPInfo';
 import VotePicker from 'components/VotePicker';
 import VotingPower from 'components/VotingPower';
 import AddVotePower from 'components/AddVotePower';
-import { RPC_URL, publicClient } from 'services/clients';
+import { RPC_URL, publicClient, walletClient } from 'services/clients';
 import { voteTrackerConfig } from 'constants/voteTrackerConfig';
 import type { Address } from './Home';
+import { getAddress } from 'viem';
+import { filecoin } from 'viem/chains';
 
 const VoteDataContainer = styled.div`
   display: flex;
@@ -46,9 +48,11 @@ function VoteData({
 }) {
   const [errorMessage, setErrorMessage] = useState('');
   const [hasVoted, setHasVoted] = useState(false);
+  const [hasRegistered, setHasRegistered] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [minerIds, setMinerIds] = useState<string[]>([]);
+  const [minerIds, setMinerIds] = useState<bigint[]>([]);
   const [rawBytePower, setRawBytePower] = useState('');
+  const [agentAddress, setAgentAddress] = useState<Address>('0x0000000000000000000000000000000000000000');
 
   useEffect(() => {
     async function getHasVoted() {
@@ -58,7 +62,7 @@ function VoteData({
             address: lastFipAddress,
             abi: voteTrackerConfig.abi,
             functionName: 'hasVoted',
-            args: [lastFipAddress],
+            args: [address || `0x`],
           });
 
           setHasVoted(userHasVoted);
@@ -71,15 +75,26 @@ function VoteData({
     getHasVoted();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const { data, error, isError, write } = useContractWrite({
-    abi: voteTrackerConfig.abi,
-    functionName: 'registerVoter',
-    // args: [address || `0x`, minerIds],
-  });
+  useEffect(() => {
+    async function getHasRegistered() {
+      if (lastFipAddress) {
+        try {
+          const userHasRegistered = await publicClient.readContract({
+            address: lastFipAddress,
+            abi: voteTrackerConfig.abi,
+            functionName: 'hasRegistered',
+            args: [address || `0x`],
+          });
 
-  const { isLoading, isSuccess } = useWaitForTransaction({
-    hash: data?.hash,
-  });
+          setHasRegistered(userHasRegistered);
+        } catch {
+          setHasRegistered(false);
+        }
+      }
+    }
+
+    getHasRegistered();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   function formatBytes(bytes: number) {
     if (bytes == 0) {
@@ -105,8 +120,21 @@ function VoteData({
     );
   }
 
+  const { data, error, isError, write } = useContractWrite({
+    abi: voteTrackerConfig.abi,
+    address: lastFipAddress,
+    functionName: 'registerVoter',
+    args: [agentAddress, minerIds],
+  });
+
+  const { isLoading, isSuccess } = useWaitForTransaction({
+    hash: data?.hash,
+  });
+
   async function addVotingPower(agentAddress: string) {
     setLoading(true);
+    setAgentAddress(getAddress(agentAddress || '0x0000000000000000000000000000000000000000'));
+
     try {
       let rawBytes = 0;
 
@@ -145,6 +173,9 @@ function VoteData({
         await getMiners(agentAddress);
       }
 
+      write?.()
+
+      // Make sure to do this setState call when useWaitForTransaction.isSuccess is valid. useEffect maybe? will leave this up to you.
       setRawBytePower(formatBytes(rawBytes));
     } catch (error) {
       setErrorMessage('Error adding Miner IDs');

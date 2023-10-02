@@ -16,7 +16,7 @@ function VotePicker({
   minerIds,
 }: {
   address: Address | undefined;
-  minerIds: string[];
+  minerIds: bigint[];
 }) {
   const [vote, setVote] = useState(0);
   const [glifPool, setGlifPool] = useState('0');

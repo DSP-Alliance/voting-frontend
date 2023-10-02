@@ -1,635 +1,654 @@
 export const voteTrackerConfig = {
   abi: [
     {
-      inputs: [
+      "inputs": [
         {
-          internalType: 'uint32',
-          name: 'length',
-          type: 'uint32',
+          "internalType": "uint32",
+          "name": "length",
+          "type": "uint32"
         },
         {
-          internalType: 'string[2]',
-          name: '_yesOptions',
-          type: 'string[2]',
+          "internalType": "string[2]",
+          "name": "_yesOptions",
+          "type": "string[2]"
         },
         {
-          internalType: 'address[]',
-          name: '_lsdTokens',
-          type: 'address[]',
+          "internalType": "address[]",
+          "name": "_lsdTokens",
+          "type": "address[]"
         },
         {
-          internalType: 'uint32',
-          name: '_FIP',
-          type: 'uint32',
+          "internalType": "uint32",
+          "name": "_FIP",
+          "type": "uint32"
         },
         {
-          internalType: 'address',
-          name: 'owner',
-          type: 'address',
+          "internalType": "address",
+          "name": "owner",
+          "type": "address"
         },
         {
-          internalType: 'string',
-          name: '_question',
-          type: 'string',
-        },
+          "internalType": "string",
+          "name": "_question",
+          "type": "string"
+        }
       ],
-      stateMutability: 'nonpayable',
-      type: 'constructor',
+      "stateMutability": "nonpayable",
+      "type": "constructor"
     },
     {
-      inputs: [
+      "inputs": [
         {
-          internalType: 'int256',
-          name: 'errorCode',
-          type: 'int256',
-        },
+          "internalType": "int256",
+          "name": "errorCode",
+          "type": "int256"
+        }
       ],
-      name: 'ActorError',
-      type: 'error',
+      "name": "ActorError",
+      "type": "error"
     },
     {
-      inputs: [],
-      name: 'ActorNotFound',
-      type: 'error',
+      "inputs": [],
+      "name": "ActorNotFound",
+      "type": "error"
     },
     {
-      inputs: [],
-      name: 'AlreadyRegistered',
-      type: 'error',
+      "inputs": [],
+      "name": "AlreadyRegistered",
+      "type": "error"
     },
     {
-      inputs: [],
-      name: 'AlreadyVoted',
-      type: 'error',
+      "inputs": [],
+      "name": "AlreadyVoted",
+      "type": "error"
     },
     {
-      inputs: [],
-      name: 'FailToCallActor',
-      type: 'error',
+      "inputs": [],
+      "name": "FailToCallActor",
+      "type": "error"
     },
     {
-      inputs: [
+      "inputs": [
         {
-          internalType: 'CommonTypes.FilActorId',
-          name: 'actorId',
-          type: 'uint64',
-        },
+          "internalType": "CommonTypes.FilActorId",
+          "name": "actorId",
+          "type": "uint64"
+        }
       ],
-      name: 'InvalidActorID',
-      type: 'error',
+      "name": "InvalidActorID",
+      "type": "error"
     },
     {
-      inputs: [
+      "inputs": [
         {
-          internalType: 'uint64',
-          name: '',
-          type: 'uint64',
-        },
+          "internalType": "uint64",
+          "name": "",
+          "type": "uint64"
+        }
       ],
-      name: 'InvalidCodec',
-      type: 'error',
+      "name": "InvalidCodec",
+      "type": "error"
     },
     {
-      inputs: [],
-      name: 'InvalidGlifPool',
-      type: 'error',
+      "inputs": [],
+      "name": "InvalidGlifPool",
+      "type": "error"
     },
     {
-      inputs: [],
-      name: 'InvalidMiner',
-      type: 'error',
+      "inputs": [],
+      "name": "InvalidMiner",
+      "type": "error"
     },
     {
-      inputs: [],
-      name: 'InvalidResponseLength',
-      type: 'error',
+      "inputs": [],
+      "name": "InvalidResponseLength",
+      "type": "error"
     },
     {
-      inputs: [],
-      name: 'MinerAlreadyRegistered',
-      type: 'error',
+      "inputs": [],
+      "name": "MinerAlreadyRegistered",
+      "type": "error"
     },
     {
-      inputs: [
+      "inputs": [
         {
-          internalType: 'uint256',
-          name: 'balance',
-          type: 'uint256',
+          "internalType": "uint256",
+          "name": "balance",
+          "type": "uint256"
         },
         {
-          internalType: 'uint256',
-          name: 'value',
-          type: 'uint256',
-        },
+          "internalType": "uint256",
+          "name": "value",
+          "type": "uint256"
+        }
       ],
-      name: 'NotEnoughBalance',
-      type: 'error',
+      "name": "NotEnoughBalance",
+      "type": "error"
     },
     {
-      inputs: [],
-      name: 'NotRegistered',
-      type: 'error',
+      "inputs": [],
+      "name": "NotRegistered",
+      "type": "error"
     },
     {
-      inputs: [],
-      name: 'VoteConcluded',
-      type: 'error',
+      "inputs": [],
+      "name": "VoteConcluded",
+      "type": "error"
     },
     {
-      inputs: [],
-      name: 'VoteNotConcluded',
-      type: 'error',
+      "inputs": [],
+      "name": "VoteNotConcluded",
+      "type": "error"
     },
     {
-      anonymous: false,
-      inputs: [
+      "anonymous": false,
+      "inputs": [
         {
-          indexed: true,
-          internalType: 'address',
-          name: 'user',
-          type: 'address',
+          "indexed": true,
+          "internalType": "address",
+          "name": "user",
+          "type": "address"
         },
         {
-          indexed: true,
-          internalType: 'address',
-          name: 'newOwner',
-          type: 'address',
-        },
+          "indexed": true,
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
       ],
-      name: 'OwnershipTransferred',
-      type: 'event',
+      "name": "OwnershipTransferred",
+      "type": "event"
     },
     {
-      anonymous: false,
-      inputs: [
+      "anonymous": false,
+      "inputs": [
         {
-          indexed: false,
-          internalType: 'address',
-          name: 'voter',
-          type: 'address',
+          "indexed": false,
+          "internalType": "address",
+          "name": "voter",
+          "type": "address"
         },
         {
-          indexed: false,
-          internalType: 'uint256',
-          name: 'weightRBP',
-          type: 'uint256',
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "weightRBP",
+          "type": "uint256"
         },
         {
-          indexed: false,
-          internalType: 'uint256',
-          name: 'weightToken',
-          type: 'uint256',
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "weightToken",
+          "type": "uint256"
         },
         {
-          indexed: false,
-          internalType: 'uint256',
-          name: 'vote',
-          type: 'uint256',
-        },
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "vote",
+          "type": "uint256"
+        }
       ],
-      name: 'VoteCast',
-      type: 'event',
+      "name": "VoteCast",
+      "type": "event"
     },
     {
-      anonymous: false,
-      inputs: [
+      "anonymous": false,
+      "inputs": [
         {
-          indexed: false,
-          internalType: 'address',
-          name: 'voter',
-          type: 'address',
+          "indexed": false,
+          "internalType": "address",
+          "name": "voter",
+          "type": "address"
         },
         {
-          indexed: false,
-          internalType: 'uint64[]',
-          name: 'minerIds',
-          type: 'uint64[]',
+          "indexed": false,
+          "internalType": "uint64[]",
+          "name": "minerIds",
+          "type": "uint64[]"
         },
         {
-          indexed: false,
-          internalType: 'uint256',
-          name: 'weightRBP',
-          type: 'uint256',
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "weightRBP",
+          "type": "uint256"
         },
         {
-          indexed: false,
-          internalType: 'uint256',
-          name: 'weightToken',
-          type: 'uint256',
-        },
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "weightToken",
+          "type": "uint256"
+        }
       ],
-      name: 'VoterRegistered',
-      type: 'event',
+      "name": "VoterRegistered",
+      "type": "event"
     },
     {
-      inputs: [],
-      name: 'FIP',
-      outputs: [
+      "inputs": [],
+      "name": "FIP",
+      "outputs": [
         {
-          internalType: 'uint32',
-          name: '',
-          type: 'uint32',
-        },
+          "internalType": "uint32",
+          "name": "",
+          "type": "uint32"
+        }
       ],
-      stateMutability: 'view',
-      type: 'function',
+      "stateMutability": "view",
+      "type": "function"
     },
     {
-      inputs: [
+      "inputs": [
         {
-          internalType: 'address',
-          name: 'token',
-          type: 'address',
-        },
+          "internalType": "address",
+          "name": "token",
+          "type": "address"
+        }
       ],
-      name: 'addLSDToken',
-      outputs: [],
-      stateMutability: 'nonpayable',
-      type: 'function',
+      "name": "addLSDToken",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
     },
     {
-      inputs: [
+      "inputs": [
         {
-          internalType: 'uint256',
-          name: 'vote',
-          type: 'uint256',
-        },
+          "internalType": "uint256",
+          "name": "vote",
+          "type": "uint256"
+        }
       ],
-      name: 'castVote',
-      outputs: [],
-      stateMutability: 'nonpayable',
-      type: 'function',
+      "name": "castVote",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
     },
     {
-      inputs: [],
-      name: 'getVoteResultsMinerToken',
-      outputs: [
+      "inputs": [],
+      "name": "getVoteResultsMinerToken",
+      "outputs": [
         {
-          internalType: 'uint256',
-          name: '',
-          type: 'uint256',
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
         },
         {
-          internalType: 'uint256',
-          name: '',
-          type: 'uint256',
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
         },
         {
-          internalType: 'uint256',
-          name: '',
-          type: 'uint256',
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
         },
         {
-          internalType: 'uint256',
-          name: '',
-          type: 'uint256',
-        },
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
       ],
-      stateMutability: 'view',
-      type: 'function',
+      "stateMutability": "view",
+      "type": "function"
     },
     {
-      inputs: [],
-      name: 'getVoteResultsRBP',
-      outputs: [
+      "inputs": [],
+      "name": "getVoteResultsRBP",
+      "outputs": [
         {
-          internalType: 'uint256',
-          name: '',
-          type: 'uint256',
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
         },
         {
-          internalType: 'uint256',
-          name: '',
-          type: 'uint256',
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
         },
         {
-          internalType: 'uint256',
-          name: '',
-          type: 'uint256',
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
         },
         {
-          internalType: 'uint256',
-          name: '',
-          type: 'uint256',
-        },
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
       ],
-      stateMutability: 'view',
-      type: 'function',
+      "stateMutability": "view",
+      "type": "function"
     },
     {
-      inputs: [],
-      name: 'getVoteResultsToken',
-      outputs: [
+      "inputs": [],
+      "name": "getVoteResultsToken",
+      "outputs": [
         {
-          internalType: 'uint256',
-          name: '',
-          type: 'uint256',
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
         },
         {
-          internalType: 'uint256',
-          name: '',
-          type: 'uint256',
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
         },
         {
-          internalType: 'uint256',
-          name: '',
-          type: 'uint256',
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
         },
         {
-          internalType: 'uint256',
-          name: '',
-          type: 'uint256',
-        },
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
       ],
-      stateMutability: 'view',
-      type: 'function',
+      "stateMutability": "view",
+      "type": "function"
     },
     {
-      inputs: [
+      "inputs": [
         {
-          internalType: 'address',
-          name: '',
-          type: 'address',
-        },
+          "internalType": "address",
+          "name": "voter",
+          "type": "address"
+        }
       ],
-      name: 'hasVoted',
-      outputs: [
+      "name": "hasRegistered",
+      "outputs": [
         {
-          internalType: 'bool',
-          name: '',
-          type: 'bool',
-        },
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
       ],
-      stateMutability: 'view',
-      type: 'function',
+      "stateMutability": "view",
+      "type": "function"
     },
     {
-      inputs: [
+      "inputs": [
         {
-          internalType: 'uint256',
-          name: '',
-          type: 'uint256',
-        },
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
       ],
-      name: 'lsdTokens',
-      outputs: [
+      "name": "hasVoted",
+      "outputs": [
         {
-          internalType: 'address',
-          name: '',
-          type: 'address',
-        },
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
       ],
-      stateMutability: 'view',
-      type: 'function',
+      "stateMutability": "view",
+      "type": "function"
     },
     {
-      inputs: [],
-      name: 'owner',
-      outputs: [
+      "inputs": [
         {
-          internalType: 'address',
-          name: '',
-          type: 'address',
-        },
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
       ],
-      stateMutability: 'view',
-      type: 'function',
+      "name": "lsdTokens",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
     },
     {
-      inputs: [],
-      name: 'question',
-      outputs: [
+      "inputs": [],
+      "name": "owner",
+      "outputs": [
         {
-          internalType: 'string',
-          name: '',
-          type: 'string',
-        },
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
       ],
-      stateMutability: 'view',
-      type: 'function',
+      "stateMutability": "view",
+      "type": "function"
     },
     {
-      inputs: [
+      "inputs": [],
+      "name": "question",
+      "outputs": [
         {
-          internalType: 'address',
-          name: 'glifpool',
-          type: 'address',
-        },
-        {
-          internalType: 'uint64[]',
-          name: 'minerIds',
-          type: 'uint64[]',
-        },
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        }
       ],
-      name: 'registerVoter',
-      outputs: [
-        {
-          internalType: 'uint256',
-          name: 'powerRBP',
-          type: 'uint256',
-        },
-        {
-          internalType: 'uint256',
-          name: 'powerToken',
-          type: 'uint256',
-        },
-      ],
-      stateMutability: 'nonpayable',
-      type: 'function',
+      "stateMutability": "view",
+      "type": "function"
     },
     {
-      inputs: [
+      "inputs": [
         {
-          internalType: 'uint64',
-          name: '',
-          type: 'uint64',
+          "internalType": "address",
+          "name": "glifpool",
+          "type": "address"
         },
-      ],
-      name: 'registeredMiner',
-      outputs: [
         {
-          internalType: 'bool',
-          name: '',
-          type: 'bool',
-        },
+          "internalType": "uint64[]",
+          "name": "minerIds",
+          "type": "uint64[]"
+        }
       ],
-      stateMutability: 'view',
-      type: 'function',
+      "name": "registerVoter",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "powerRBP",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "powerToken",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
     },
     {
-      inputs: [
+      "inputs": [
         {
-          internalType: 'uint256',
-          name: 'index',
-          type: 'uint256',
-        },
+          "internalType": "uint64",
+          "name": "",
+          "type": "uint64"
+        }
       ],
-      name: 'removeLSDToken',
-      outputs: [],
-      stateMutability: 'nonpayable',
-      type: 'function',
+      "name": "registeredMiner",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
     },
     {
-      inputs: [
+      "inputs": [
         {
-          internalType: 'address',
-          name: 'newOwner',
-          type: 'address',
-        },
+          "internalType": "uint256",
+          "name": "index",
+          "type": "uint256"
+        }
       ],
-      name: 'transferOwnership',
-      outputs: [],
-      stateMutability: 'nonpayable',
-      type: 'function',
+      "name": "removeLSDToken",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
     },
     {
-      inputs: [
+      "inputs": [
         {
-          internalType: 'uint256',
-          name: 'vote',
-          type: 'uint256',
-        },
-        {
-          internalType: 'address',
-          name: 'glifPool',
-          type: 'address',
-        },
-        {
-          internalType: 'uint64[]',
-          name: 'minerIds',
-          type: 'uint64[]',
-        },
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
       ],
-      name: 'voteAndRegister',
-      outputs: [
-        {
-          internalType: 'uint256',
-          name: 'voteWeightRBP',
-          type: 'uint256',
-        },
-        {
-          internalType: 'uint256',
-          name: 'voteWeightToken',
-          type: 'uint256',
-        },
-      ],
-      stateMutability: 'nonpayable',
-      type: 'function',
+      "name": "transferOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
     },
     {
-      inputs: [],
-      name: 'voteLength',
-      outputs: [
+      "inputs": [
         {
-          internalType: 'uint32',
-          name: '',
-          type: 'uint32',
+          "internalType": "uint256",
+          "name": "vote",
+          "type": "uint256"
         },
+        {
+          "internalType": "address",
+          "name": "glifPool",
+          "type": "address"
+        },
+        {
+          "internalType": "uint64[]",
+          "name": "minerIds",
+          "type": "uint64[]"
+        }
       ],
-      stateMutability: 'view',
-      type: 'function',
+      "name": "voteAndRegister",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "voteWeightRBP",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "voteWeightToken",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
     },
     {
-      inputs: [],
-      name: 'voteStart',
-      outputs: [
+      "inputs": [],
+      "name": "voteLength",
+      "outputs": [
         {
-          internalType: 'uint32',
-          name: '',
-          type: 'uint32',
-        },
+          "internalType": "uint32",
+          "name": "",
+          "type": "uint32"
+        }
       ],
-      stateMutability: 'view',
-      type: 'function',
+      "stateMutability": "view",
+      "type": "function"
     },
     {
-      inputs: [
+      "inputs": [],
+      "name": "voteStart",
+      "outputs": [
         {
-          internalType: 'address',
-          name: '',
-          type: 'address',
-        },
+          "internalType": "uint32",
+          "name": "",
+          "type": "uint32"
+        }
       ],
-      name: 'voterWeightMinerToken',
-      outputs: [
-        {
-          internalType: 'uint256',
-          name: '',
-          type: 'uint256',
-        },
-      ],
-      stateMutability: 'view',
-      type: 'function',
+      "stateMutability": "view",
+      "type": "function"
     },
     {
-      inputs: [
+      "inputs": [
         {
-          internalType: 'address',
-          name: '',
-          type: 'address',
-        },
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
       ],
-      name: 'voterWeightRBP',
-      outputs: [
+      "name": "voterWeightMinerToken",
+      "outputs": [
         {
-          internalType: 'uint256',
-          name: '',
-          type: 'uint256',
-        },
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
       ],
-      stateMutability: 'view',
-      type: 'function',
+      "stateMutability": "view",
+      "type": "function"
     },
     {
-      inputs: [
+      "inputs": [
         {
-          internalType: 'address',
-          name: '',
-          type: 'address',
-        },
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
       ],
-      name: 'voterWeightToken',
-      outputs: [
+      "name": "voterWeightRBP",
+      "outputs": [
         {
-          internalType: 'uint256',
-          name: '',
-          type: 'uint256',
-        },
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
       ],
-      stateMutability: 'view',
-      type: 'function',
+      "stateMutability": "view",
+      "type": "function"
     },
     {
-      inputs: [],
-      name: 'winningVote',
-      outputs: [
+      "inputs": [
         {
-          internalType: 'enum VoteTracker.Vote',
-          name: '',
-          type: 'uint8',
-        },
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
       ],
-      stateMutability: 'view',
-      type: 'function',
+      "name": "voterWeightToken",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
     },
     {
-      inputs: [
+      "inputs": [],
+      "name": "winningVote",
+      "outputs": [
         {
-          internalType: 'uint256',
-          name: '',
-          type: 'uint256',
-        },
+          "internalType": "enum VoteTracker.Vote",
+          "name": "",
+          "type": "uint8"
+        }
       ],
-      name: 'yesOptions',
-      outputs: [
-        {
-          internalType: 'string',
-          name: '',
-          type: 'string',
-        },
-      ],
-      stateMutability: 'view',
-      type: 'function',
+      "stateMutability": "view",
+      "type": "function"
     },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "yesOptions",
+      "outputs": [
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
   ],
 } as const;
