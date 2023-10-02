@@ -162,7 +162,7 @@ function VoteData({
     }
 
     getTokenPower()
-  }, [rawBytePower]);
+  }, [rawBytePower && isSuccess]);
 
   async function addVotingPower(agentAddress: string) {
     setLoading(true);
