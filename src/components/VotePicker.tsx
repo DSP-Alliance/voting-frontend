@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
+import { useContractWrite, useWaitForTransaction } from 'wagmi';
 
 import { publicClient } from 'services/clients';
 import { voteTrackerConfig } from 'constants/voteTrackerConfig';
@@ -13,19 +14,62 @@ const VotePickerContainer = styled.div`
 
 function VotePicker({
   address,
+  lastFipAddress,
   minerIds,
 }: {
   address: Address | undefined;
+  lastFipAddress: Address | undefined;
   minerIds: bigint[];
 }) {
-  const [vote, setVote] = useState(0);
+  const [vote, setVote] = useState<bigint>(BigInt(0));
+  const [yesOptions, setYesOptions] = useState<string[]>([]);
   const [glifPool, setGlifPool] = useState('0');
 
   async function sendVote() {
     const encodedVote = encodeVote(vote);
   }
 
-  function encodeVote(vote: number) {
+  useEffect(() => {
+    async function getYesOptions() {
+      if (lastFipAddress) {
+        try {
+          const yesOption1 = await publicClient.readContract({
+            address: lastFipAddress,
+            abi: voteTrackerConfig.abi,
+            functionName: 'yesOptions',
+            args: [BigInt(0)],
+          });
+          const yesOption2 = await publicClient.readContract({
+            address: lastFipAddress,
+            abi: voteTrackerConfig.abi,
+            functionName: 'yesOptions',
+            args: [BigInt(1)],
+          });
+
+          if (yesOption1.length > 0 && yesOption2.length > 0) {
+            setYesOptions([yesOption1, yesOption2]);
+          }
+        } catch {
+          setYesOptions([]);
+        }
+      }
+    }
+
+    getYesOptions();
+  }, []);
+
+  const { data, error, isError, write } = useContractWrite({
+    abi: voteTrackerConfig.abi,
+    address: lastFipAddress,
+    functionName: 'castVote',
+    args: [vote],
+  });
+
+  const { isLoading, isSuccess } = useWaitForTransaction({
+    hash: data?.hash,
+  });
+
+  function encodeVote(vote: bigint) {
     return vote;
     // switch (vote % 3) {
     //   // yes Vote
@@ -49,9 +93,12 @@ function VotePicker({
 
   return (
     <VotePickerContainer>
-      <button>Yes</button>
-      <button>No</button>
-      <button>Abstain</button>
+      <button onClick={() => {setVote(BigInt(0)); write?.()}}>Yes</button>
+      {
+        // yes options mapping
+      }
+      <button onClick={() => {setVote(BigInt(1)); write?.()}}>No</button>
+      <button onClick={() => {setVote(BigInt(2)); write?.()}}>Abstain</button>
     </VotePickerContainer>
   );
 }

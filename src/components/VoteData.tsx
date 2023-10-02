@@ -72,7 +72,7 @@ function VoteData({
     }
 
     getHasVoted();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [lastFipAddress]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     async function getHasRegistered() {
@@ -85,8 +85,6 @@ function VoteData({
             args: [address || `0x`],
           });
 
-          console.log(userHasRegistered)
-
           setHasRegistered(userHasRegistered);
         } catch {
           setHasRegistered(false);
@@ -95,7 +93,7 @@ function VoteData({
     }
 
     getHasRegistered();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [lastFipAddress]); // eslint-disable-line react-hooks/exhaustive-deps
 
   function formatBytes(bytes: number) {
     if (bytes == 0) {
@@ -210,7 +208,7 @@ function VoteData({
             <>
               <h4>Choose Vote</h4>
               {hasRegistered && (
-                <VotePicker address={address} minerIds={minerIds} />
+                <VotePicker address={address} lastFipAddress={lastFipAddress} minerIds={minerIds} />
               )}
               {!hasRegistered && (
                 <AddVotePower
