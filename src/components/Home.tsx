@@ -83,12 +83,11 @@ function Home() {
     // getOwner();
     setIsOwner(true);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
-  console.log('hi lisa isowner ', isOwner);
+
   useEffect(() => {
-    let index = 0;
     async function getVoteData() {
       try {
-        const deployedCount: number = await publicClient.readContract({
+        const deployedCount: bigint = await publicClient.readContract({
           abi: voteFactoryConfig.abi,
           address: voteFactoryConfig.address,
           functionName: 'deployedVotesLength',
@@ -96,12 +95,14 @@ function Home() {
 
         const promises = [];
         for (let i = 0; i < deployedCount; i++) {
-          promises.push(publicClient.readContract({
-            abi: voteFactoryConfig.abi,
-            address: voteFactoryConfig.address,
-            functionName: 'deployedVotes',
-            args: [BigInt(index)],
-          }));
+          promises.push(
+            publicClient.readContract({
+              abi: voteFactoryConfig.abi,
+              address: voteFactoryConfig.address,
+              functionName: 'deployedVotes',
+              args: [BigInt(i)],
+            }),
+          );
         }
         const voteAddresses: Address[] = await Promise.all(promises);
 

@@ -1,15 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import styled from 'styled-components';
-import {
-  DialogActions,
-  FormControl,
-  FormControlLabel,
-  FormLabel,
-  Radio,
-  RadioGroup,
-  TextField,
-} from '@mui/material';
+import { DialogActions, TextField } from '@mui/material';
 import { useContractWrite, useWaitForTransaction } from 'wagmi';
 
 import { voteFactoryConfig } from 'constants/voteFactoryConfig';
@@ -42,7 +34,7 @@ const DeleteTokenButton = styled.button`
 `;
 
 const ErrorMessage = styled.div`
-  color: var(--rederror);
+  color: var(--error);
   word-wrap: break-word;
 `;
 
@@ -55,10 +47,11 @@ function VoteFactory({ closeModal }: { closeModal: () => void }) {
     defaultValues: {
       fipNum: '',
       length: '',
-      yesOptions: ['', ''],
+      yesOptionOne: '',
+      yesOptionTwo: '',
       [`lsdToken${allLsdTokens.length + 1}`]:
         '0x3C3501E6c353DbaEDDFA90376975Ce7aCe4Ac7a8',
-      question: ''
+      question: '',
     },
   });
 
@@ -69,9 +62,7 @@ function VoteFactory({ closeModal }: { closeModal: () => void }) {
     args: [
       parseInt(watch('length')) * 60,
       parseInt(watch('fipNum')),
-      // This needs to be changed, this value is now yesOptions which accepts string[2]
-      //watch('doubleYesOption') === 'true' ? true : false,
-      watch('yesOptions'),
+      [watch('yesOptionOne'), watch('yesOptionTwo')],
       watch(`lsdToken${allLsdTokens.length + 1}`)
         ? [
             ...allLsdTokens,
@@ -212,28 +203,42 @@ function VoteFactory({ closeModal }: { closeModal: () => void }) {
             />
           )}
         />
-        <FormControl>
-          <FormLabel>Double yes option?</FormLabel>
-          <Controller
-            rules={{ required: 'Required' }}
-            name='doubleYesOption'
-            control={control}
-            render={({ field: { onChange, value } }) => (
-              <RadioGroup row value={value || 'false'} onChange={onChange}>
-                <FormControlLabel
-                  value={'true'}
-                  label={'Yes'}
-                  control={<Radio />}
-                />
-                <FormControlLabel
-                  value={'false'}
-                  label={'No'}
-                  control={<Radio />}
-                />
-              </RadioGroup>
-            )}
-          />
-        </FormControl>
+        <Controller
+          name='yesOptionOne'
+          control={control}
+          rules={{ required: 'Required' }}
+          render={({ field: { onChange, value }, fieldState: { error } }) => (
+            <TextField
+              required
+              type='text'
+              helperText={error ? 'Enter the text for the yes option' : null}
+              size='small'
+              error={!!error}
+              onChange={onChange}
+              onBlur={() => trigger('yesOptionOne')}
+              value={value || ''}
+              fullWidth
+              label='Yes Option 1'
+              variant='outlined'
+            />
+          )}
+        />
+        <Controller
+          name='yesOptionTwo'
+          control={control}
+          render={({ field: { onChange, value } }) => (
+            <TextField
+              type='text'
+              size='small'
+              onChange={onChange}
+              onBlur={() => trigger('yesOptionTwo')}
+              value={value || ''}
+              fullWidth
+              label='Yes Option 2 (optional)'
+              variant='outlined'
+            />
+          )}
+        />
         <LsdTokensContainer>
           {renderAllLsdTokens()}
           <Controller

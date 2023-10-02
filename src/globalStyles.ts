@@ -2,9 +2,12 @@ import { createGlobalStyle } from 'styled-components';
 
 const GlobalStyle = createGlobalStyle`
   body {
-    --blue: #1976d2;
-    --darkblue: #1976d2dd;
-    --rederror: #d32f2f;
+    --primary: #1976d2;
+    --darkprimary: #0d47a1;
+    --yesvote: #a5d6a7;
+    --novote: #e57373;
+    --abstainvote: #bdbdbd;
+    --error: #d32f2f;
     margin: 0;
     padding: 0;
     font-family: Roboto, Helvetica, Sans-Serif;
@@ -14,7 +17,7 @@ const GlobalStyle = createGlobalStyle`
     padding: 8px;
     border-radius: 4px;
     border: none;
-    background-color: var(--blue);
+    background-color: var(--primary);
     color: #fff;
 
     &:disabled {
@@ -23,7 +26,7 @@ const GlobalStyle = createGlobalStyle`
     
     &:hover:enabled {
       cursor: pointer;
-      background-color: var(--darkblue);
+      background-color: var(--darkprimary);
     }
   }
 

@@ -30,7 +30,7 @@ const ConnectButton = styled.button`
 
 const ErrorMessage = styled.div`
   align-self: center;
-  color: var(--rederror);
+  color: var(--error);
 `;
 
 export function Connectors() {

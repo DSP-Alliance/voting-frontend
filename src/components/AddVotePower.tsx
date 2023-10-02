@@ -16,7 +16,7 @@ const AddressCheckbox = styled.div`
 `;
 
 const ErrorMessage = styled.div`
-  color: var(--rederror);
+  color: var(--error);
   word-wrap: break-word;
   margin-top: 8px;
 `;

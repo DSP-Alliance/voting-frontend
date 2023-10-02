@@ -11,7 +11,7 @@ const InfoContainer = styled.div`
 `;
 
 const Link = styled.a`
-  color: var(--blue);
+  color: var(--primary);
   word-break: break-all;
 `;
 

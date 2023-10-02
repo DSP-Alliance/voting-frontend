@@ -25,7 +25,7 @@ const DataSections = styled.div`
 
 const VoteSection = styled.div`
   display: block;
-  border: 1px solid var(--blue);
+  border: 1px solid var(--primary);
   padding: 24px;
 `;
 
@@ -35,7 +35,7 @@ const InfoText = styled.span`
 
 function VoteData({
   address,
-  lastFipAddress = '0x',
+  lastFipAddress,
   lastFipNum,
   countdownValue,
 }: {
@@ -52,17 +52,19 @@ function VoteData({
 
   useEffect(() => {
     async function getHasVoted() {
-      try {
-        const userHasVoted = await publicClient.readContract({
-          address: lastFipAddress,
-          abi: voteTrackerConfig.abi,
-          functionName: 'hasVoted',
-          args: [lastFipAddress],
-        });
+      if (lastFipAddress) {
+        try {
+          const userHasVoted = await publicClient.readContract({
+            address: lastFipAddress,
+            abi: voteTrackerConfig.abi,
+            functionName: 'hasVoted',
+            args: [lastFipAddress],
+          });
 
-        setHasVoted(userHasVoted);
-      } catch {
-        setHasVoted(false);
+          setHasVoted(userHasVoted);
+        } catch {
+          setHasVoted(false);
+        }
       }
     }
 
@@ -190,15 +192,17 @@ function VoteData({
           {/* https://github.com/0xpluto/fip-voting/blob/master/src/components/TotalVotes.tsx */}
         </VoteSection>
         <VoteSection>
-          {/* {hasVoted && <h4>Voting Power</h4>} */}
+          {hasVoted && <h4>Voting Power</h4>}
           {/* https://github.com/0xpluto/fip-voting/blob/e19da9798c2756fcc471a91b1ae03c4f492bb3c3/src/components/VotingPower.tsx */}
-          <h4>Wallet Voting Power</h4>
-          <VotingPower rawBytePower={rawBytePower} />
+          {!hasVoted && (
+            <>
+              <h4>Wallet Voting Power</h4>
+              <VotingPower rawBytePower={rawBytePower} />
+            </>
+          )}
         </VoteSection>
       </DataSections>
     </VoteDataContainer>
-    // Previous votes chart
-    // https://github.com/0xpluto/fip-voting/blob/master/src/components/PreviousVotes.tsx */}
   );
 }
 
