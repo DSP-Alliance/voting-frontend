@@ -161,8 +161,29 @@ function VoteData({
       }
     }
 
-    getTokenPower()
-  }, [rawBytePower && isSuccess]);
+    if (hasRegistered) {
+      getTokenPower()
+    }
+  }, [hasRegistered]);
+
+  useEffect(() =>{
+    async function getRawBytePower() {
+      if (!lastFipAddress) return
+
+      let userBytePower = await publicClient.readContract({
+        address: lastFipAddress,
+        abi: voteTrackerConfig.abi,
+        functionName: 'voterWeightRBP',
+        args: [address || `0x`],
+      });
+
+      setRawBytePower(formatBytes(parseInt(userBytePower.toString())))
+    }
+
+    if (hasRegistered) {
+      getRawBytePower()
+    }
+  }, [hasRegistered])
 
   async function addVotingPower(agentAddress: string) {
     setLoading(true);
@@ -215,7 +236,9 @@ function VoteData({
         }
       }
 
-      write?.()
+      if (!hasRegistered) {
+        write?.()
+      }
 
       setRawBytePower(formatBytes(rawBytes));
     } catch (error) {
@@ -266,7 +289,7 @@ function VoteData({
         <VoteSection>
           {hasVoted && <h4>Voting Power</h4>}
           {/* https://github.com/0xpluto/fip-voting/blob/e19da9798c2756fcc471a91b1ae03c4f492bb3c3/src/components/VotingPower.tsx */}
-          {!hasVoted && (
+          {(!hasVoted && hasRegistered) && (
             <>
               <h4>Wallet Voting Power</h4>
               <VotingPower rawBytePower={rawBytePower} tokenPower={tokenPower} />
