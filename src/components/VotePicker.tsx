@@ -19,6 +19,7 @@ function VotePicker({
   address: Address | undefined;
   lastFipAddress: Address | undefined;
 }) {
+  const [questionText, setQuestionText] = useState('');
   const [vote, setVote] = useState<bigint>(BigInt(0));
   const [yesOptions, setYesOptions] = useState<string[]>([]);
 
@@ -30,6 +31,11 @@ function VotePicker({
     async function getYesOptions() {
       if (lastFipAddress) {
         try {
+          const question = await publicClient.readContract({
+            address: lastFipAddress,
+            abi: voteTrackerConfig.abi,
+            functionName: 'question',
+          });
           const yesOption1 = await publicClient.readContract({
             address: lastFipAddress,
             abi: voteTrackerConfig.abi,
@@ -43,6 +49,7 @@ function VotePicker({
             args: [BigInt(1)],
           });
 
+          setQuestionText(question);
           if (yesOption1.length > 0 && yesOption2.length > 0) {
             setYesOptions([yesOption1, yesOption2]);
           }
@@ -90,6 +97,7 @@ function VotePicker({
 
   return (
     <VotePickerContainer>
+      <div>{questionText}</div>
       {yesOptions.map((option) => {
         if (option) {
           return (
