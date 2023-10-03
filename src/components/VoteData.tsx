@@ -79,6 +79,7 @@ function VoteData({
   useEffect(() => {
     async function getHasRegistered() {
       if (lastFipAddress) {
+        console.log(lastFipAddress)
         try {
           const userHasRegistered = await publicClient.readContract({
             address: lastFipAddress,
@@ -95,7 +96,7 @@ function VoteData({
     }
 
     getHasRegistered();
-  }, [lastFipAddress]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [lastFipAddress, ]); // eslint-disable-line react-hooks/exhaustive-deps
 
   function formatBytes(bytes: number) {
     if (bytes == 0) {
@@ -174,6 +175,8 @@ function VoteData({
         functionName: 'voterWeightRBP',
         args: [address || `0x`],
       });
+
+      console.log(userBytePower)
 
       setRawBytePower(formatBytes(parseInt(userBytePower.toString())))
     }
