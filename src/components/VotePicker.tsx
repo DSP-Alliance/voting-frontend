@@ -62,7 +62,7 @@ function VotePicker({
     abi: voteTrackerConfig.abi,
     address: lastFipAddress,
     functionName: 'castVote',
-    args: [encodeVote(vote)],
+    args: [vote],
   });
 
   const { isLoading, isSuccess } = useWaitForTransaction({
@@ -75,28 +75,6 @@ function VotePicker({
     }
   });
 
-  function encodeVote(vote: bigint) {
-    return vote;
-    // switch (vote % 3) {
-    //   // yes Vote
-    //   case 0: { // If we have two yes options then (vote % 6) can only equal 0 or 3
-    //     if (doubleYesVote && vote % 6 >= 3) {
-    //       // If it is 3 then it is for option 2
-    //       yesVoteOption2 += weight;
-    //     } else {
-    //       // If it is 0 or there is no second yes option
-    //       yesVoteOption1 += weight;
-    //     }
-    //   }
-    //   // no Vote
-    //   case 1:
-    //     noVote += weight;
-    //   // abstain Vote
-    //   case 2:
-    //     abstainVote += weight;
-    // }
-  }
-
   function submitVote(vote: bigint) {
     setVote(vote);
     write?.();
@@ -105,20 +83,22 @@ function VotePicker({
   return (
     <VotePickerContainer>
       <div>{questionText}</div>
-      {yesOptions.map((option) => {
-        if (option) {
-          return (
-            <button
-              key={option}
-              onClick={() => {
-                submitVote(BigInt(0));
-              }}
-            >
-              {option}
-            </button>
-          );
-        }
-      })}
+      <button
+        onClick={() => {
+          submitVote(BigInt(0));
+        }}
+      >
+        {yesOptions[0]}
+      </button>
+      {yesOptions[1] && (
+        <button
+          onClick={() => {
+            submitVote(BigInt(3));
+          }}
+        >
+          {yesOptions[1]}
+        </button>
+      )}
       <button
         onClick={() => {
           submitVote(BigInt(1));

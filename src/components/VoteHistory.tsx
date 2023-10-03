@@ -14,6 +14,7 @@ import {
 import { voteTrackerConfig } from 'constants/voteTrackerConfig';
 import { publicClient } from 'services/clients';
 import { voteFactoryConfig } from 'constants/voteFactoryConfig';
+import { formatBytes, timeLength } from 'utilities/helpers';
 
 const Container = styled.div`
   display: grid;
@@ -36,7 +37,7 @@ function VoteHistory({ fips }: { fips: number[] }) {
   const [questionText, setQuestionText] = useState('');
   const [startTime, setStartTime] = useState<number>(0);
   const [length, setLength] = useState<number>(0);
-  const [winningVote, setWinningVote] = useState<number>();
+  const [winningVoteValue, setWinningVoteValue] = useState<number>();
 
   useEffect(() => {
     if (selectedFip) {
@@ -99,13 +100,19 @@ function VoteHistory({ fips }: { fips: number[] }) {
               setQuestionText(question);
               setStartTime(startTime);
               setLength(length);
-              setWinningVote(winningVote);
+              console.log('hi lisa winningVote ', winningVote);
+
+              setWinningVoteValue(winningVote);
               setData([
                 {
                   name: 'Yes 1',
                   RPB: Number(rbpVotes[0]),
                   Tokens: Number(minerTokenVotes[0]),
                   'Miner Tokens': Number(tokenVotes[0]),
+                  // WIP get these to all show the same units
+                  // RPB: formatBytes(Number(rbpVotes[0])),
+                  // Tokens: formatBytes(Number(minerTokenVotes[0])),
+                  // 'Miner Tokens': formatBytes(Number(tokenVotes[0])),
                 },
                 {
                   name: 'Yes 2',
@@ -134,23 +141,11 @@ function VoteHistory({ fips }: { fips: number[] }) {
 
   const timestamp = new Date(startTime * 1000).toLocaleString();
 
-  const timeLength = () => {
-    let hours = 0;
-    const minutes = length / 60;
-    if (minutes > 60) {
-      hours = minutes / 60;
-    }
-
-    return hours
-      ? `${hours} hours` + minutes && `, ${minutes} minutes`
-      : `${minutes} minutes`;
-  };
-
   const winningVoteText = () => {
-    if (winningVote === 0) return 'Yes 1';
-    if (winningVote === 1) return 'Yes 1';
-    if (winningVote === 2) return 'Yes 1';
-    if (winningVote === 3) return 'Yes 1';
+    if (winningVoteValue === 0) return 'Yes 1';
+    if (winningVoteValue === 1) return 'No';
+    if (winningVoteValue === 2) return 'Abstain';
+    if (winningVoteValue === 3) return 'Yes 2';
   };
 
   return (
@@ -178,15 +173,15 @@ function VoteHistory({ fips }: { fips: number[] }) {
       <div>
         {questionText && <QuestionText>{questionText}</QuestionText>}
         {Boolean(startTime) && <p>Started: {timestamp}</p>}
-        {Boolean(length) && <p>Length of time: {timeLength()}</p>}
-        {winningVote && <p>Winning vote: {winningVoteText()}</p>}
+        {Boolean(length) && <p>Length of time: {timeLength(length)}</p>}
+        {winningVoteValue && <p>Winning vote: {winningVoteText()}</p>}
       </div>
       {data.length > 0 && (
         <ChartArea>
-          <BarChart width={730} height={250} data={data}>
+          <BarChart width={800} height={250} data={data}>
             <CartesianGrid strokeDasharray='3 3' />
             <XAxis dataKey='name' />
-            <YAxis />
+            <YAxis width={100} unit='Bytes' />
             <Tooltip />
             <Legend />
             <Bar dataKey='RPB' fill='var(--rpbcount)' />

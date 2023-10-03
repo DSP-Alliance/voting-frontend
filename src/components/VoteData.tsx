@@ -9,7 +9,7 @@ import ClipLoader from 'react-spinners/ClipLoader';
 import { voteTrackerConfig } from 'constants/voteTrackerConfig';
 import { ownableConfig } from 'constants/ownableConfig';
 import { RPC_URL, publicClient } from 'services/clients';
-import { formatBytes } from 'utilities/helpers';
+import { formatBytesWithLabel } from 'utilities/helpers';
 import FIPInfo from 'components/FIPInfo';
 import VoteActions from 'components/VoteActions';
 import VotingPower from 'components/VotingPower';
@@ -128,7 +128,9 @@ function VoteData({
             args: [address || `0x`],
           });
 
-          setRawBytePower(formatBytes(parseInt(userBytePower.toString())));
+          setRawBytePower(
+            formatBytesWithLabel(parseInt(userBytePower.toString())),
+          );
         } catch {
           setTokenPower(BigInt(0));
           setRawBytePower('');
@@ -210,7 +212,7 @@ function VoteData({
       //   write?.();
       // }
 
-      setRawBytePower(formatBytes(rawBytes));
+      setRawBytePower(formatBytesWithLabel(rawBytes));
     } catch (error) {
       setErrorMessage('Error adding Miner IDs');
     } finally {
