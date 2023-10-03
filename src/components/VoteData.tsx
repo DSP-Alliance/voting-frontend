@@ -133,8 +133,6 @@ function VoteData({
   });
 
   useEffect(() => {
-    setHasRegistered(true);
-
     async function getTokenPower() {
       if (lastFipAddress) {
         try {
