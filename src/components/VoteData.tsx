@@ -208,9 +208,9 @@ function VoteData({
         }
       }
 
-      if (!hasRegistered) {
-        write?.();
-      }
+      // if (!hasRegistered) {
+      //   write?.();
+      // }
 
       setRawBytePower(formatBytes(rawBytes));
     } catch (error) {
@@ -260,6 +260,7 @@ function VoteData({
             lastFipAddress={lastFipAddress}
             loading={loading || isLoading}
             setHasVoted={setHasVoted}
+            write={write}
           />
         </VoteSection>
         <VoteSection>

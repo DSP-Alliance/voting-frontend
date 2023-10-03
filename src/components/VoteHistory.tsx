@@ -94,7 +94,7 @@ function VoteHistory({ fips }: { fips: number[] }) {
               rbpVotes,
               minerTokenVotes,
               tokenVotes,
-              winningVote, // This is quite ugly.
+              winningVote,
             ]) => {
               setQuestionText(question);
               setStartTime(startTime);

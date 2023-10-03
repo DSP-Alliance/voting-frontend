@@ -1,13 +1,12 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { getAddress } from 'viem';
-import axios from 'axios';
 import ClipLoader from 'react-spinners/ClipLoader';
+import { PieChart } from 'recharts';
 
-import { RPC_URL, publicClient } from 'services/clients';
-import { ownableConfig } from 'constants/ownableConfig';
+import { publicClient } from 'services/clients';
+import { voteTrackerConfig } from 'constants/voteTrackerConfig';
 import VotePicker from 'components/VotePicker';
-import AddVotePower from 'components/AddVotePower';
+import Register from 'components/Register';
 import type { Address } from './Home';
 
 interface VoteActionsProps {
@@ -22,6 +21,7 @@ interface VoteActionsProps {
   lastFipAddress: Address | undefined;
   loading: boolean;
   setHasVoted: React.Dispatch<React.SetStateAction<boolean>>;
+  write: () => void;
 }
 
 const InfoText = styled.span`
@@ -39,10 +39,61 @@ function VoteActions({
   lastFipAddress,
   loading,
   setHasVoted,
+  write,
 }: VoteActionsProps) {
+  const [data, setData] = useState<{ [key: string]: any }[]>();
+
+  useEffect(() => {
+    if (lastFipAddress) {
+      Promise.all([
+        publicClient.readContract({
+          abi: voteTrackerConfig.abi,
+          address: lastFipAddress,
+          functionName: 'getVoteResultsRBP',
+        }),
+        publicClient.readContract({
+          abi: voteTrackerConfig.abi,
+          address: lastFipAddress,
+          functionName: 'getVoteResultsMinerToken',
+        }),
+        publicClient.readContract({
+          abi: voteTrackerConfig.abi,
+          address: lastFipAddress,
+          functionName: 'getVoteResultsToken',
+        }),
+      ]).then(([rbpVotes, minerTokenVotes, tokenVotes]) => {
+        setData([
+          {
+            name: 'Yes 1',
+            RPB: Number(rbpVotes[0]),
+            Tokens: Number(minerTokenVotes[0]),
+            'Miner Tokens': Number(tokenVotes[0]),
+          },
+          {
+            name: 'Yes 2',
+            RPB: Number(rbpVotes[1]),
+            Tokens: Number(minerTokenVotes[1]),
+            'Miner Tokens': Number(tokenVotes[1]),
+          },
+          {
+            name: 'No',
+            RPB: Number(rbpVotes[2]),
+            Tokens: Number(minerTokenVotes[2]),
+            'Miner Tokens': Number(tokenVotes[2]),
+          },
+          {
+            name: 'Abstain',
+            RPB: Number(rbpVotes[3]),
+            Tokens: Number(minerTokenVotes[3]),
+            'Miner Tokens': Number(tokenVotes[3]),
+          },
+        ]);
+      });
+    }
+  });
+
   function renderVoteResults() {
-    // show latest vote results
-    if (lastFipNum) return <p>hi</p>;
+    if (lastFipNum) return <PieChart data={data} />;
     return <InfoText>Last vote data does not exist</InfoText>;
   }
 
@@ -68,10 +119,11 @@ function VoteActions({
             />
           )}
           {!hasRegistered && (
-            <AddVotePower
+            <Register
               addVotingPower={addVotingPower}
               error={errorMessage}
               loading={loading}
+              write={write}
             />
           )}
         </>
