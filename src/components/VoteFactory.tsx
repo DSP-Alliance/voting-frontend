@@ -38,7 +38,13 @@ const ErrorMessage = styled.div`
   word-wrap: break-word;
 `;
 
-function VoteFactory({ closeModal }: { closeModal: () => void }) {
+function VoteFactory({
+  closeModal,
+  getFipData,
+}: {
+  closeModal: () => void;
+  getFipData: () => void;
+}) {
   const [allLsdTokens, setAllLsdTokens] = useState<Address[]>([]);
   const [disableButton, setDisableButton] = useState(false);
 
@@ -78,8 +84,12 @@ function VoteFactory({ closeModal }: { closeModal: () => void }) {
   });
 
   useEffect(() => {
-    console.log(data)
-    if (isSuccess) closeModal();
+    console.log('hi lisa start vote data ', data);
+    if (isSuccess) {
+      console.log('hi lisa issuccess');
+      getFipData();
+      closeModal();
+    }
   }, [isSuccess]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {

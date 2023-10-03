@@ -6,6 +6,7 @@ const Container = styled.div`
   grid-column-start: 3;
   justify-self: end;
   display: flex;
+  margin-right: 12px;
 `;
 
 const OptionsContainer = styled.div`
@@ -64,7 +65,7 @@ export function Connectors() {
               disabled={!connector.ready}
               key={connector.id}
               onClick={() => {
-                connect({ connector })
+                connect({ connector });
               }}
             >
               Connect to {connector.name}

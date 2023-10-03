@@ -51,7 +51,9 @@ function FIPInfo({ num }: { num: number }) {
 
   return (
     <InfoContainer>
-      <span>{fipData?.fip?.replace(/\"/g, '')}</span>
+      <span>
+        {'#' + fipData?.fip?.replace(/(\"|)/g, '').replace(/^0+/, '')}
+      </span>
       <span>{fipData?.title}</span>
       <span>{`Authors: ${fipData?.author?.replace(/\"/g, '')}`}</span>
       <span>{`Status: ${fipData ? fipData.status : '-'}`}</span>

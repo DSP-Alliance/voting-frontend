@@ -57,11 +57,12 @@ const VoteContent = styled.div`
 
 function Home() {
   const { address = `0x` } = useAccount();
-  const [countdownValue, setCountdownValue] = useState<number>(0);
+  const [countdownValue, setCountdownValue] = useState<number>(1000);
   const [fipAddresses, setFipAddresses] = useState<Address[]>([]);
   const [fipList, setFipList] = useState<number[]>([]);
-  const [lastFipNum, setLastFipNum] = useState<number>();
   const [isOwner, setIsOwner] = useState(false);
+  const [lastFipNum, setLastFipNum] = useState<number>();
+  const [loadingFipData, setLoadingFipData] = useState(true);
   const [showVoteFactory, setShowVoteFactory] = useState(false);
 
   useEffect(() => {
@@ -80,67 +81,55 @@ function Home() {
       }
     }
 
-    // getOwner();
-    setIsOwner(true);
+    getOwner();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  useEffect(() => {
-    async function getVoteData() {
-      try {
-        const deployedCount: bigint = await publicClient.readContract({
-          abi: voteFactoryConfig.abi,
-          address: voteFactoryConfig.address,
-          functionName: 'deployedVotesLength',
-        });
+  async function getFipData() {
+    try {
+      const deployedCount: bigint = await publicClient.readContract({
+        abi: voteFactoryConfig.abi,
+        address: voteFactoryConfig.address,
+        functionName: 'deployedVotesLength',
+      });
 
-        const promises = [];
-        for (let i = 0; i < deployedCount; i++) {
-          promises.push(
-            publicClient.readContract({
-              abi: voteFactoryConfig.abi,
-              address: voteFactoryConfig.address,
-              functionName: 'deployedVotes',
-              args: [BigInt(i)],
-            }),
-          );
-        }
-        const voteAddresses: Address[] = await Promise.all(promises);
-
-        console.log(voteAddresses)
-
-        setFipAddresses(voteAddresses);
-      } catch (error) {
-        setLastFipNum(undefined);
-      }
-    }
-
-    getVoteData();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
-  useEffect(() => {
-    async function getFipNums() {
-      try {
-        const fips = await Promise.all(
-          fipAddresses.map((fipAddress) => {
-            console.log(fipAddress)
-            return publicClient.readContract({
-              abi: voteTrackerConfig.abi,
-              address: fipAddress,
-              functionName: 'FIP',
-            });
+      const promises = [];
+      for (let i = 0; i < deployedCount; i++) {
+        promises.push(
+          publicClient.readContract({
+            abi: voteFactoryConfig.abi,
+            address: voteFactoryConfig.address,
+            functionName: 'deployedVotes',
+            args: [BigInt(i)],
           }),
         );
-
-        console.log(fips)
-        setFipList(fips);
-        setLastFipNum(fips[fips.length - 1]);
-      } catch {
-        setLastFipNum(undefined);
       }
-    }
+      const voteAddresses: Address[] = await Promise.all(promises);
 
-    if (fipAddresses) getFipNums();
-  }, [fipAddresses]);
+      setFipAddresses(voteAddresses);
+
+      const fips = await Promise.all(
+        voteAddresses.map((fipAddress) => {
+          return publicClient.readContract({
+            abi: voteTrackerConfig.abi,
+            address: fipAddress,
+            functionName: 'FIP',
+          });
+        }),
+      );
+
+      setFipList(fips);
+      setLastFipNum(fips[fips.length - 1]);
+      setLoadingFipData(false);
+    } catch (error) {
+      setFipAddresses([]);
+      setLastFipNum(undefined);
+      setLoadingFipData(false);
+    }
+  }
+
+  useEffect(() => {
+    getFipData();
+  }, []);
 
   useEffect(() => {
     async function isLastVoteRunning() {
@@ -156,14 +145,10 @@ function Home() {
         functionName: 'voteLength',
       });
 
-      console.log(voteStartTime, voteLength)
-
       const voteEndTime = voteStartTime + voteLength;
       const currentTime = Math.floor(Date.now() / 1000);
-      console.log(currentTime)
 
       if (currentTime < voteEndTime) {
-        console.log("set countdown")
         setCountdownValue(voteEndTime - currentTime);
       }
     }
@@ -186,9 +171,9 @@ function Home() {
       </ButtonContainer>
       {showVoteFactory && (
         <VoteFactoryModal
-          address={address}
           open={showVoteFactory}
           closeModal={() => setShowVoteFactory(false)}
+          getFipData={getFipData}
         />
       )}
       <VoteContent>
@@ -197,6 +182,7 @@ function Home() {
           lastFipAddress={fipAddresses[fipAddresses.length - 1]}
           lastFipNum={lastFipNum}
           countdownValue={countdownValue}
+          loadingFipData={loadingFipData}
         />
         <VoteHistory fips={fipList} />
       </VoteContent>

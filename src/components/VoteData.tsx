@@ -2,17 +2,18 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import Countdown from 'react-countdown';
 import { useContractWrite, useWaitForTransaction } from 'wagmi';
+import { getAddress } from 'viem';
 import axios from 'axios';
+import ClipLoader from 'react-spinners/ClipLoader';
 
-import FIPInfo from 'components/FIPInfo';
-import VotePicker from 'components/VotePicker';
-import VotingPower from 'components/VotingPower';
-import AddVotePower from 'components/AddVotePower';
-import { RPC_URL, publicClient, walletClient } from 'services/clients';
 import { voteTrackerConfig } from 'constants/voteTrackerConfig';
 import { ownableConfig } from 'constants/ownableConfig';
+import { RPC_URL, publicClient } from 'services/clients';
+import { formatBytes } from 'utilities/helpers';
+import FIPInfo from 'components/FIPInfo';
+import VoteActions from 'components/VoteActions';
+import VotingPower from 'components/VotingPower';
 import type { Address } from './Home';
-import { getAddress } from 'viem';
 
 const VoteDataContainer = styled.div`
   display: flex;
@@ -39,23 +40,44 @@ function VoteData({
   address,
   lastFipAddress,
   lastFipNum,
+  loadingFipData,
   countdownValue,
 }: {
   address: Address | undefined;
   lastFipAddress: Address | undefined;
   lastFipNum: number | undefined;
+  loadingFipData: boolean;
   countdownValue: number;
 }) {
+  const [agentAddress, setAgentAddress] = useState<Address>(
+    '0x0000000000000000000000000000000000000000',
+  );
   const [errorMessage, setErrorMessage] = useState('');
-  const [hasVoted, setHasVoted] = useState(false);
   const [hasRegistered, setHasRegistered] = useState(false);
+  const [hasVoted, setHasVoted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [minerIds, setMinerIds] = useState<bigint[]>([]);
   const [rawBytePower, setRawBytePower] = useState('');
   const [tokenPower, setTokenPower] = useState<bigint>(BigInt(0));
-  const [agentAddress, setAgentAddress] = useState<Address>('0x0000000000000000000000000000000000000000');
 
   useEffect(() => {
+    async function getHasRegistered() {
+      if (lastFipAddress) {
+        try {
+          const userHasRegistered = await publicClient.readContract({
+            address: lastFipAddress,
+            abi: voteTrackerConfig.abi,
+            functionName: 'hasRegistered',
+            args: [address || `0x`],
+          });
+
+          setHasRegistered(userHasRegistered);
+        } catch {
+          setHasRegistered(false);
+        }
+      }
+    }
+
     async function getHasVoted() {
       if (lastFipAddress) {
         try {
@@ -73,68 +95,12 @@ function VoteData({
       }
     }
 
-    getHasVoted();
-  }, [lastFipAddress]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  useEffect(() => {
-    async function getHasRegistered() {
-      if (lastFipAddress) {
-        console.log(lastFipAddress)
-        try {
-          const userHasRegistered = await publicClient.readContract({
-            address: lastFipAddress,
-            abi: voteTrackerConfig.abi,
-            functionName: 'hasRegistered',
-            args: [address || `0x`],
-          });
-
-          setHasRegistered(userHasRegistered);
-        } catch {
-          setHasRegistered(false);
-        }
-      }
-    }
-
     getHasRegistered();
-  }, [lastFipAddress, ]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  function formatBytes(bytes: number) {
-    if (bytes == 0) {
-      return '0 Bytes';
-    }
-    const unitMultiple = 1024; // use binary bytes
-    const unitNames = [
-      'Bytes',
-      'KiB',
-      'MiB',
-      'GiB',
-      'TiB',
-      'PiB',
-      'EiB',
-      'ZiB',
-      'YiB',
-    ];
-    const unitChanges = Math.floor(Math.log(bytes) / Math.log(unitMultiple));
-    return (
-      parseFloat((bytes / Math.pow(unitMultiple, unitChanges)).toFixed(2)) +
-      ' ' +
-      unitNames[unitChanges]
-    );
-  }
-
-  const { data, error, isError, write } = useContractWrite({
-    abi: voteTrackerConfig.abi,
-    address: lastFipAddress,
-    functionName: 'registerVoter',
-    args: [agentAddress, minerIds],
-  });
-
-  const { isLoading, isSuccess } = useWaitForTransaction({
-    hash: data?.hash,
-  });
+    getHasVoted();
+  }, [lastFipAddress, address]);
 
   useEffect(() => {
-    async function getTokenPower() {
+    async function getByteAndTokenPower() {
       if (lastFipAddress) {
         try {
           let userTokenPower = await publicClient.readContract({
@@ -154,42 +120,45 @@ function VoteData({
           }
 
           setTokenPower(userTokenPower);
+
+          const userBytePower = await publicClient.readContract({
+            address: lastFipAddress,
+            abi: voteTrackerConfig.abi,
+            functionName: 'voterWeightRBP',
+            args: [address || `0x`],
+          });
+
+          console.log(userBytePower);
+
+          setRawBytePower(formatBytes(parseInt(userBytePower.toString())));
         } catch {
           setTokenPower(BigInt(0));
+          setRawBytePower('');
         }
       }
     }
 
     if (hasRegistered) {
-      getTokenPower()
+      getByteAndTokenPower();
     }
-  }, [hasRegistered]);
+  }, [hasRegistered, address, lastFipAddress]);
 
-  useEffect(() =>{
-    async function getRawBytePower() {
-      console.log("getRawBytePower")
-      if (!lastFipAddress) return
+  const { data, error, isError, write } = useContractWrite({
+    abi: voteTrackerConfig.abi,
+    address: lastFipAddress,
+    functionName: 'registerVoter',
+    args: [agentAddress, minerIds],
+  });
 
-      let userBytePower = await publicClient.readContract({
-        address: lastFipAddress,
-        abi: voteTrackerConfig.abi,
-        functionName: 'voterWeightRBP',
-        args: [address || `0x`],
-      });
-
-      console.log(userBytePower)
-
-      setRawBytePower(formatBytes(parseInt(userBytePower.toString())))
-    }
-
-    if (hasRegistered) {
-      getRawBytePower()
-    }
-  }, [hasRegistered])
+  const { isLoading, isSuccess } = useWaitForTransaction({
+    hash: data?.hash,
+  });
 
   async function addVotingPower(agentAddress: string) {
     setLoading(true);
-    setAgentAddress(getAddress(agentAddress || '0x0000000000000000000000000000000000000000'));
+    setAgentAddress(
+      getAddress(agentAddress || '0x0000000000000000000000000000000000000000'),
+    );
 
     try {
       let rawBytes = 0;
@@ -227,20 +196,20 @@ function VoteData({
 
       if (agentAddress) {
         const glifOwner = await publicClient.readContract({
-          address: getAddress(agentAddress || '0x0000000000000000000000000000000000000000'),
+          address: getAddress(
+            agentAddress || '0x0000000000000000000000000000000000000000',
+          ),
           abi: ownableConfig.abi,
-          functionName: "owner"
+          functionName: 'owner',
         });
 
-        if (glifOwner == address) {
-          console.log("get miners for glif pool")
+        if (glifOwner === address) {
           await getMiners(agentAddress);
         }
       }
 
       if (!hasRegistered) {
-        console.log(minerIds)
-        write?.()
+        write?.();
       }
 
       setRawBytePower(formatBytes(rawBytes));
@@ -251,53 +220,54 @@ function VoteData({
     }
   }
 
+  useEffect(() => {
+    if (isSuccess) {
+      setHasRegistered(true);
+    }
+  }, [isSuccess]);
+
+  function renderLatestVote() {
+    if (lastFipNum) return <FIPInfo num={lastFipNum} />;
+    return <InfoText>Last vote data does not exist</InfoText>;
+  }
+
   return (
     <VoteDataContainer>
-      <div>
-        Time left: <Countdown date={Date.now() + (countdownValue * 1000)} />
-      </div>
+      {Boolean(countdownValue) && (
+        <div>
+          Time left: <Countdown date={Date.now() + countdownValue * 1000} />
+        </div>
+      )}
       <DataSections>
         <VoteSection>
           <h4>Latest Vote FIP</h4>
-          {lastFipNum && <FIPInfo num={lastFipNum} />}
-          {!lastFipNum && <InfoText>Last vote data does not exist</InfoText>}
+          {loadingFipData ? (
+            <ClipLoader color='var(--primary)' />
+          ) : (
+            renderLatestVote()
+          )}
         </VoteSection>
         <VoteSection>
-          {!Boolean(countdownValue) && !hasVoted && (
-            <>
-              <h4>Latest Vote Results</h4>
-              {!lastFipNum && (
-                <InfoText>Last vote data does not exist</InfoText>
-              )}
-            </>
-          )}
-          {Boolean(countdownValue) && !hasVoted && (
-            <>
-              <h4>Choose Vote</h4>
-              {hasRegistered && (
-                <VotePicker address={address} lastFipAddress={lastFipAddress} minerIds={minerIds} />
-              )}
-              {!hasRegistered && (
-                <AddVotePower
-                  addVotingPower={addVotingPower}
-                  error={errorMessage}
-                  loading={loading}
-                />
-              )}
-            </>
-          )}
-
-          {/* https://github.com/0xpluto/fip-voting/blob/master/src/components/TotalVotes.tsx */}
+          <VoteActions
+            addVotingPower={addVotingPower}
+            address={address}
+            countdownValue={countdownValue}
+            errorMessage={errorMessage}
+            hasRegistered={hasRegistered}
+            hasVoted={hasVoted}
+            loadingFipData={loadingFipData}
+            lastFipNum={lastFipNum}
+            lastFipAddress={lastFipAddress}
+            loading={loading || isLoading}
+          />
         </VoteSection>
         <VoteSection>
-          {hasVoted && <h4>Voting Power</h4>}
-          {/* https://github.com/0xpluto/fip-voting/blob/e19da9798c2756fcc471a91b1ae03c4f492bb3c3/src/components/VotingPower.tsx */}
-          {(!hasVoted && hasRegistered) && (
-            <>
-              <h4>Wallet Voting Power</h4>
-              <VotingPower rawBytePower={rawBytePower} tokenPower={tokenPower} />
-            </>
-          )}
+          <VotingPower
+            hasVoted={hasVoted}
+            hasRegistered={hasRegistered}
+            rawBytePower={rawBytePower}
+            tokenPower={tokenPower}
+          />
         </VoteSection>
       </DataSections>
     </VoteDataContainer>

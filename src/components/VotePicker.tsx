@@ -15,15 +15,12 @@ const VotePickerContainer = styled.div`
 function VotePicker({
   address,
   lastFipAddress,
-  minerIds,
 }: {
   address: Address | undefined;
   lastFipAddress: Address | undefined;
-  minerIds: bigint[];
 }) {
   const [vote, setVote] = useState<bigint>(BigInt(0));
   const [yesOptions, setYesOptions] = useState<string[]>([]);
-  const [glifPool, setGlifPool] = useState('0');
 
   async function sendVote() {
     const encodedVote = encodeVote(vote);
@@ -93,12 +90,37 @@ function VotePicker({
 
   return (
     <VotePickerContainer>
-      <button onClick={() => {setVote(BigInt(0)); write?.()}}>Yes</button>
-      {
-        // yes options mapping
-      }
-      <button onClick={() => {setVote(BigInt(1)); write?.()}}>No</button>
-      <button onClick={() => {setVote(BigInt(2)); write?.()}}>Abstain</button>
+      {yesOptions.map((option) => {
+        if (option) {
+          return (
+            <button
+              key={option}
+              onClick={() => {
+                setVote(BigInt(0));
+                write?.();
+              }}
+            >
+              {option}
+            </button>
+          );
+        }
+      })}
+      <button
+        onClick={() => {
+          setVote(BigInt(1));
+          write?.();
+        }}
+      >
+        No
+      </button>
+      <button
+        onClick={() => {
+          setVote(BigInt(2));
+          write?.();
+        }}
+      >
+        Abstain
+      </button>
     </VotePickerContainer>
   );
 }
