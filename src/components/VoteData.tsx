@@ -128,8 +128,6 @@ function VoteData({
             args: [address || `0x`],
           });
 
-          console.log(userBytePower);
-
           setRawBytePower(formatBytes(parseInt(userBytePower.toString())));
         } catch {
           setTokenPower(BigInt(0));

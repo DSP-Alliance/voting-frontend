@@ -90,7 +90,7 @@ function VoteActions({
         ]);
       });
     }
-  });
+  }, []);
 
   function renderVoteResults() {
     if (lastFipNum) return <PieChart data={data} />;

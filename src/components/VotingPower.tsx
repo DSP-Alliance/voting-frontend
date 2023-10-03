@@ -13,8 +13,6 @@ function VotingPower({
   rawBytePower: string;
   tokenPower: bigint | null;
 }) {
-  console.log(tokenPower);
-
   function renderContent() {
     if (!hasVoted && hasRegistered) {
       return (

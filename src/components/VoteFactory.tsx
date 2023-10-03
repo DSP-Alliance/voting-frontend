@@ -84,9 +84,7 @@ function VoteFactory({
   });
 
   useEffect(() => {
-    console.log('hi lisa start vote data ', data);
     if (isSuccess) {
-      console.log('hi lisa issuccess');
       getFipData();
       closeModal();
     }
