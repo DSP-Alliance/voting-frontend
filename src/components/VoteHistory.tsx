@@ -1,8 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { FormControl, InputLabel, MenuItem, Select } from '@mui/material';
-import { getAddress, Address } from 'viem';
-import { filecoin } from 'viem/chains';
 import {
   Bar,
   BarChart,
@@ -19,14 +17,13 @@ import { voteFactoryConfig } from 'constants/voteFactoryConfig';
 
 const Container = styled.div`
   display: grid;
-  grid-template-columns: 300px auto;
+  grid-template-columns: 150px 300px auto;
   gap: 12px;
 `;
 
 const QuestionText = styled.div`
   overflow-wrap: break-word;
-  margin-left: 8px;
-  margin-top: 12px;
+  margin-top: 24px;
 `;
 
 const ChartArea = styled.div`
@@ -34,10 +31,12 @@ const ChartArea = styled.div`
 `;
 
 function VoteHistory({ fips }: { fips: number[] }) {
-  // { yes: 0 }, { no: 0 }, { abstain: 0 }
-  const [data, setData] = useState();
+  const [data, setData] = useState<{ [key: string]: any }[]>([]);
   const [selectedFip, setSelectedFip] = useState('');
   const [questionText, setQuestionText] = useState('');
+  const [startTime, setStartTime] = useState<number>(0);
+  const [length, setLength] = useState<number>(0);
+  const [winningVote, setWinningVote] = useState<number>();
 
   useEffect(() => {
     if (selectedFip) {
@@ -96,23 +95,63 @@ function VoteHistory({ fips }: { fips: number[] }) {
               minerTokenVotes,
               tokenVotes,
               winningVote, // This is quite ugly.
-            ]: [
-              number,
-              number,
-              string,
-              readonly [bigint, bigint, bigint, bigint],
-              readonly [bigint, bigint, bigint, bigint],
-              readonly [bigint, bigint, bigint, bigint],
-              number,
             ]) => {
               setQuestionText(question);
-              // setData();
-              // You can sum together all votes using the rbpVotes, minerTokenVotes, and tokenVotes to get a total vote count and calculate percentages
+              setStartTime(startTime);
+              setLength(length);
+              setWinningVote(winningVote);
+              setData([
+                {
+                  name: 'Yes 1',
+                  RPB: Number(rbpVotes[0]),
+                  Tokens: Number(minerTokenVotes[0]),
+                  'Miner Tokens': Number(tokenVotes[0]),
+                },
+                {
+                  name: 'Yes 2',
+                  RPB: Number(rbpVotes[1]),
+                  Tokens: Number(minerTokenVotes[1]),
+                  'Miner Tokens': Number(tokenVotes[1]),
+                },
+                {
+                  name: 'No',
+                  RPB: Number(rbpVotes[2]),
+                  Tokens: Number(minerTokenVotes[2]),
+                  'Miner Tokens': Number(tokenVotes[2]),
+                },
+                {
+                  name: 'Abstain',
+                  RPB: Number(rbpVotes[3]),
+                  Tokens: Number(minerTokenVotes[3]),
+                  'Miner Tokens': Number(tokenVotes[3]),
+                },
+              ]);
             },
           );
         });
     }
   }, [selectedFip]);
+
+  const timestamp = new Date(startTime * 1000).toLocaleString();
+
+  const timeLength = () => {
+    let hours = 0;
+    const minutes = length / 60;
+    if (minutes > 60) {
+      hours = minutes / 60;
+    }
+
+    return hours
+      ? `${hours} hours` + minutes && `, ${minutes} minutes`
+      : `${minutes} minutes`;
+  };
+
+  const winningVoteText = () => {
+    if (winningVote === 0) return 'Yes 1';
+    if (winningVote === 1) return 'Yes 1';
+    if (winningVote === 2) return 'Yes 1';
+    if (winningVote === 3) return 'Yes 1';
+  };
 
   return (
     <Container>
@@ -135,19 +174,24 @@ function VoteHistory({ fips }: { fips: number[] }) {
               })}
           </Select>
         </FormControl>
-        {questionText && <QuestionText>{questionText}</QuestionText>}
       </div>
-      {data && (
+      <div>
+        {questionText && <QuestionText>{questionText}</QuestionText>}
+        {Boolean(startTime) && <p>Started: {timestamp}</p>}
+        {Boolean(length) && <p>Length of time: {timeLength()}</p>}
+        {winningVote && <p>Winning vote: {winningVoteText()}</p>}
+      </div>
+      {data.length > 0 && (
         <ChartArea>
           <BarChart width={730} height={250} data={data}>
             <CartesianGrid strokeDasharray='3 3' />
             <XAxis dataKey='name' />
             <YAxis />
-            <Tooltip cursor={{ fill: 'transparent' }} />
+            <Tooltip />
             <Legend />
-            <Bar dataKey='yes' fill='var(--yesvote)' />
-            <Bar dataKey='no' fill='var(--novote)' />
-            <Bar dataKey='abstain' fill='var(--abstainvote)' />
+            <Bar dataKey='RPB' fill='var(--rpbcount)' />
+            <Bar dataKey='Tokens' fill='var(--tokencount)' />
+            <Bar dataKey='Miner Tokens' fill='var(--minertokencount)' />
           </BarChart>
         </ChartArea>
       )}

@@ -21,6 +21,7 @@ interface VoteActionsProps {
   lastFipNum: number | undefined;
   lastFipAddress: Address | undefined;
   loading: boolean;
+  setHasVoted: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const InfoText = styled.span`
@@ -28,7 +29,6 @@ const InfoText = styled.span`
 `;
 
 function VoteActions({
-  address,
   addVotingPower,
   countdownValue,
   errorMessage,
@@ -38,6 +38,7 @@ function VoteActions({
   lastFipNum,
   lastFipAddress,
   loading,
+  setHasVoted,
 }: VoteActionsProps) {
   function renderVoteResults() {
     // show latest vote results
@@ -61,7 +62,10 @@ function VoteActions({
         <>
           <h4>Choose Vote</h4>
           {hasRegistered && (
-            <VotePicker address={address} lastFipAddress={lastFipAddress} />
+            <VotePicker
+              setHasVoted={setHasVoted}
+              lastFipAddress={lastFipAddress}
+            />
           )}
           {!hasRegistered && (
             <AddVotePower

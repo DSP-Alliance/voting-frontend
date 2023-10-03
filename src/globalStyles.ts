@@ -4,9 +4,9 @@ const GlobalStyle = createGlobalStyle`
   body {
     --primary: #1976d2;
     --darkprimary: #0d47a1;
-    --yesvote: #a5d6a7;
-    --novote: #e57373;
-    --abstainvote: #bdbdbd;
+    --rpbcount: #42a5f5;
+    --tokencount: #3f51b5;
+    --minertokencount: #d1c4e9;
     --error: #d32f2f;
     margin: 0;
     padding: 0;

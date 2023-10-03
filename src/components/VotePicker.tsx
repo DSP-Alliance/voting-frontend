@@ -13,19 +13,15 @@ const VotePickerContainer = styled.div`
 `;
 
 function VotePicker({
-  address,
   lastFipAddress,
+  setHasVoted,
 }: {
-  address: Address | undefined;
   lastFipAddress: Address | undefined;
+  setHasVoted: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   const [questionText, setQuestionText] = useState('');
   const [vote, setVote] = useState<bigint>(BigInt(0));
   const [yesOptions, setYesOptions] = useState<string[]>([]);
-
-  async function sendVote() {
-    const encodedVote = encodeVote(vote);
-  }
 
   useEffect(() => {
     async function getYesOptions() {
@@ -66,11 +62,17 @@ function VotePicker({
     abi: voteTrackerConfig.abi,
     address: lastFipAddress,
     functionName: 'castVote',
-    args: [vote],
+    args: [encodeVote(vote)],
   });
 
   const { isLoading, isSuccess } = useWaitForTransaction({
     hash: data?.hash,
+  });
+
+  useEffect(() => {
+    if (isSuccess) {
+      setHasVoted(true);
+    }
   });
 
   function encodeVote(vote: bigint) {
@@ -95,6 +97,11 @@ function VotePicker({
     // }
   }
 
+  function submitVote(vote: bigint) {
+    setVote(vote);
+    write?.();
+  }
+
   return (
     <VotePickerContainer>
       <div>{questionText}</div>
@@ -104,8 +111,7 @@ function VotePicker({
             <button
               key={option}
               onClick={() => {
-                setVote(BigInt(0));
-                write?.();
+                submitVote(BigInt(0));
               }}
             >
               {option}
@@ -115,16 +121,14 @@ function VotePicker({
       })}
       <button
         onClick={() => {
-          setVote(BigInt(1));
-          write?.();
+          submitVote(BigInt(1));
         }}
       >
         No
       </button>
       <button
         onClick={() => {
-          setVote(BigInt(2));
-          write?.();
+          submitVote(BigInt(2));
         }}
       >
         Abstain

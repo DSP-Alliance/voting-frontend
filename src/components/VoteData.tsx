@@ -259,6 +259,7 @@ function VoteData({
             lastFipNum={lastFipNum}
             lastFipAddress={lastFipAddress}
             loading={loading || isLoading}
+            setHasVoted={setHasVoted}
           />
         </VoteSection>
         <VoteSection>
