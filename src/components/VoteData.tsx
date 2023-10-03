@@ -239,6 +239,7 @@ function VoteData({
       }
 
       if (!hasRegistered) {
+        console.log(minerIds)
         write?.()
       }
 
