@@ -167,6 +167,7 @@ function VoteData({
 
   useEffect(() =>{
     async function getRawBytePower() {
+      console.log("getRawBytePower")
       if (!lastFipAddress) return
 
       let userBytePower = await publicClient.readContract({
