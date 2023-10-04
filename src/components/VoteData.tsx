@@ -175,7 +175,7 @@ function VoteData({
           `https://filfox.info/api/v1/address/${address}`,
         );
         const ownedMiners = request.data.ownedMiners;
-        setMinerIds((prev) => [...prev, request.data.ownedMiners]);
+        setMinerIds((prev) => [...prev, ...request.data.ownedMiners]);
 
         const promises: Promise<any>[] = [];
 
