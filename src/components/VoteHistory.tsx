@@ -1,20 +1,22 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { FormControl, InputLabel, MenuItem, Select } from '@mui/material';
 import {
   Bar,
   BarChart,
   CartesianGrid,
+  Label,
   Legend,
   Tooltip,
   XAxis,
   YAxis,
 } from 'recharts';
+import ClipLoader from 'react-spinners/ClipLoader';
 
 import { voteTrackerConfig } from 'constants/voteTrackerConfig';
 import { publicClient } from 'services/clients';
 import { voteFactoryConfig } from 'constants/voteFactoryConfig';
-import { formatBytes, timeLength } from 'utilities/helpers';
+import { formatBytes, getLargestUnit, timeLength } from 'utilities/helpers';
 
 const Container = styled.div`
   display: grid;
@@ -24,6 +26,10 @@ const Container = styled.div`
   @media (max-width: 920px) {
     grid-template-columns: 1fr;
   }
+`;
+
+const LoaderContainer = styled.div`
+  align-self: center;
 `;
 
 const QuestionText = styled.div`
@@ -36,15 +42,18 @@ const ChartArea = styled.div`
 `;
 
 function VoteHistory({ fips }: { fips: number[] }) {
-  const [data, setData] = useState<{ [key: string]: any }[]>([]);
-  const [selectedFip, setSelectedFip] = useState('');
-  const [questionText, setQuestionText] = useState('');
-  const [startTime, setStartTime] = useState<number>(0);
+  const [data, setData] = useState<{ [key: string]: string | number }[]>([]);
   const [length, setLength] = useState<number>(0);
-  const [winningVoteValue, setWinningVoteValue] = useState<number>();
+  const [loading, setLoading] = useState(false);
+  const [questionText, setQuestionText] = useState('');
+  const [selectedFip, setSelectedFip] = useState('');
+  const [startTime, setStartTime] = useState<number>(0);
+  const [yAxisUnit, setYAxisUnit] = useState<string>('');
+  const [winningVoteText, setWinningVoteText] = useState('');
 
   useEffect(() => {
     if (selectedFip) {
+      setLoading(true);
       // We use a promise here as multicall is enabled for this client
       // Meaning that we can reduce our load on the RPC URL and get data back faster.
       publicClient
@@ -91,6 +100,18 @@ function VoteHistory({ fips }: { fips: number[] }) {
               address: addr,
               functionName: 'winningVote',
             }),
+            publicClient.readContract({
+              abi: voteTrackerConfig.abi,
+              address: addr,
+              functionName: 'yesOptions',
+              args: [BigInt(0)],
+            }),
+            publicClient.readContract({
+              abi: voteTrackerConfig.abi,
+              address: addr,
+              functionName: 'yesOptions',
+              args: [BigInt(1)],
+            }),
           ]).then(
             ([
               startTime,
@@ -100,41 +121,53 @@ function VoteHistory({ fips }: { fips: number[] }) {
               minerTokenVotes,
               tokenVotes,
               winningVote,
+              yesOption1,
+              yesOption2,
             ]) => {
               setQuestionText(question);
               setStartTime(startTime);
               setLength(length);
-              setWinningVoteValue(winningVote);
+
+              if (winningVote === 0) setWinningVoteText(yesOption1);
+              if (winningVote === 1) setWinningVoteText('No');
+              if (winningVote === 2) setWinningVoteText('Abstain');
+              if (winningVote === 3) setWinningVoteText(yesOption2);
+
+              const unit = getLargestUnit([
+                ...rbpVotes,
+                ...minerTokenVotes,
+                ...tokenVotes,
+              ]);
+              setYAxisUnit(unit);
+
               setData([
                 {
-                  name: 'Yes 1',
-                  RPB: Number(rbpVotes[0]),
-                  Tokens: Number(minerTokenVotes[0]),
-                  'Miner Tokens': Number(tokenVotes[0]),
-                  // WIP get these to all show the same units
-                  // RPB: formatBytes(Number(rbpVotes[0])),
-                  // Tokens: formatBytes(Number(minerTokenVotes[0])),
-                  // 'Miner Tokens': formatBytes(Number(tokenVotes[0])),
+                  name: yesOption1,
+                  RPB: formatBytes(Number(rbpVotes[0]), unit),
+                  Tokens: formatBytes(Number(minerTokenVotes[0]), unit),
+                  'Miner Tokens': formatBytes(Number(tokenVotes[0]), unit),
                 },
                 {
-                  name: 'Yes 2',
-                  RPB: Number(rbpVotes[1]),
-                  Tokens: Number(minerTokenVotes[1]),
-                  'Miner Tokens': Number(tokenVotes[1]),
+                  name: yesOption2,
+                  RPB: formatBytes(Number(rbpVotes[1]), unit),
+                  Tokens: formatBytes(Number(minerTokenVotes[1]), unit),
+                  'Miner Tokens': formatBytes(Number(tokenVotes[1]), unit),
                 },
                 {
                   name: 'No',
-                  RPB: Number(rbpVotes[2]),
-                  Tokens: Number(minerTokenVotes[2]),
-                  'Miner Tokens': Number(tokenVotes[2]),
+                  RPB: formatBytes(Number(rbpVotes[2]), unit),
+                  Tokens: formatBytes(Number(minerTokenVotes[2]), unit),
+                  'Miner Tokens': formatBytes(Number(tokenVotes[2]), unit),
                 },
                 {
                   name: 'Abstain',
-                  RPB: Number(rbpVotes[3]),
-                  Tokens: Number(minerTokenVotes[3]),
-                  'Miner Tokens': Number(tokenVotes[3]),
+                  RPB: formatBytes(Number(rbpVotes[3]), unit),
+                  Tokens: formatBytes(Number(minerTokenVotes[3]), unit),
+                  'Miner Tokens': formatBytes(Number(tokenVotes[3]), unit),
                 },
               ]);
+
+              setLoading(false);
             },
           );
         });
@@ -142,13 +175,6 @@ function VoteHistory({ fips }: { fips: number[] }) {
   }, [selectedFip]);
 
   const timestamp = new Date(startTime * 1000).toLocaleString();
-
-  const winningVoteText = () => {
-    if (winningVoteValue === 0) return 'Yes 1';
-    if (winningVoteValue === 1) return 'No';
-    if (winningVoteValue === 2) return 'Abstain';
-    if (winningVoteValue === 3) return 'Yes 2';
-  };
 
   return (
     <Container>
@@ -172,18 +198,39 @@ function VoteHistory({ fips }: { fips: number[] }) {
           </Select>
         </FormControl>
       </div>
-      <div>
-        {questionText && <QuestionText>{questionText}</QuestionText>}
-        {Boolean(startTime) && <p>Started: {timestamp}</p>}
-        {Boolean(length) && <p>Length of time: {timeLength(length)}</p>}
-        {winningVoteValue && <p>Winning vote: {winningVoteText()}</p>}
-      </div>
-      {data.length > 0 && (
+      {loading && (
+        <LoaderContainer>
+          <ClipLoader color='var(--primary)' />
+        </LoaderContainer>
+      )}
+      {!loading && (
+        <div>
+          {questionText && <QuestionText>{questionText}</QuestionText>}
+          {Boolean(startTime) && <p>Started: {timestamp}</p>}
+          {Boolean(length) && <p>Length of time: {timeLength(length)}</p>}
+          {winningVoteText && <p>Winning vote: {winningVoteText}</p>}
+        </div>
+      )}
+      {data.length > 0 && !loading && (
         <ChartArea>
-          <BarChart width={800} height={250} data={data}>
+          <BarChart width={800} height={300} data={data}>
             <CartesianGrid strokeDasharray='3 3' />
-            <XAxis dataKey='name' />
-            <YAxis width={100} unit='Bytes' />
+            <XAxis
+              dataKey='name'
+              tickFormatter={(value: string) => {
+                const limit = 20;
+                if (value.length < limit) return value;
+                return `${value.substring(0, limit)}...`;
+              }}
+            />
+            <YAxis width={50}>
+              <Label
+                angle={90}
+                value={yAxisUnit}
+                position='insideLeft'
+                style={{ textAnchor: 'middle' }}
+              />
+            </YAxis>
             <Tooltip />
             <Legend />
             <Bar dataKey='RPB' fill='var(--rbpcount)' />

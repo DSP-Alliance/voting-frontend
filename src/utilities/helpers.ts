@@ -1,35 +1,50 @@
+const UNIT_NAMES = [
+  'Bytes',
+  'KiB',
+  'MiB',
+  'GiB',
+  'TiB',
+  'PiB',
+  'EiB',
+  'ZiB',
+  'YiB',
+];
+
+const UNIT_MULTIPLE = 1024; // use binary bytes
+
 export function formatBytesWithLabel(bytes: number): string {
   if (bytes === 0) {
     return '0 Bytes';
   }
-  const unitMultiple = 1024; // use binary bytes
-  const unitNames = [
-    'Bytes',
-    'KiB',
-    'MiB',
-    'GiB',
-    'TiB',
-    'PiB',
-    'EiB',
-    'ZiB',
-    'YiB',
-  ];
-  const unitChanges = Math.floor(Math.log(bytes) / Math.log(unitMultiple));
+  const unitChanges = Math.floor(Math.log(bytes) / Math.log(UNIT_MULTIPLE));
+
   return (
-    parseFloat((bytes / Math.pow(unitMultiple, unitChanges)).toFixed(2)) +
+    parseFloat((bytes / Math.pow(UNIT_MULTIPLE, unitChanges)).toFixed(2)) +
     ' ' +
-    unitNames[unitChanges]
+    UNIT_NAMES[unitChanges]
   );
 }
 
-export function formatBytes(bytes: number): number {
+export function formatBytes(bytes: number, unit: string): number {
   if (bytes === 0) {
     return 0;
   }
-  const unitMultiple = 1024; // use binary bytes
+  const unitChanges = UNIT_NAMES.indexOf(unit);
 
-  const unitChanges = Math.floor(Math.log(bytes) / Math.log(unitMultiple));
-  return parseFloat((bytes / Math.pow(unitMultiple, unitChanges)).toFixed(2));
+  return parseFloat((bytes / Math.pow(UNIT_MULTIPLE, unitChanges)).toFixed(5));
+}
+
+export function getLargestUnit(data: bigint[]): string {
+  let index = 0;
+  data.map((value) => {
+    const unitChanges = Math.floor(
+      Math.log(Number(value)) / Math.log(UNIT_MULTIPLE),
+    );
+    if (unitChanges > index)
+      index = UNIT_NAMES.indexOf(UNIT_NAMES[unitChanges]);
+  });
+
+  return UNIT_NAMES[index];
 }
 
 export function timeLength(length: number) {
