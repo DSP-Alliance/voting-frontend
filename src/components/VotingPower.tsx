@@ -1,5 +1,11 @@
 import React from 'react';
 import { formatEther } from 'viem';
+import { useAccount } from 'wagmi';
+import styled from 'styled-components';
+
+const InfoText = styled.span`
+  font-style: italic;
+`;
 
 function VotingPower({
   hasRegistered,
@@ -12,23 +18,24 @@ function VotingPower({
   rawBytePower: string;
   tokenPower: bigint | null;
 }) {
-  function renderContent() {
-    if (!hasVoted && hasRegistered) {
-      return (
+  const { isConnected } = useAccount();
+
+  return (
+    <>
+      <h4>Wallet Voting Power</h4>
+      {!isConnected && (
+        <InfoText>Connect your account to display voting power</InfoText>
+      )}
+      {isConnected && !hasVoted && hasRegistered && (
         <>
-          <h4>Wallet Voting Power</h4>
           <div>{rawBytePower && <p>RBP: {rawBytePower}</p>}</div>
           <div>
             {tokenPower !== null ? <p>{formatEther(tokenPower)} $FIL</p> : null}
           </div>
         </>
-      );
-    }
-
-    return <h4>Voting Power</h4>;
-  }
-
-  return <>{renderContent()}</>;
+      )}
+    </>
+  );
 }
 
 export default VotingPower;

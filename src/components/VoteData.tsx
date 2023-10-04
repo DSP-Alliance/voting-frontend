@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import Countdown from 'react-countdown';
-import { useContractWrite, useWaitForTransaction } from 'wagmi';
+import { useAccount, useContractWrite, useWaitForTransaction } from 'wagmi';
 import { getAddress } from 'viem';
 import axios from 'axios';
 import ClipLoader from 'react-spinners/ClipLoader';
@@ -53,6 +53,7 @@ function VoteData({
   loadingFipData: boolean;
   countdownValue: number;
 }) {
+  const { isConnected } = useAccount();
   const [agentAddress, setAgentAddress] = useState<Address>(
     '0x0000000000000000000000000000000000000000',
   );
@@ -99,9 +100,11 @@ function VoteData({
       }
     }
 
-    getHasRegistered();
-    getHasVoted();
-  }, [lastFipAddress, address]);
+    if (isConnected) {
+      getHasRegistered();
+      getHasVoted();
+    }
+  }, [lastFipAddress, address, isConnected]);
 
   useEffect(() => {
     async function getByteAndTokenPower() {

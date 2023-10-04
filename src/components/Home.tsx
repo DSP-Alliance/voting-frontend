@@ -56,7 +56,7 @@ const VoteContent = styled.div`
 `;
 
 function Home() {
-  const { address = `0x` } = useAccount();
+  const { address, isConnected } = useAccount();
   const [countdownValue, setCountdownValue] = useState<number>(0);
   const [fipAddresses, setFipAddresses] = useState<Address[]>([]);
   const [fipList, setFipList] = useState<number[]>([]);
@@ -72,7 +72,7 @@ function Home() {
           abi: voteFactoryConfig.abi,
           address: voteFactoryConfig.address,
           functionName: 'starters',
-          args: [address],
+          args: [address || '0x0000000000000000000000000000000000000000'],
         });
 
         if (owner) setIsOwner(true);
@@ -81,8 +81,8 @@ function Home() {
       }
     }
 
-    getOwner();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    if (isConnected) getOwner();
+  }, [isConnected]); // eslint-disable-line react-hooks/exhaustive-deps
 
   async function getFipData() {
     try {
