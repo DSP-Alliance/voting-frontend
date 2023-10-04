@@ -21,7 +21,7 @@ interface VoteActionsProps {
   lastFipNum: number | undefined;
   lastFipAddress: Address | undefined;
   loading: boolean;
-  minerIds: bigint[];
+  minerIds: string[];
   rawBytePower: string;
   registering: boolean;
   setHasVoted: React.Dispatch<React.SetStateAction<boolean>>;
