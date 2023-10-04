@@ -61,7 +61,7 @@ function VoteData({
   const [hasRegistered, setHasRegistered] = useState(false);
   const [hasVoted, setHasVoted] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [minerIds, setMinerIds] = useState<string[]>([]);
+  const [minerIds, setMinerIds] = useState<bigint[]>([]);
   const [rawBytePower, setRawBytePower] = useState('');
   const [tokenPower, setTokenPower] = useState<bigint>(BigInt(0));
 

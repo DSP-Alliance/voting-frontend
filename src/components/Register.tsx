@@ -56,7 +56,7 @@ function Register({
   write: () => void;
   rawBytePower: string;
   tokenPower: bigint | null;
-  minerIds: string[];
+  minerIds: bigint[];
 }) {
   const [agentAddress, setAgentAddress] = useState('');
   const [showAddressField, setShowAddressField] = useState(false);
@@ -106,7 +106,7 @@ function Register({
               <div>
                 Miner IDs:
                 {minerIds.map((id, index) => (
-                  <li key={index}>{id}</li>
+                  <li key={index}>{id.toString()}</li>
                 ))}
               </div>
             )}

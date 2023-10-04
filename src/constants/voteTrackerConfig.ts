@@ -201,9 +201,9 @@ export const voteTrackerConfig = {
         },
         {
           indexed: false,
-          internalType: 'string[]',
+          internalType: 'uint64[]',
           name: 'minerIds',
-          type: 'string[]',
+          type: 'uint64[]',
         },
         {
           indexed: false,
@@ -435,9 +435,9 @@ export const voteTrackerConfig = {
           type: 'address',
         },
         {
-          internalType: 'string[]',
+          internalType: 'uint64[]',
           name: 'minerIds',
-          type: 'string[]',
+          type: 'uint64[]',
         },
       ],
       name: 'registerVoter',
@@ -514,9 +514,9 @@ export const voteTrackerConfig = {
           type: 'address',
         },
         {
-          internalType: 'string[]',
+          internalType: 'uint64[]',
           name: 'minerIds',
-          type: 'string[]',
+          type: 'uint64[]',
         },
       ],
       name: 'voteAndRegister',
