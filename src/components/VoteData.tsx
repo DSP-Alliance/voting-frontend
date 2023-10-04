@@ -135,12 +135,12 @@ function VoteData({
             args: [address || `0x`],
           });
 
-          setRawBytePower(
-            formatBytesWithLabel(parseInt(userBytePower.toString())),
-          );
+          //setRawBytePower(
+          //  formatBytesWithLabel(parseInt(userBytePower.toString())),
+          //);
         } catch {
           setTokenPower(BigInt(0));
-          setRawBytePower('');
+          //setRawBytePower('');
         }
       }
     }
@@ -154,7 +154,7 @@ function VoteData({
     abi: voteTrackerConfig.abi,
     address: lastFipAddress,
     functionName: 'registerVoter',
-    args: [agentAddress, minerIds.map((id) => Number(id.replace('f0', '')))],
+    args: [agentAddress, minerIds.map((id) => BigInt(id.replace('f0', '')))],
   });
 
   const { isLoading, isSuccess } = useWaitForTransaction({
@@ -215,8 +215,18 @@ function VoteData({
         }
       }
 
+      const data = await publicClient.readContract({
+        address: lastFipAddress || "0x000000000000000",
+        abi: voteTrackerConfig.abi,
+        functionName: "getVotingPower",
+        args: [address || '0x', getAddress(agentAddress), minerIds.map((id) => BigInt(id.replace('f0', '')))],
+      });
+
+      console.log(data)
+
       setRawBytePower(formatBytesWithLabel(rawBytes));
     } catch (error) {
+      console.log(error)
       setErrorMessage('Error adding Miner IDs');
     } finally {
       setLoading(false);
