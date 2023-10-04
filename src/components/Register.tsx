@@ -60,7 +60,7 @@ function Register({
 }) {
   const [agentAddress, setAgentAddress] = useState('');
   const [showAddressField, setShowAddressField] = useState(false);
-  const [showConfirmation, setShowConfirmation] = useState(true);
+  const [showConfirmation, setShowConfirmation] = useState(false);
 
   return (
     <div>

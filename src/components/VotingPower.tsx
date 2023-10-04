@@ -26,12 +26,21 @@ function VotingPower({
       {!isConnected && (
         <InfoText>Connect your account to display voting power</InfoText>
       )}
-      {isConnected && !hasVoted && hasRegistered && (
+      {isConnected && (
         <>
-          <div>{rawBytePower && <p>RBP: {rawBytePower}</p>}</div>
-          <div>
-            {tokenPower !== null ? <p>{formatEther(tokenPower)} $FIL</p> : null}
-          </div>
+          {hasRegistered && (
+            <>
+              <div>{rawBytePower && <p>RBP: {rawBytePower}</p>}</div>
+              <div>
+                {tokenPower !== null ? (
+                  <p>{formatEther(tokenPower)} $FIL</p>
+                ) : null}
+              </div>
+            </>
+          )}
+          {!hasRegistered && (
+            <InfoText>Register when a vote is active</InfoText>
+          )}
         </>
       )}
     </>
