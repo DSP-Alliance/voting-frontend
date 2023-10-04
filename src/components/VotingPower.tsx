@@ -17,7 +17,7 @@ function VotingPower({
       return (
         <>
           <h4>Wallet Voting Power</h4>
-          <div>{rawBytePower && <p>{rawBytePower}</p>}</div>
+          <div>{rawBytePower && <p>RBP: {rawBytePower}</p>}</div>
           <div>
             {tokenPower !== null ? <p>{formatEther(tokenPower)} $FIL</p> : null}
           </div>

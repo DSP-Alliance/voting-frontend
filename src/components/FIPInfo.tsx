@@ -15,7 +15,13 @@ const Link = styled.a`
   word-break: break-all;
 `;
 
+const ErrorMessage = styled.div`
+  align-self: center;
+  color: var(--error);
+`;
+
 function FIPInfo({ num }: { num: number }) {
+  const [errorMessage, setErrorMessage] = useState<string>('');
   const [fipData, setFipData] = useState<FipData>();
 
   useEffect(() => {
@@ -23,8 +29,8 @@ function FIPInfo({ num }: { num: number }) {
       try {
         const response = await getFip(num);
         setFipData(response);
-      } catch (error) {
-        console.error(error);
+      } catch (error: any) {
+        setErrorMessage(JSON.stringify(error));
       }
     }
 
@@ -61,6 +67,7 @@ function FIPInfo({ num }: { num: number }) {
         Discussions:
         <ul>{fipData && renderDiscussionLinks(fipData['discussions-to'])}</ul>
       </span>
+      {errorMessage && <ErrorMessage>Error: {errorMessage}</ErrorMessage>}
     </InfoContainer>
   );
 }

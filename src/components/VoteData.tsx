@@ -24,6 +24,10 @@ const DataSections = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   gap: 12px;
+
+  @media (max-width: 920px) {
+    grid-template-columns: 1fr;
+  }
 `;
 
 const VoteSection = styled.div`
@@ -208,10 +212,6 @@ function VoteData({
         }
       }
 
-      // if (!hasRegistered) {
-      //   write?.();
-      // }
-
       setRawBytePower(formatBytesWithLabel(rawBytes));
     } catch (error) {
       setErrorMessage('Error adding Miner IDs');
@@ -252,14 +252,18 @@ function VoteData({
             addVotingPower={addVotingPower}
             address={address}
             countdownValue={countdownValue}
-            errorMessage={errorMessage}
+            errorMessage={errorMessage || error?.message}
             hasRegistered={hasRegistered}
             hasVoted={hasVoted}
             loadingFipData={loadingFipData}
             lastFipNum={lastFipNum}
             lastFipAddress={lastFipAddress}
-            loading={loading || isLoading}
+            loading={loading}
+            minerIds={minerIds}
+            rawBytePower={rawBytePower}
+            registering={isLoading}
             setHasVoted={setHasVoted}
+            tokenPower={tokenPower}
             write={write}
           />
         </VoteSection>

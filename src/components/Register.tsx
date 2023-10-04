@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { TextField } from '@mui/material';
+import { formatEther } from 'viem';
+import ClipLoader from 'react-spinners/ClipLoader';
 
 const ActionArea = styled.div`
   display: flex;
@@ -21,20 +23,44 @@ const ErrorMessage = styled.div`
   margin-top: 8px;
 `;
 
+const ButtonContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+`;
+
+const BackButton = styled.button`
+  background-color: #fff;
+  color: var(--primary);
+  border: 1px solid var(--primary);
+
+  &:hover:enabled {
+    background-color: #e1e3e1;
+  }
+`;
+
 function Register({
   addVotingPower,
   error,
   loading,
+  registering,
   write,
+  rawBytePower,
+  tokenPower,
+  minerIds,
 }: {
   addVotingPower: (address: string) => void;
-  error: string;
+  error: string | undefined;
   loading: boolean;
+  registering: boolean;
   write: () => void;
+  rawBytePower: string;
+  tokenPower: bigint | null;
+  minerIds: bigint[];
 }) {
   const [agentAddress, setAgentAddress] = useState('');
   const [showAddressField, setShowAddressField] = useState(false);
-  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [showConfirmation, setShowConfirmation] = useState(true);
 
   return (
     <div>
@@ -43,12 +69,16 @@ function Register({
           <>
             <button
               disabled={loading}
-              onClick={() => addVotingPower(agentAddress)}
+              onClick={() => {
+                addVotingPower(agentAddress);
+                setShowConfirmation(true);
+              }}
             >
               Register to Vote
             </button>
             <AddressCheckbox>
               <input
+                disabled={loading}
                 type='checkbox'
                 id='addAgentAddress'
                 checked={showAddressField}
@@ -58,6 +88,7 @@ function Register({
             </AddressCheckbox>
             {showAddressField && (
               <TextField
+                disabled={loading}
                 size='small'
                 margin='normal'
                 label='Agent Address'
@@ -66,16 +97,36 @@ function Register({
                 onChange={(e) => setAgentAddress(e.target.value)}
               />
             )}
+            {loading && <ClipLoader color='var(--primary)' />}
           </>
         )}
-        {showConfirmation && (
+        {showConfirmation && !loading && (
           <>
-            {/* <p>{minerIds.map((id) => <li>id</li>)} */}
-            {/* <div>{rawBytePower && <p>{rawBytePower}</p>}</div>
+            {minerIds && (
+              <div>
+                Miner IDs:
+                {minerIds.map((id, index) => (
+                  <li key={index}>{id.toString()}</li>
+                ))}
+              </div>
+            )}
+            <div>{rawBytePower && <p>RBP: {rawBytePower}</p>}</div>
             <div>
-              {tokenPower !== null ? <p>{tokenPower.toString()} $FIL</p> : null}
-            </div> */}
-            <button onClick={() => write?.()}>Confirm registration</button>
+              {tokenPower !== null ? (
+                <p>{formatEther(tokenPower)} $FIL</p>
+              ) : null}
+            </div>
+            <ButtonContainer>
+              <BackButton
+                disabled={registering}
+                onClick={() => setShowConfirmation(false)}
+              >
+                Go back
+              </BackButton>
+              <button disabled={registering} onClick={() => write?.()}>
+                Confirm registration
+              </button>
+            </ButtonContainer>
           </>
         )}
       </ActionArea>

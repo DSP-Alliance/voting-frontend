@@ -20,6 +20,10 @@ const Container = styled.div`
   display: grid;
   grid-template-columns: 150px 300px auto;
   gap: 12px;
+
+  @media (max-width: 920px) {
+    grid-template-columns: 1fr;
+  }
 `;
 
 const QuestionText = styled.div`
@@ -100,8 +104,6 @@ function VoteHistory({ fips }: { fips: number[] }) {
               setQuestionText(question);
               setStartTime(startTime);
               setLength(length);
-              console.log('hi lisa winningVote ', winningVote);
-
               setWinningVoteValue(winningVote);
               setData([
                 {
@@ -184,7 +186,7 @@ function VoteHistory({ fips }: { fips: number[] }) {
             <YAxis width={100} unit='Bytes' />
             <Tooltip />
             <Legend />
-            <Bar dataKey='RPB' fill='var(--rpbcount)' />
+            <Bar dataKey='RPB' fill='var(--rbpcount)' />
             <Bar dataKey='Tokens' fill='var(--tokencount)' />
             <Bar dataKey='Miner Tokens' fill='var(--minertokencount)' />
           </BarChart>

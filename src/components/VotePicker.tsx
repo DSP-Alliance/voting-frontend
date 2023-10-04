@@ -84,6 +84,7 @@ function VotePicker({
     <VotePickerContainer>
       <div>{questionText}</div>
       <button
+        disabled={isLoading}
         onClick={() => {
           submitVote(BigInt(0));
         }}
@@ -92,6 +93,7 @@ function VotePicker({
       </button>
       {yesOptions[1] && (
         <button
+          disabled={isLoading}
           onClick={() => {
             submitVote(BigInt(3));
           }}
@@ -100,6 +102,7 @@ function VotePicker({
         </button>
       )}
       <button
+        disabled={isLoading}
         onClick={() => {
           submitVote(BigInt(1));
         }}
@@ -107,6 +110,7 @@ function VotePicker({
         No
       </button>
       <button
+        disabled={isLoading}
         onClick={() => {
           submitVote(BigInt(2));
         }}
