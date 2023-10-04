@@ -61,7 +61,7 @@ function VoteData({
   const [hasRegistered, setHasRegistered] = useState(false);
   const [hasVoted, setHasVoted] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [minerIds, setMinerIds] = useState<bigint[]>([]);
+  const [minerIds, setMinerIds] = useState<string[]>([]);
   const [rawBytePower, setRawBytePower] = useState('');
   const [tokenPower, setTokenPower] = useState<bigint>(BigInt(0));
 
@@ -154,7 +154,7 @@ function VoteData({
     abi: voteTrackerConfig.abi,
     address: lastFipAddress,
     functionName: 'registerVoter',
-    args: [agentAddress, minerIds],
+    args: [agentAddress, minerIds.map((id) => Number(id.replace('f0', '')))],
   });
 
   const { isLoading, isSuccess } = useWaitForTransaction({

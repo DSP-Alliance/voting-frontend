@@ -56,7 +56,7 @@ function Register({
   write: () => void;
   rawBytePower: string;
   tokenPower: bigint | null;
-  minerIds: bigint[];
+  minerIds: string[];
 }) {
   const [agentAddress, setAgentAddress] = useState('');
   const [showAddressField, setShowAddressField] = useState(false);
