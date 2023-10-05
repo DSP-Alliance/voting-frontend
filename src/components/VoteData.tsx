@@ -2,14 +2,14 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import Countdown from 'react-countdown';
 import { useAccount, useContractWrite, useWaitForTransaction } from 'wagmi';
-import { getAddress } from 'viem';
+import { ContractFunctionRevertedError, decodeErrorResult, getAddress } from 'viem';
 import axios from 'axios';
 import ClipLoader from 'react-spinners/ClipLoader';
 
 import { voteTrackerConfig } from 'constants/voteTrackerConfig';
 import { ownableConfig } from 'constants/ownableConfig';
 import { RPC_URL, publicClient } from 'services/clients';
-import { formatBytesWithLabel } from 'utilities/helpers';
+import { formatBytesWithLabel, ZERO_ADDRESS } from 'utilities/helpers';
 import FIPInfo from 'components/FIPInfo';
 import VoteActions from 'components/VoteActions';
 import VotingPower from 'components/VotingPower';
@@ -55,7 +55,7 @@ function VoteData({
 }) {
   const { isConnected } = useAccount();
   const [agentAddress, setAgentAddress] = useState<Address>(
-    '0x0000000000000000000000000000000000000000',
+    ZERO_ADDRESS,
   );
   const [errorMessage, setErrorMessage] = useState('');
   const [hasRegistered, setHasRegistered] = useState(false);
@@ -164,7 +164,7 @@ function VoteData({
   async function addVotingPower(agentAddress: string) {
     setLoading(true);
     setAgentAddress(
-      getAddress(agentAddress || '0x0000000000000000000000000000000000000000'),
+      getAddress(agentAddress.length > 0 ? agentAddress : ZERO_ADDRESS),
     );
 
     try {
@@ -201,10 +201,10 @@ function VoteData({
 
       await getMiners(address as string);
 
-      if (agentAddress) {
+      if (agentAddress.length > 0) {
         const glifOwner = await publicClient.readContract({
           address: getAddress(
-            agentAddress || '0x0000000000000000000000000000000000000000',
+            agentAddress || ZERO_ADDRESS,
           ),
           abi: ownableConfig.abi,
           functionName: 'owner',
@@ -215,18 +215,20 @@ function VoteData({
         }
       }
 
-      const data = await publicClient.readContract({
-        address: lastFipAddress || "0x000000000000000",
+      const [tokenPower, bytePower] = await publicClient.readContract({
+        address: lastFipAddress || ZERO_ADDRESS,
         abi: voteTrackerConfig.abi,
         functionName: "getVotingPower",
-        args: [address || '0x', getAddress(agentAddress), minerIds.map((id) => BigInt(id.replace('f0', '')))],
+        args: [address || ZERO_ADDRESS, getAddress(agentAddress.length > 0 ? agentAddress : ZERO_ADDRESS), minerIds.map((id) => BigInt(id.replace('f0', '')))],
       });
 
       console.log(data)
 
-      setRawBytePower(formatBytesWithLabel(rawBytes));
+      setRawBytePower(formatBytesWithLabel(parseInt(bytePower.toString())));
+      setTokenPower(tokenPower)
     } catch (error) {
       console.log(error)
+      //console.log(decodeErrorResult({abi: voteTrackerConfig.abi, data}))
       setErrorMessage('Error adding Miner IDs');
     } finally {
       setLoading(false);

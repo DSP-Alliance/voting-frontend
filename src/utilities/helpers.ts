@@ -12,6 +12,8 @@ const UNIT_NAMES = [
 
 const UNIT_MULTIPLE = 1024; // use binary bytes
 
+export const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
+
 export function formatBytesWithLabel(bytes: number): string {
   if (bytes === 0) {
     return '0 Bytes';
