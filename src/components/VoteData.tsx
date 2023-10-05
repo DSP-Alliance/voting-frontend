@@ -51,7 +51,7 @@ function VoteData({
   lastFipAddress: Address | undefined;
   lastFipNum: number | undefined;
   loadingFipData: boolean;
-  countdownValue: number;
+  countdownValue: number | undefined;
 }) {
   const { isConnected } = useAccount();
   const [agentAddress, setAgentAddress] = useState<Address>(ZERO_ADDRESS);
@@ -133,14 +133,19 @@ function VoteData({
     }
   }, [hasRegistered, address, lastFipAddress]);
 
-  const { data, error, isError, write } = useContractWrite({
+  const {
+    data,
+    error,
+    isLoading: isLoadingWrite,
+    write,
+  } = useContractWrite({
     abi: voteTrackerConfig.abi,
     address: lastFipAddress,
     functionName: 'registerVoter',
     args: [agentAddress, minerIds.map((id) => BigInt(id.replace('f0', '')))],
   });
 
-  const { isLoading, isSuccess } = useWaitForTransaction({
+  const { isLoading: isLoadingWait, isSuccess } = useWaitForTransaction({
     hash: data?.hash,
   });
 
@@ -236,7 +241,7 @@ function VoteData({
 
   return (
     <VoteDataContainer>
-      {Boolean(countdownValue) && (
+      {countdownValue !== undefined && countdownValue !== 0 && (
         <div>
           Time left: <Countdown date={Date.now() + countdownValue * 1000} />
         </div>
@@ -264,7 +269,7 @@ function VoteData({
             loading={loading}
             minerIds={minerIds}
             rawBytePower={rawBytePower}
-            registering={isLoading}
+            registering={isLoadingWrite || isLoadingWait}
             setHasVoted={setHasVoted}
             tokenPower={tokenPower}
             write={write}

@@ -18,8 +18,10 @@ const AddressCheckbox = styled.div`
 `;
 
 const ErrorMessage = styled.div`
+  font-size: 14px;
   color: var(--error);
   word-wrap: break-word;
+  max-width: 50ch;
   margin-top: 8px;
 `;
 
@@ -97,17 +99,19 @@ function Register({
                 onChange={(e) => setAgentAddress(e.target.value)}
               />
             )}
-            {loading && <ClipLoader color='var(--primary)' />}
           </>
         )}
+        {loading && <ClipLoader color='var(--primary)' />}
         {showConfirmation && !loading && (
           <>
             {minerIds && (
               <div>
                 Miner IDs:
-                {minerIds.map((id, index) => (
-                  <li key={index}>{id.toString()}</li>
-                ))}
+                {minerIds.length
+                  ? minerIds.map((id, index) => (
+                      <li key={index}>{id.toString()}</li>
+                    ))
+                  : ' -'}
               </div>
             )}
             <div>{rawBytePower && <p>RBP: {rawBytePower}</p>}</div>
@@ -123,9 +127,12 @@ function Register({
               >
                 Go back
               </BackButton>
-              <button disabled={registering} onClick={() => write?.()}>
-                Confirm registration
-              </button>
+              {!registering && (
+                <button disabled={registering} onClick={() => write?.()}>
+                  Confirm registration
+                </button>
+              )}
+              {registering && <ClipLoader color='var(--primary)' />}
             </ButtonContainer>
           </>
         )}

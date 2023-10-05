@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm, Controller, set } from 'react-hook-form';
 import styled from 'styled-components';
 import { DialogActions, TextField } from '@mui/material';
 import { useContractWrite, useWaitForTransaction } from 'wagmi';
+import ClipLoader from 'react-spinners/ClipLoader';
 
 import { voteFactoryConfig } from 'constants/voteFactoryConfig';
 import type { Address } from './Home';
@@ -33,7 +34,12 @@ const DeleteTokenButton = styled.button`
   }
 `;
 
+const LoaderWithMargin = styled(ClipLoader)`
+  margin-left: 12px;
+`;
+
 const ErrorMessage = styled.div`
+  font-size: 14px;
   color: var(--error);
   word-wrap: break-word;
 `;
@@ -61,7 +67,13 @@ function VoteFactory({
     },
   });
 
-  const { data, error, isError, write } = useContractWrite({
+  const {
+    data,
+    error,
+    isError,
+    isLoading: isLoadingWrite,
+    write,
+  } = useContractWrite({
     address: voteFactoryConfig.address,
     abi: voteFactoryConfig.abi,
     functionName: 'startVote',
@@ -79,15 +91,20 @@ function VoteFactory({
     ],
   });
 
-  const { isLoading, isSuccess } = useWaitForTransaction({
+  const { isLoading: isLoadingWait, isSuccess } = useWaitForTransaction({
     hash: data?.hash,
   });
 
   useEffect(() => {
-    if (isSuccess) {
-      getFipData();
-      closeModal();
+    async function updateFipData() {
+      if (isSuccess) {
+        getFipData();
+        closeModal();
+        // setTimeout(() => closeModal(), 5000); // hi lisa to test if it is a matter of timing
+      }
     }
+
+    updateFipData();
   }, [isSuccess]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
@@ -282,13 +299,18 @@ function VoteFactory({
         </LsdTokensContainer>
         <DialogActions>
           <button onClick={closeModal}>Cancel</button>
-          <button
-            type='submit'
-            disabled={isLoading || disableButton}
-            onClick={onSubmit}
-          >
-            Start Vote
-          </button>
+          {(isLoadingWrite || isLoadingWait) && (
+            <LoaderWithMargin color='var(--primary)' />
+          )}
+          {!isLoadingWrite && !isLoadingWait && (
+            <button
+              type='submit'
+              disabled={isLoadingWrite || isLoadingWait || disableButton}
+              onClick={onSubmit}
+            >
+              Start Vote
+            </button>
+          )}
         </DialogActions>
       </Form>
       {isError && <ErrorMessage>Error: {error?.message}</ErrorMessage>}

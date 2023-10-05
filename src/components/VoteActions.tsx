@@ -13,7 +13,7 @@ import type { Address } from './Home';
 interface VoteActionsProps {
   address: Address | undefined;
   addVotingPower: (agentAddress: string) => void;
-  countdownValue: number;
+  countdownValue: number | undefined;
   errorMessage: string | undefined;
   hasRegistered: boolean;
   hasVoted: boolean;

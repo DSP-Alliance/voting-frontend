@@ -12,6 +12,14 @@ const VotePickerContainer = styled.div`
   gap: 12px;
 `;
 
+const ErrorMessage = styled.div`
+  font-size: 14px;
+  align-self: center;
+  word-wrap: break-word;
+  max-width: 50ch;
+  color: var(--error);
+`;
+
 function VotePicker({
   lastFipAddress,
   setHasVoted,
@@ -47,9 +55,7 @@ function VotePicker({
           });
 
           setQuestionText(question);
-          if (yesOption1.length > 0 && yesOption2.length > 0) {
-            setYesOptions([yesOption1, yesOption2]);
-          }
+          setYesOptions([yesOption1, ...(yesOption2 ? [yesOption2] : [])]);
         } catch {
           setYesOptions([]);
         }
@@ -59,14 +65,19 @@ function VotePicker({
     getYesOptions();
   }, []);
 
-  const { data, error, isError, write } = useContractWrite({
+  const {
+    data,
+    error,
+    isLoading: isLoadingWrite,
+    write,
+  } = useContractWrite({
     abi: voteTrackerConfig.abi,
     address: lastFipAddress,
     functionName: 'castVote',
     args: [vote],
   });
 
-  const { isLoading, isSuccess } = useWaitForTransaction({
+  const { isLoading: isLoadingWait, isSuccess } = useWaitForTransaction({
     hash: data?.hash,
   });
 
@@ -92,7 +103,7 @@ function VotePicker({
     <VotePickerContainer>
       <div>{questionText}</div>
       <button
-        disabled={isLoading}
+        disabled={isLoadingWrite || isLoadingWait}
         onClick={() => {
           submitVote(BigInt(0));
         }}
@@ -101,7 +112,7 @@ function VotePicker({
       </button>
       {yesOptions[1] && (
         <button
-          disabled={isLoading}
+          disabled={isLoadingWrite || isLoadingWait}
           onClick={() => {
             submitVote(BigInt(3));
           }}
@@ -110,7 +121,7 @@ function VotePicker({
         </button>
       )}
       <button
-        disabled={isLoading}
+        disabled={isLoadingWrite || isLoadingWait}
         onClick={() => {
           submitVote(BigInt(1));
         }}
@@ -118,13 +129,14 @@ function VotePicker({
         No
       </button>
       <button
-        disabled={isLoading}
+        disabled={isLoadingWrite || isLoadingWait}
         onClick={() => {
           submitVote(BigInt(2));
         }}
       >
         Abstain
       </button>
+      {error && <ErrorMessage>{error.message}</ErrorMessage>}
     </VotePickerContainer>
   );
 }

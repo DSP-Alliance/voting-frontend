@@ -30,6 +30,7 @@ const ConnectButton = styled.button`
 `;
 
 const ErrorMessage = styled.div`
+  font-size: 14px;
   align-self: center;
   color: var(--error);
 `;

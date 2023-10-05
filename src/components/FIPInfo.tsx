@@ -16,6 +16,7 @@ const Link = styled.a`
 `;
 
 const ErrorMessage = styled.div`
+  font-size: 14px;
   align-self: center;
   color: var(--error);
 `;

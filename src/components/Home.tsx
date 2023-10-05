@@ -57,7 +57,7 @@ const VoteContent = styled.div`
 
 function Home() {
   const { address, isConnected } = useAccount();
-  const [countdownValue, setCountdownValue] = useState<number>(0);
+  const [countdownValue, setCountdownValue] = useState<number | undefined>();
   const [fipAddresses, setFipAddresses] = useState<Address[]>([]);
   const [fipList, setFipList] = useState<number[]>([]);
   const [isOwner, setIsOwner] = useState(false);
@@ -163,7 +163,7 @@ function Home() {
         <Connectors />
       </Header>
       <ButtonContainer>
-        {isOwner && !Boolean(countdownValue) && (
+        {isOwner && countdownValue === 0 && (
           <StartVoteButton onClick={() => setShowVoteFactory(true)}>
             Start Vote
           </StartVoteButton>
