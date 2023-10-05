@@ -110,37 +110,21 @@ function VoteData({
     async function getByteAndTokenPower() {
       if (lastFipAddress) {
         try {
-          let userTokenPower = await publicClient.readContract({
-            address: lastFipAddress,
+          const [tokenPower, bytePower] = await publicClient.readContract({
+            address: lastFipAddress || ZERO_ADDRESS,
             abi: voteTrackerConfig.abi,
-            functionName: 'voterWeightToken',
-            args: [address || `0x`],
+            functionName: "getVotingPower",
+            args: [address || ZERO_ADDRESS, getAddress(agentAddress.length > 0 ? agentAddress : ZERO_ADDRESS), minerIds.map((id) => BigInt(id.replace('f0', '')))],
           });
 
-          if (userTokenPower == BigInt(0)) {
-            userTokenPower = await publicClient.readContract({
-              address: lastFipAddress,
-              abi: voteTrackerConfig.abi,
-              functionName: 'voterWeightMinerToken',
-              args: [address || `0x`],
-            });
-          }
 
-          setTokenPower(userTokenPower);
-
-          const userBytePower = await publicClient.readContract({
-            address: lastFipAddress,
-            abi: voteTrackerConfig.abi,
-            functionName: 'voterWeightRBP',
-            args: [address || `0x`],
-          });
-
-          //setRawBytePower(
-          //  formatBytesWithLabel(parseInt(userBytePower.toString())),
-          //);
+          setRawBytePower(
+            formatBytesWithLabel(parseInt(bytePower.toString())),
+          );
+          setTokenPower(tokenPower);
         } catch {
           setTokenPower(BigInt(0));
-          //setRawBytePower('');
+          setRawBytePower('');
         }
       }
     }
