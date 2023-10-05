@@ -17,6 +17,7 @@ import { voteTrackerConfig } from 'constants/voteTrackerConfig';
 import { publicClient } from 'services/clients';
 import { voteFactoryConfig } from 'constants/voteFactoryConfig';
 import { formatBytes, getLargestUnit, timeLength } from 'utilities/helpers';
+import { formatEther } from 'viem';
 
 const Container = styled.div`
   display: grid;
@@ -135,8 +136,6 @@ function VoteHistory({ fips }: { fips: number[] }) {
 
               const unit = getLargestUnit([
                 ...rbpVotes,
-                ...minerTokenVotes,
-                ...tokenVotes,
               ]);
               setYAxisUnit(unit);
 
@@ -144,26 +143,26 @@ function VoteHistory({ fips }: { fips: number[] }) {
                 {
                   name: yesOption1,
                   RPB: formatBytes(Number(rbpVotes[0]), unit),
-                  Tokens: formatBytes(Number(minerTokenVotes[0]), unit),
-                  'Miner Tokens': formatBytes(Number(tokenVotes[0]), unit),
+                  Tokens: formatEther(minerTokenVotes[0]),
+                  'Miner Tokens': formatEther(tokenVotes[0]),
                 },
                 {
                   name: yesOption2,
                   RPB: formatBytes(Number(rbpVotes[1]), unit),
-                  Tokens: formatBytes(Number(minerTokenVotes[1]), unit),
-                  'Miner Tokens': formatBytes(Number(tokenVotes[1]), unit),
+                  Tokens: formatEther(minerTokenVotes[1]),
+                  'Miner Tokens': formatEther(tokenVotes[1]),
                 },
                 {
                   name: 'No',
                   RPB: formatBytes(Number(rbpVotes[2]), unit),
-                  Tokens: formatBytes(Number(minerTokenVotes[2]), unit),
-                  'Miner Tokens': formatBytes(Number(tokenVotes[2]), unit),
+                  Tokens: formatEther(minerTokenVotes[2]),
+                  'Miner Tokens': formatEther(tokenVotes[2]),
                 },
                 {
                   name: 'Abstain',
                   RPB: formatBytes(Number(rbpVotes[3]), unit),
-                  Tokens: formatBytes(Number(minerTokenVotes[3]), unit),
-                  'Miner Tokens': formatBytes(Number(tokenVotes[3]), unit),
+                  Tokens: formatEther(minerTokenVotes[3]),
+                  'Miner Tokens': formatEther(tokenVotes[3]),
                 },
               ]);
 
