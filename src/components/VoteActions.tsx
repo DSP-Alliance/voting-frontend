@@ -112,17 +112,21 @@ function VoteActions({
           );
           setData([
             {
-              name: `${yesOption1}`,
+              name: yesOption1,
               RPB: Number(rbpVotes[0]),
               Tokens: Number(minerTokenVotes[0]),
               'Miner Tokens': Number(tokenVotes[0]),
             },
-            {
-              name: `${yesOption2}`,
-              RPB: Number(rbpVotes[1]),
-              Tokens: Number(minerTokenVotes[1]),
-              'Miner Tokens': Number(tokenVotes[1]),
-            },
+            ...(yesOption2
+              ? [
+                  {
+                    name: yesOption2,
+                    RPB: Number(rbpVotes[1]),
+                    Tokens: Number(minerTokenVotes[1]),
+                    'Miner Tokens': Number(tokenVotes[1]),
+                  },
+                ]
+              : []),
             {
               name: 'No',
               RPB: Number(rbpVotes[2]),

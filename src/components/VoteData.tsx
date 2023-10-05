@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import Countdown from 'react-countdown';
 import { useAccount, useContractWrite, useWaitForTransaction } from 'wagmi';
-import { ContractFunctionRevertedError, decodeErrorResult, getAddress } from 'viem';
+import { getAddress } from 'viem';
 import axios from 'axios';
 import ClipLoader from 'react-spinners/ClipLoader';
 
@@ -54,9 +54,7 @@ function VoteData({
   countdownValue: number;
 }) {
   const { isConnected } = useAccount();
-  const [agentAddress, setAgentAddress] = useState<Address>(
-    ZERO_ADDRESS,
-  );
+  const [agentAddress, setAgentAddress] = useState<Address>(ZERO_ADDRESS);
   const [errorMessage, setErrorMessage] = useState('');
   const [hasRegistered, setHasRegistered] = useState(false);
   const [hasVoted, setHasVoted] = useState(false);
@@ -113,14 +111,15 @@ function VoteData({
           const [tokenPower, bytePower] = await publicClient.readContract({
             address: lastFipAddress || ZERO_ADDRESS,
             abi: voteTrackerConfig.abi,
-            functionName: "getVotingPower",
-            args: [address || ZERO_ADDRESS, getAddress(agentAddress.length > 0 ? agentAddress : ZERO_ADDRESS), minerIds.map((id) => BigInt(id.replace('f0', '')))],
+            functionName: 'getVotingPower',
+            args: [
+              address || ZERO_ADDRESS,
+              getAddress(agentAddress.length > 0 ? agentAddress : ZERO_ADDRESS),
+              minerIds.map((id) => BigInt(id.replace('f0', ''))),
+            ],
           });
 
-
-          setRawBytePower(
-            formatBytesWithLabel(parseInt(bytePower.toString())),
-          );
+          setRawBytePower(formatBytesWithLabel(parseInt(bytePower.toString())));
           setTokenPower(tokenPower);
         } catch {
           setTokenPower(BigInt(0));
@@ -140,8 +139,6 @@ function VoteData({
     functionName: 'registerVoter',
     args: [agentAddress, minerIds.map((id) => BigInt(id.replace('f0', '')))],
   });
-
-  console.log([agentAddress, minerIds.map((id) => BigInt(id.replace('f0', '')))])
 
   const { isLoading, isSuccess } = useWaitForTransaction({
     hash: data?.hash,
@@ -189,9 +186,7 @@ function VoteData({
 
       if (agentAddress.length > 0) {
         const glifOwner = await publicClient.readContract({
-          address: getAddress(
-            agentAddress || ZERO_ADDRESS,
-          ),
+          address: getAddress(agentAddress || ZERO_ADDRESS),
           abi: ownableConfig.abi,
           functionName: 'owner',
         });
@@ -204,19 +199,25 @@ function VoteData({
       const [tokenPower, bytePower] = await publicClient.readContract({
         address: lastFipAddress || ZERO_ADDRESS,
         abi: voteTrackerConfig.abi,
-        functionName: "getVotingPower",
-        args: [address || ZERO_ADDRESS, getAddress(agentAddress.length > 0 ? agentAddress : ZERO_ADDRESS), minerIds.map((id) => BigInt(id.replace('f0', '')))],
+        functionName: 'getVotingPower',
+        args: [
+          address || ZERO_ADDRESS,
+          getAddress(agentAddress.length > 0 ? agentAddress : ZERO_ADDRESS),
+          minerIds.map((id) => BigInt(id.replace('f0', ''))),
+        ],
       });
 
-      console.log([address || ZERO_ADDRESS, getAddress(agentAddress.length > 0 ? agentAddress : ZERO_ADDRESS), minerIds.map((id) => BigInt(id.replace('f0', '')))])
-      console.log(tokenPower, bytePower)
+      console.log([
+        address || ZERO_ADDRESS,
+        getAddress(agentAddress.length > 0 ? agentAddress : ZERO_ADDRESS),
+        minerIds.map((id) => BigInt(id.replace('f0', ''))),
+      ]);
+      console.log(tokenPower, bytePower);
 
       setRawBytePower(formatBytesWithLabel(rawBytes));
-      setTokenPower(tokenPower)
+      setTokenPower(tokenPower);
     } catch (error) {
-      console.log(error)
-      //console.log(decodeErrorResult({abi: voteTrackerConfig.abi, data}))
-      setErrorMessage('Error adding Miner IDs');
+      setErrorMessage('Error registering you to vote');
     } finally {
       setLoading(false);
     }

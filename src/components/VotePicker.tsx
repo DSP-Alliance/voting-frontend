@@ -84,7 +84,6 @@ function VotePicker({
   useEffect(() => {
     if (!hasClicked) return;
 
-    console.log(vote)
     setHasClicked(false);
     write?.();
   }, [vote, hasClicked]);

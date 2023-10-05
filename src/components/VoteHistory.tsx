@@ -40,6 +40,10 @@ const QuestionText = styled.div`
 
 const ChartArea = styled.div`
   margin: 24px;
+
+  @media (max-width: 1080px) {
+    grid-column-start: 1;
+  }
 `;
 
 function VoteHistory({ fips }: { fips: number[] }) {
@@ -134,9 +138,7 @@ function VoteHistory({ fips }: { fips: number[] }) {
               if (winningVote === 2) setWinningVoteText('Abstain');
               if (winningVote === 3) setWinningVoteText(yesOption2);
 
-              const unit = getLargestUnit([
-                ...rbpVotes,
-              ]);
+              const unit = getLargestUnit([...rbpVotes]);
               setYAxisUnit(unit);
 
               setData([
@@ -146,12 +148,16 @@ function VoteHistory({ fips }: { fips: number[] }) {
                   Tokens: formatEther(tokenVotes[0]),
                   'Miner Tokens': formatEther(minerTokenVotes[0]),
                 },
-                {
-                  name: yesOption2,
-                  RPB: formatBytes(Number(rbpVotes[1]), unit),
-                  Tokens: formatEther(tokenVotes[1]),
-                  'Miner Tokens': formatEther(minerTokenVotes[1]),
-                },
+                ...(yesOption2
+                  ? [
+                      {
+                        name: yesOption2,
+                        RPB: formatBytes(Number(rbpVotes[1]), unit),
+                        Tokens: formatEther(tokenVotes[1]),
+                        'Miner Tokens': formatEther(minerTokenVotes[1]),
+                      },
+                    ]
+                  : []),
                 {
                   name: 'No',
                   RPB: formatBytes(Number(rbpVotes[2]), unit),
