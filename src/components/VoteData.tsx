@@ -225,7 +225,7 @@ function VoteData({
       console.log([address || ZERO_ADDRESS, getAddress(agentAddress.length > 0 ? agentAddress : ZERO_ADDRESS), minerIds.map((id) => BigInt(id.replace('f0', '')))])
       console.log(tokenPower, bytePower)
 
-      setRawBytePower(formatBytesWithLabel(parseInt(bytePower.toString())));
+      setRawBytePower(formatBytesWithLabel(rawBytes));
       setTokenPower(tokenPower)
     } catch (error) {
       console.log(error)
