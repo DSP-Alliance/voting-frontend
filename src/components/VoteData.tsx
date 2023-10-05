@@ -157,6 +157,8 @@ function VoteData({
     args: [agentAddress, minerIds.map((id) => BigInt(id.replace('f0', '')))],
   });
 
+  console.log([agentAddress, minerIds.map((id) => BigInt(id.replace('f0', '')))])
+
   const { isLoading, isSuccess } = useWaitForTransaction({
     hash: data?.hash,
   });
