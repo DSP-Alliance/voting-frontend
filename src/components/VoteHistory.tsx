@@ -143,26 +143,26 @@ function VoteHistory({ fips }: { fips: number[] }) {
                 {
                   name: yesOption1,
                   RPB: formatBytes(Number(rbpVotes[0]), unit),
-                  Tokens: formatEther(minerTokenVotes[0]),
-                  'Miner Tokens': formatEther(tokenVotes[0]),
+                  Tokens: formatEther(tokenVotes[0]),
+                  'Miner Tokens': formatEther(minerTokenVotes[0]),
                 },
                 {
                   name: yesOption2,
                   RPB: formatBytes(Number(rbpVotes[1]), unit),
-                  Tokens: formatEther(minerTokenVotes[1]),
-                  'Miner Tokens': formatEther(tokenVotes[1]),
+                  Tokens: formatEther(tokenVotes[1]),
+                  'Miner Tokens': formatEther(minerTokenVotes[1]),
                 },
                 {
                   name: 'No',
                   RPB: formatBytes(Number(rbpVotes[2]), unit),
-                  Tokens: formatEther(minerTokenVotes[2]),
-                  'Miner Tokens': formatEther(tokenVotes[2]),
+                  Tokens: formatEther(tokenVotes[2]),
+                  'Miner Tokens': formatEther(minerTokenVotes[2]),
                 },
                 {
                   name: 'Abstain',
                   RPB: formatBytes(Number(rbpVotes[3]), unit),
-                  Tokens: formatEther(minerTokenVotes[3]),
-                  'Miner Tokens': formatEther(tokenVotes[3]),
+                  Tokens: formatEther(tokenVotes[3]),
+                  'Miner Tokens': formatEther(minerTokenVotes[3]),
                 },
               ]);
 

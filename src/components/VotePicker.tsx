@@ -22,6 +22,7 @@ function VotePicker({
   const [questionText, setQuestionText] = useState('');
   const [vote, setVote] = useState<bigint>(BigInt(0));
   const [yesOptions, setYesOptions] = useState<string[]>([]);
+  const [hasClicked, setHasClicked] = useState(false);
 
   useEffect(() => {
     async function getYesOptions() {
@@ -76,9 +77,17 @@ function VotePicker({
   });
 
   function submitVote(vote: bigint) {
+    setHasClicked(true);
     setVote(vote);
-    write?.();
   }
+
+  useEffect(() => {
+    if (!hasClicked) return;
+
+    console.log(vote)
+    setHasClicked(false);
+    write?.();
+  }, [vote, hasClicked]);
 
   return (
     <VotePickerContainer>
