@@ -206,7 +206,7 @@ function VoteHistory({ fips }: { fips: number[] }) {
         <div>
           {questionText && <QuestionText>{questionText}</QuestionText>}
           {Boolean(startTime) && <p>Started: {timestamp}</p>}
-          {Boolean(length) && <p>Length of time: {timeLength(length)}</p>}
+          {Boolean(length) && <p>Length of time: {timeLength(length / 60)}</p>}
           {winningVoteText && <p>Winning vote: {winningVoteText}</p>}
         </div>
       )}
