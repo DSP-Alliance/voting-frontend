@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { useForm, Controller, set } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import styled from 'styled-components';
 import { DialogActions, TextField } from '@mui/material';
 import { useContractWrite, useWaitForTransaction } from 'wagmi';
 import ClipLoader from 'react-spinners/ClipLoader';
 
+import { publicClient } from 'services/clients';
 import { voteFactoryConfig } from 'constants/voteFactoryConfig';
 import type { Address } from './Home';
 
@@ -47,12 +48,17 @@ const ErrorMessage = styled.div`
 function VoteFactory({
   closeModal,
   getFipData,
+  initialVotesLength,
+  setLastFipNum,
 }: {
   closeModal: () => void;
   getFipData: () => void;
+  initialVotesLength: number;
+  setLastFipNum: React.Dispatch<React.SetStateAction<number | undefined>>;
 }) {
   const [allLsdTokens, setAllLsdTokens] = useState<Address[]>([]);
-  const [disableButton, setDisableButton] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [isCheckingForDeployed, setIsCheckingForDeployed] = useState(false);
 
   const { control, getValues, setValue, trigger, watch } = useForm({
     mode: 'onTouched',
@@ -96,23 +102,31 @@ function VoteFactory({
   });
 
   useEffect(() => {
-    async function updateFipData() {
-      if (isSuccess) {
-        getFipData();
-        closeModal();
-        // setTimeout(() => closeModal(), 5000); // hi lisa to test if it is a matter of timing
-      }
-    }
+    if (isSuccess) {
+      setIsCheckingForDeployed(true);
+      const interval = setInterval(async () => {
+        try {
+          const deployedCount: bigint = await publicClient.readContract({
+            abi: voteFactoryConfig.abi,
+            address: voteFactoryConfig.address,
+            functionName: 'deployedVotesLength',
+          });
 
-    updateFipData();
+          if (deployedCount && deployedCount > initialVotesLength) {
+            getFipData();
+            setLastFipNum(parseInt(watch('fipNum')));
+            setIsCheckingForDeployed(false);
+            closeModal();
+          }
+        } catch (error) {
+          setErrorMessage(JSON.stringify(error));
+        }
+      }, 1000);
+      return () => clearInterval(interval);
+    }
   }, [isSuccess]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  useEffect(() => {
-    if (isError) setDisableButton(false);
-  }, [isError]);
-
   function onSubmit(e: React.MouseEvent) {
-    setDisableButton(true);
     e.preventDefault();
 
     trigger();
@@ -299,13 +313,13 @@ function VoteFactory({
         </LsdTokensContainer>
         <DialogActions>
           <button onClick={closeModal}>Cancel</button>
-          {(isLoadingWrite || isLoadingWait) && (
+          {(isLoadingWrite || isLoadingWait || isCheckingForDeployed) && (
             <LoaderWithMargin color='var(--primary)' />
           )}
-          {!isLoadingWrite && !isLoadingWait && (
+          {!isLoadingWrite && !isLoadingWait && !isCheckingForDeployed && (
             <button
               type='submit'
-              disabled={isLoadingWrite || isLoadingWait || disableButton}
+              // disabled={isLoadingWrite || isLoadingWait || isCheckingForDeployed || disableButton}
               onClick={onSubmit}
             >
               Start Vote
@@ -314,6 +328,7 @@ function VoteFactory({
         </DialogActions>
       </Form>
       {isError && <ErrorMessage>Error: {error?.message}</ErrorMessage>}
+      {errorMessage && <ErrorMessage>Error: {errorMessage}</ErrorMessage>}
     </>
   );
 }

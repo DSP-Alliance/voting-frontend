@@ -36,7 +36,7 @@ function FIPInfo({ num }: { num: number }) {
     }
 
     getFIPInfo();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [num]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const renderDiscussionLinks = (links: string | undefined) => {
     if (links) {

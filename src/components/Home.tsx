@@ -60,6 +60,7 @@ function Home() {
   const [countdownValue, setCountdownValue] = useState<number | undefined>();
   const [fipAddresses, setFipAddresses] = useState<Address[]>([]);
   const [fipList, setFipList] = useState<number[]>([]);
+  const [initialVotesLength, setInitialVotesLength] = useState<number>(0);
   const [isOwner, setIsOwner] = useState(false);
   const [lastFipNum, setLastFipNum] = useState<number>();
   const [loadingFipData, setLoadingFipData] = useState(true);
@@ -106,6 +107,7 @@ function Home() {
       const voteAddresses: Address[] = await Promise.all(promises);
 
       setFipAddresses(voteAddresses);
+      setInitialVotesLength(voteAddresses.length);
 
       const fips = await Promise.all(
         voteAddresses.map((fipAddress) => {
@@ -150,6 +152,8 @@ function Home() {
 
       if (currentTime < voteEndTime) {
         setCountdownValue(voteEndTime - currentTime);
+      } else {
+        setCountdownValue(0);
       }
     }
 
@@ -174,6 +178,8 @@ function Home() {
           open={showVoteFactory}
           closeModal={() => setShowVoteFactory(false)}
           getFipData={getFipData}
+          initialVotesLength={initialVotesLength}
+          setLastFipNum={setLastFipNum}
         />
       )}
       <VoteContent>

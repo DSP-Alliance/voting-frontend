@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useContractWrite, useWaitForTransaction } from 'wagmi';
 
-import { publicClient } from 'services/clients';
 import { voteTrackerConfig } from 'constants/voteTrackerConfig';
 import type { Address } from './Home';
 
@@ -23,47 +22,15 @@ const ErrorMessage = styled.div`
 function VotePicker({
   lastFipAddress,
   setHasVoted,
+  yesOption1,
+  yesOption2,
 }: {
   lastFipAddress: Address | undefined;
   setHasVoted: React.Dispatch<React.SetStateAction<boolean>>;
+  yesOption1: string;
+  yesOption2: string;
 }) {
-  const [questionText, setQuestionText] = useState('');
   const [vote, setVote] = useState<bigint>(BigInt(0));
-  const [yesOptions, setYesOptions] = useState<string[]>([]);
-  const [hasClicked, setHasClicked] = useState(false);
-
-  useEffect(() => {
-    async function getYesOptions() {
-      if (lastFipAddress) {
-        try {
-          const question = await publicClient.readContract({
-            address: lastFipAddress,
-            abi: voteTrackerConfig.abi,
-            functionName: 'question',
-          });
-          const yesOption1 = await publicClient.readContract({
-            address: lastFipAddress,
-            abi: voteTrackerConfig.abi,
-            functionName: 'yesOptions',
-            args: [BigInt(0)],
-          });
-          const yesOption2 = await publicClient.readContract({
-            address: lastFipAddress,
-            abi: voteTrackerConfig.abi,
-            functionName: 'yesOptions',
-            args: [BigInt(1)],
-          });
-
-          setQuestionText(question);
-          setYesOptions([yesOption1, ...(yesOption2 ? [yesOption2] : [])]);
-        } catch {
-          setYesOptions([]);
-        }
-      }
-    }
-
-    getYesOptions();
-  }, []);
 
   const {
     data,
@@ -85,53 +52,54 @@ function VotePicker({
     if (isSuccess) {
       setHasVoted(true);
     }
-  });
-
-  function submitVote(vote: bigint) {
-    setHasClicked(true);
-    setVote(vote);
-  }
+  }, [isSuccess]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
-    if (!hasClicked) return;
-
-    setHasClicked(false);
-    write?.();
-  }, [vote, hasClicked]);
+    if (vote) {
+      write?.();
+    }
+  }, [vote, write]);
 
   return (
     <VotePickerContainer>
-      <div>{questionText}</div>
       <button
+        type='button'
         disabled={isLoadingWrite || isLoadingWait}
-        onClick={() => {
-          submitVote(BigInt(0));
+        onClick={(e) => {
+          e.preventDefault();
+          setVote(BigInt(0));
         }}
       >
-        {yesOptions[0]}
+        {yesOption1}
       </button>
-      {yesOptions[1] && (
+      {yesOption2 && (
         <button
+          type='button'
           disabled={isLoadingWrite || isLoadingWait}
-          onClick={() => {
-            submitVote(BigInt(3));
+          onClick={(e) => {
+            e.preventDefault();
+            setVote(BigInt(3));
           }}
         >
-          {yesOptions[1]}
+          {yesOption2}
         </button>
       )}
       <button
+        type='button'
         disabled={isLoadingWrite || isLoadingWait}
-        onClick={() => {
-          submitVote(BigInt(1));
+        onClick={(e) => {
+          e.preventDefault();
+          setVote(BigInt(1));
         }}
       >
         No
       </button>
       <button
+        type='button'
         disabled={isLoadingWrite || isLoadingWait}
-        onClick={() => {
-          submitVote(BigInt(2));
+        onClick={(e) => {
+          e.preventDefault();
+          setVote(BigInt(2));
         }}
       >
         Abstain

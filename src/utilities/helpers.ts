@@ -42,8 +42,7 @@ export function getLargestUnit(data: bigint[]): string {
     const unitChanges = Math.floor(
       Math.log(Number(value)) / Math.log(UNIT_MULTIPLE),
     );
-    if (unitChanges > index)
-      index = UNIT_NAMES.indexOf(UNIT_NAMES[unitChanges]);
+    if (unitChanges > index) index = unitChanges;
   });
 
   return UNIT_NAMES[index];
