@@ -314,7 +314,7 @@ function VoteFactory({
         <DialogActions>
           <button onClick={closeModal}>Cancel</button>
           {(isLoadingWrite || isLoadingWait || isCheckingForDeployed) && (
-            <LoaderWithMargin color='var(--primary)' />
+            <LoaderWithMargin color='var(--primary)' size='20px' />
           )}
           {!isLoadingWrite && !isLoadingWait && !isCheckingForDeployed && (
             <button

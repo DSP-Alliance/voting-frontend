@@ -29,6 +29,7 @@ const ButtonContainer = styled.div`
   display: flex;
   flex-direction: row;
   gap: 12px;
+  align-items: center;
 `;
 
 const BackButton = styled.button`
@@ -132,7 +133,7 @@ function Register({
                   Confirm registration
                 </button>
               )}
-              {registering && <ClipLoader color='var(--primary)' />}
+              {registering && <ClipLoader color='var(--primary)' size='20px' />}
             </ButtonContainer>
           </>
         )}

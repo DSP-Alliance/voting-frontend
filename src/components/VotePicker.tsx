@@ -30,7 +30,7 @@ function VotePicker({
   yesOption1: string;
   yesOption2: string;
 }) {
-  const [vote, setVote] = useState<bigint>(BigInt(0));
+  const [vote, setVote] = useState<bigint | undefined>();
 
   const {
     data,
@@ -41,7 +41,7 @@ function VotePicker({
     abi: voteTrackerConfig.abi,
     address: lastFipAddress,
     functionName: 'castVote',
-    args: [vote],
+    args: [vote || BigInt(0)],
   });
 
   const { isLoading: isLoadingWait, isSuccess } = useWaitForTransaction({
@@ -54,20 +54,18 @@ function VotePicker({
     }
   }, [isSuccess]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  useEffect(() => {
-    if (vote) {
-      write?.();
-    }
-  }, [vote, write]);
+  function submitVote(vote: bigint) {
+    setVote(vote);
+    write?.();
+  }
 
   return (
     <VotePickerContainer>
       <button
         type='button'
         disabled={isLoadingWrite || isLoadingWait}
-        onClick={(e) => {
-          e.preventDefault();
-          setVote(BigInt(0));
+        onClick={() => {
+          submitVote(BigInt(0));
         }}
       >
         {yesOption1}
@@ -76,9 +74,8 @@ function VotePicker({
         <button
           type='button'
           disabled={isLoadingWrite || isLoadingWait}
-          onClick={(e) => {
-            e.preventDefault();
-            setVote(BigInt(3));
+          onClick={() => {
+            submitVote(BigInt(3));
           }}
         >
           {yesOption2}
@@ -88,8 +85,7 @@ function VotePicker({
         type='button'
         disabled={isLoadingWrite || isLoadingWait}
         onClick={(e) => {
-          e.preventDefault();
-          setVote(BigInt(1));
+          submitVote(BigInt(1));
         }}
       >
         No
@@ -98,8 +94,7 @@ function VotePicker({
         type='button'
         disabled={isLoadingWrite || isLoadingWait}
         onClick={(e) => {
-          e.preventDefault();
-          setVote(BigInt(2));
+          submitVote(BigInt(2));
         }}
       >
         Abstain

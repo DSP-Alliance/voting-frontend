@@ -30,6 +30,10 @@ const DataSections = styled.div`
   }
 `;
 
+const CountdownContainer = styled.div`
+  height: 20px;
+`;
+
 const VoteSection = styled.div`
   display: block;
   border: 1px solid var(--primary);
@@ -236,11 +240,13 @@ function VoteData({
 
   return (
     <VoteDataContainer>
-      {countdownValue !== undefined && countdownValue !== 0 && (
-        <div>
-          Time left: <Countdown date={Date.now() + countdownValue * 1000} />
-        </div>
-      )}
+      <CountdownContainer>
+        {countdownValue !== undefined && countdownValue !== 0 && (
+          <span>
+            Time left: <Countdown date={Date.now() + countdownValue * 1000} />
+          </span>
+        )}
+      </CountdownContainer>
       <DataSections>
         <VoteSection>
           <h4>Latest Vote FIP</h4>

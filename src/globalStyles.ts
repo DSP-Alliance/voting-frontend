@@ -4,6 +4,7 @@ const GlobalStyle = createGlobalStyle`
   body {
     --primary: #1976d2;
     --darkprimary: #0d47a1;
+    --caption: #757575;
     --error: #d32f2f;
     --rbpcount: #42a5f5;
     --rbpcountlight0: #42a5f5;

@@ -25,21 +25,33 @@ const Legend = styled.div`
   gap: 16px;
 `;
 
+const Label = styled.div`
+  color: var(--primary);
+`;
+
+const DataText = styled.div`
+  margin-top: 4px;
+  color: var(--caption);
+`;
+
 function VoteResults({
   lastFipNum,
   lastFipAddress,
-  loadingFipData,
+  loading,
   yesOption1,
 }: {
   lastFipNum: number | undefined;
   lastFipAddress: Address | undefined;
-  loadingFipData: boolean;
+  loading: boolean;
   yesOption1: string;
 }) {
   const [data, setData] = useState<{ [key: string]: string | number }[]>([]);
   const [totalRbp, setTotalRbp] = useState('');
   const [totalTokens, setTotalTokens] = useState('');
   const [totalMinerTokens, setTotalMinerTokens] = useState('');
+  const [winningRbp, setWinningRbp] = useState('');
+  const [winningTokens, setWinningTokens] = useState('');
+  const [winningMinerTokens, setWinningMinerTokens] = useState('');
 
   useEffect(() => {
     if (lastFipAddress) {
@@ -75,6 +87,31 @@ function VoteResults({
         setTotalMinerTokens(
           formatEther(minerTokenVotes.reduce((a, b) => a + b, BigInt(0))),
         );
+
+        const VOTES = ['Yes', 'Yes', 'No', 'Abstain'];
+
+        setWinningRbp(
+          VOTES[
+            rbpVotes.indexOf(
+              BigInt(Math.max(...rbpVotes.map((rbp) => Number(rbp)))),
+            )
+          ],
+        );
+        setWinningTokens(
+          VOTES[
+            tokenVotes.indexOf(
+              BigInt(Math.max(...tokenVotes.map((rbp) => Number(rbp)))),
+            )
+          ],
+        );
+        setWinningMinerTokens(
+          VOTES[
+            minerTokenVotes.indexOf(
+              BigInt(Math.max(...minerTokenVotes.map((rbp) => Number(rbp)))),
+            )
+          ],
+        );
+
         setData([
           {
             name: yesOption1,
@@ -109,7 +146,7 @@ function VoteResults({
     }
   }, [lastFipAddress]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  if (loadingFipData) return <ClipLoader color='var(--primary)' />;
+  if (loading) return <ClipLoader color='var(--primary)' />;
 
   if (lastFipNum) {
     if (data.length === 0) return <InfoText>No vote data</InfoText>;
@@ -161,14 +198,32 @@ function VoteResults({
         <Legend>
           <div>
             <span>
-              Inner: <br /> RBP, total: {totalRbp}
+              <Label>Inner:</Label>
+              RBP
+              <DataText>
+                Total: {totalRbp || '-'}
+                <br />
+                Winning: {winningRbp || '-'}
+              </DataText>
             </span>
           </div>
           <div>
-            Middle: <br /> Tokens, total: {totalTokens}
+            <Label>Middle:</Label>
+            Tokens
+            <DataText>
+              Total: {totalTokens || '-'}
+              <br />
+              Winning: {winningTokens || '-'}
+            </DataText>
           </div>
           <div>
-            Outer: <br /> Miner Tokens, total: {totalMinerTokens}
+            <Label>Outer:</Label>
+            Miner Tokens
+            <DataText>
+              Total: {totalMinerTokens || '-'}
+              <br />
+              Winning: {winningMinerTokens || '-'}
+            </DataText>
           </div>
         </Legend>
       </ChartArea>
