@@ -1,17 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import styled from 'styled-components';
-import {
-  DialogActions,
-  FormControl,
-  FormControlLabel,
-  FormLabel,
-  Radio,
-  RadioGroup,
-  TextField,
-} from '@mui/material';
+import { DialogActions, TextField } from '@mui/material';
 import { useContractWrite, useWaitForTransaction } from 'wagmi';
+import ClipLoader from 'react-spinners/ClipLoader';
 
+import { publicClient } from 'services/clients';
 import { voteFactoryConfig } from 'constants/voteFactoryConfig';
 import type { Address } from './Home';
 
@@ -41,34 +35,58 @@ const DeleteTokenButton = styled.button`
   }
 `;
 
+const LoaderWithMargin = styled(ClipLoader)`
+  margin-left: 12px;
+`;
+
 const ErrorMessage = styled.div`
-  color: var(--rederror);
+  font-size: 14px;
+  color: var(--error);
   word-wrap: break-word;
 `;
 
-function VoteFactory({ closeModal }: { closeModal: () => void }) {
+function VoteFactory({
+  closeModal,
+  getFipData,
+  initialVotesLength,
+  setLastFipNum,
+}: {
+  closeModal: () => void;
+  getFipData: () => void;
+  initialVotesLength: number;
+  setLastFipNum: React.Dispatch<React.SetStateAction<number | undefined>>;
+}) {
   const [allLsdTokens, setAllLsdTokens] = useState<Address[]>([]);
-  const [disableButton, setDisableButton] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [isCheckingForDeployed, setIsCheckingForDeployed] = useState(false);
 
   const { control, getValues, setValue, trigger, watch } = useForm({
     mode: 'onTouched',
     defaultValues: {
       fipNum: '',
       length: '',
-      doubleYesOption: 'false',
+      yesOptionOne: '',
+      yesOptionTwo: '',
       [`lsdToken${allLsdTokens.length + 1}`]:
         '0x3C3501E6c353DbaEDDFA90376975Ce7aCe4Ac7a8',
+      question: '',
     },
   });
 
-  const { data, error, isError, write } = useContractWrite({
+  const {
+    data,
+    error,
+    isError,
+    isLoading: isLoadingWrite,
+    write,
+  } = useContractWrite({
     address: voteFactoryConfig.address,
     abi: voteFactoryConfig.abi,
     functionName: 'startVote',
     args: [
       parseInt(watch('length')) * 60,
       parseInt(watch('fipNum')),
-      watch('doubleYesOption') === 'true' ? true : false,
+      [watch('yesOptionOne'), watch('yesOptionTwo')],
       watch(`lsdToken${allLsdTokens.length + 1}`)
         ? [
             ...allLsdTokens,
@@ -79,20 +97,36 @@ function VoteFactory({ closeModal }: { closeModal: () => void }) {
     ],
   });
 
-  const { isLoading, isSuccess } = useWaitForTransaction({
+  const { isLoading: isLoadingWait, isSuccess } = useWaitForTransaction({
     hash: data?.hash,
   });
 
   useEffect(() => {
-    if (isSuccess) closeModal();
+    if (isSuccess) {
+      setIsCheckingForDeployed(true);
+      const interval = setInterval(async () => {
+        try {
+          const deployedCount: bigint = await publicClient.readContract({
+            abi: voteFactoryConfig.abi,
+            address: voteFactoryConfig.address,
+            functionName: 'deployedVotesLength',
+          });
+
+          if (deployedCount && deployedCount > initialVotesLength) {
+            getFipData();
+            setLastFipNum(parseInt(watch('fipNum')));
+            setIsCheckingForDeployed(false);
+            closeModal();
+          }
+        } catch (error) {
+          setErrorMessage(JSON.stringify(error));
+        }
+      }, 1000);
+      return () => clearInterval(interval);
+    }
   }, [isSuccess]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  useEffect(() => {
-    if (isError) setDisableButton(false);
-  }, [isError]);
-
   function onSubmit(e: React.MouseEvent) {
-    setDisableButton(true);
     e.preventDefault();
 
     trigger();
@@ -209,28 +243,42 @@ function VoteFactory({ closeModal }: { closeModal: () => void }) {
             />
           )}
         />
-        <FormControl>
-          <FormLabel>Double yes option?</FormLabel>
-          <Controller
-            rules={{ required: 'Required' }}
-            name='doubleYesOption'
-            control={control}
-            render={({ field: { onChange, value } }) => (
-              <RadioGroup row value={value || 'false'} onChange={onChange}>
-                <FormControlLabel
-                  value={'true'}
-                  label={'Yes'}
-                  control={<Radio />}
-                />
-                <FormControlLabel
-                  value={'false'}
-                  label={'No'}
-                  control={<Radio />}
-                />
-              </RadioGroup>
-            )}
-          />
-        </FormControl>
+        <Controller
+          name='yesOptionOne'
+          control={control}
+          rules={{ required: 'Required' }}
+          render={({ field: { onChange, value }, fieldState: { error } }) => (
+            <TextField
+              required
+              type='text'
+              helperText={error ? 'Enter the text for the yes option' : null}
+              size='small'
+              error={!!error}
+              onChange={onChange}
+              onBlur={() => trigger('yesOptionOne')}
+              value={value || ''}
+              fullWidth
+              label='Yes Option 1'
+              variant='outlined'
+            />
+          )}
+        />
+        <Controller
+          name='yesOptionTwo'
+          control={control}
+          render={({ field: { onChange, value } }) => (
+            <TextField
+              type='text'
+              size='small'
+              onChange={onChange}
+              onBlur={() => trigger('yesOptionTwo')}
+              value={value || ''}
+              fullWidth
+              label='Yes Option 2 (optional)'
+              variant='outlined'
+            />
+          )}
+        />
         <LsdTokensContainer>
           {renderAllLsdTokens()}
           <Controller
@@ -265,16 +313,22 @@ function VoteFactory({ closeModal }: { closeModal: () => void }) {
         </LsdTokensContainer>
         <DialogActions>
           <button onClick={closeModal}>Cancel</button>
-          <button
-            type='submit'
-            disabled={isLoading || disableButton}
-            onClick={onSubmit}
-          >
-            Start Vote
-          </button>
+          {(isLoadingWrite || isLoadingWait || isCheckingForDeployed) && (
+            <LoaderWithMargin color='var(--primary)' size='20px' />
+          )}
+          {!isLoadingWrite && !isLoadingWait && !isCheckingForDeployed && (
+            <button
+              type='submit'
+              // disabled={isLoadingWrite || isLoadingWait || isCheckingForDeployed || disableButton}
+              onClick={onSubmit}
+            >
+              Start Vote
+            </button>
+          )}
         </DialogActions>
       </Form>
       {isError && <ErrorMessage>Error: {error?.message}</ErrorMessage>}
+      {errorMessage && <ErrorMessage>Error: {errorMessage}</ErrorMessage>}
     </>
   );
 }

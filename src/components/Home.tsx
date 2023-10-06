@@ -56,12 +56,14 @@ const VoteContent = styled.div`
 `;
 
 function Home() {
-  const { address = `0x` } = useAccount();
-  const [countdownValue, setCountdownValue] = useState<number>(0);
+  const { address, isConnected } = useAccount();
+  const [countdownValue, setCountdownValue] = useState<number | undefined>();
   const [fipAddresses, setFipAddresses] = useState<Address[]>([]);
   const [fipList, setFipList] = useState<number[]>([]);
-  const [lastFipNum, setLastFipNum] = useState<number>();
+  const [initialVotesLength, setInitialVotesLength] = useState<number>(0);
   const [isOwner, setIsOwner] = useState(false);
+  const [lastFipNum, setLastFipNum] = useState<number>();
+  const [loadingFipData, setLoadingFipData] = useState(true);
   const [showVoteFactory, setShowVoteFactory] = useState(false);
 
   useEffect(() => {
@@ -71,7 +73,7 @@ function Home() {
           abi: voteFactoryConfig.abi,
           address: voteFactoryConfig.address,
           functionName: 'starters',
-          args: [address],
+          args: [address || '0x0000000000000000000000000000000000000000'],
         });
 
         if (owner) setIsOwner(true);
@@ -80,61 +82,56 @@ function Home() {
       }
     }
 
-    // getOwner();
-    setIsOwner(true);
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
-  console.log('hi lisa isowner ', isOwner);
-  useEffect(() => {
-    let index = 0;
-    async function getVoteData() {
-      try {
-        const deployedCount: number = await publicClient.readContract({
-          abi: voteFactoryConfig.abi,
-          address: voteFactoryConfig.address,
-          functionName: 'deployedVotesLength',
-        });
+    if (isConnected) getOwner();
+  }, [isConnected]); // eslint-disable-line react-hooks/exhaustive-deps
 
-        const promises = [];
-        for (let i = 0; i < deployedCount; i++) {
-          promises.push(publicClient.readContract({
+  async function getFipData() {
+    try {
+      const deployedCount: bigint = await publicClient.readContract({
+        abi: voteFactoryConfig.abi,
+        address: voteFactoryConfig.address,
+        functionName: 'deployedVotesLength',
+      });
+
+      const promises = [];
+      for (let i = 0; i < deployedCount; i++) {
+        promises.push(
+          publicClient.readContract({
             abi: voteFactoryConfig.abi,
             address: voteFactoryConfig.address,
             functionName: 'deployedVotes',
-            args: [BigInt(index)],
-          }));
-        }
-        const voteAddresses: Address[] = await Promise.all(promises);
-
-        setFipAddresses(voteAddresses);
-      } catch (error) {
-        setLastFipNum(undefined);
-      }
-    }
-
-    getVoteData();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
-  useEffect(() => {
-    async function getFipNums() {
-      try {
-        const fips = await Promise.all(
-          fipAddresses.map((fipAddress) => {
-            return publicClient.readContract({
-              abi: voteTrackerConfig.abi,
-              address: fipAddress,
-              functionName: 'FIP',
-            });
+            args: [BigInt(i)],
           }),
         );
-        setFipList(fips);
-        setLastFipNum(fips[fips.length - 1]);
-      } catch {
-        setLastFipNum(undefined);
       }
-    }
+      const voteAddresses: Address[] = await Promise.all(promises);
 
-    if (fipAddresses) getFipNums();
-  }, [fipAddresses]);
+      setFipAddresses(voteAddresses);
+      setInitialVotesLength(voteAddresses.length);
+
+      const fips = await Promise.all(
+        voteAddresses.map((fipAddress) => {
+          return publicClient.readContract({
+            abi: voteTrackerConfig.abi,
+            address: fipAddress,
+            functionName: 'FIP',
+          });
+        }),
+      );
+
+      setFipList(fips);
+      setLastFipNum(fips[fips.length - 1]);
+      setLoadingFipData(false);
+    } catch (error) {
+      setFipAddresses([]);
+      setLastFipNum(undefined);
+      setLoadingFipData(false);
+    }
+  }
+
+  useEffect(() => {
+    getFipData();
+  }, []);
 
   useEffect(() => {
     async function isLastVoteRunning() {
@@ -151,10 +148,12 @@ function Home() {
       });
 
       const voteEndTime = voteStartTime + voteLength;
-      const currentTime = Date.now();
+      const currentTime = Math.floor(Date.now() / 1000);
 
       if (currentTime < voteEndTime) {
         setCountdownValue(voteEndTime - currentTime);
+      } else {
+        setCountdownValue(0);
       }
     }
 
@@ -168,7 +167,7 @@ function Home() {
         <Connectors />
       </Header>
       <ButtonContainer>
-        {isOwner && !Boolean(countdownValue) && (
+        {isOwner && countdownValue === 0 && (
           <StartVoteButton onClick={() => setShowVoteFactory(true)}>
             Start Vote
           </StartVoteButton>
@@ -176,9 +175,11 @@ function Home() {
       </ButtonContainer>
       {showVoteFactory && (
         <VoteFactoryModal
-          address={address}
           open={showVoteFactory}
           closeModal={() => setShowVoteFactory(false)}
+          getFipData={getFipData}
+          initialVotesLength={initialVotesLength}
+          setLastFipNum={setLastFipNum}
         />
       )}
       <VoteContent>
@@ -187,6 +188,7 @@ function Home() {
           lastFipAddress={fipAddresses[fipAddresses.length - 1]}
           lastFipNum={lastFipNum}
           countdownValue={countdownValue}
+          loadingFipData={loadingFipData}
         />
         <VoteHistory fips={fipList} />
       </VoteContent>

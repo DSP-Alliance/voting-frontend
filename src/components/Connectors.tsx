@@ -6,6 +6,7 @@ const Container = styled.div`
   grid-column-start: 3;
   justify-self: end;
   display: flex;
+  margin-right: 12px;
 `;
 
 const OptionsContainer = styled.div`
@@ -29,8 +30,9 @@ const ConnectButton = styled.button`
 `;
 
 const ErrorMessage = styled.div`
+  font-size: 14px;
   align-self: center;
-  color: var(--rederror);
+  color: var(--error);
 `;
 
 export function Connectors() {
@@ -63,7 +65,9 @@ export function Connectors() {
             <ConnectButton
               disabled={!connector.ready}
               key={connector.id}
-              onClick={() => connect({ connector })}
+              onClick={() => {
+                connect({ connector });
+              }}
             >
               Connect to {connector.name}
               {!connector.ready && ' (unsupported)'}

@@ -1,237 +1,237 @@
 export const voteFactoryConfig = {
-  address: '0x1ebefb51b6f12715dc5258ba0b03d927f030be07',
+  address: '0x69f1Da01E8BbCc75403040af0971c31600cb3E36',
   abi: [
     {
-      inputs: [],
-      stateMutability: 'nonpayable',
-      type: 'constructor',
+      "inputs": [],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
     },
     {
-      inputs: [
+      "inputs": [
         {
-          internalType: 'address',
-          name: 'sender',
-          type: 'address',
-        },
+          "internalType": "address",
+          "name": "sender",
+          "type": "address"
+        }
       ],
-      name: 'NotAStarter',
-      type: 'error',
+      "name": "NotAStarter",
+      "type": "error"
     },
     {
-      inputs: [
+      "inputs": [
         {
-          internalType: 'uint32',
-          name: 'fipNum',
-          type: 'uint32',
-        },
+          "internalType": "uint32",
+          "name": "fipNum",
+          "type": "uint32"
+        }
       ],
-      name: 'VoteAlreadyExists',
-      type: 'error',
+      "name": "VoteAlreadyExists",
+      "type": "error"
     },
     {
-      anonymous: false,
-      inputs: [
+      "anonymous": false,
+      "inputs": [
         {
-          indexed: true,
-          internalType: 'address',
-          name: 'user',
-          type: 'address',
+          "indexed": true,
+          "internalType": "address",
+          "name": "user",
+          "type": "address"
         },
         {
-          indexed: true,
-          internalType: 'address',
-          name: 'newOwner',
-          type: 'address',
-        },
+          "indexed": true,
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
       ],
-      name: 'OwnershipTransferred',
-      type: 'event',
+      "name": "OwnershipTransferred",
+      "type": "event"
     },
     {
-      anonymous: false,
-      inputs: [
+      "anonymous": false,
+      "inputs": [
         {
-          indexed: false,
-          internalType: 'address',
-          name: 'vote',
-          type: 'address',
+          "indexed": false,
+          "internalType": "address",
+          "name": "vote",
+          "type": "address"
         },
         {
-          indexed: false,
-          internalType: 'uint32',
-          name: 'fipNum',
-          type: 'uint32',
+          "indexed": false,
+          "internalType": "uint32",
+          "name": "fipNum",
+          "type": "uint32"
         },
         {
-          indexed: false,
-          internalType: 'uint32',
-          name: 'length',
-          type: 'uint32',
-        },
+          "indexed": false,
+          "internalType": "uint32",
+          "name": "length",
+          "type": "uint32"
+        }
       ],
-      name: 'VoteStarted',
-      type: 'event',
+      "name": "VoteStarted",
+      "type": "event"
     },
     {
-      inputs: [
+      "inputs": [
         {
-          internalType: 'uint32',
-          name: '',
-          type: 'uint32',
-        },
+          "internalType": "uint32",
+          "name": "",
+          "type": "uint32"
+        }
       ],
-      name: 'FIPnumToAddress',
-      outputs: [
+      "name": "FIPnumToAddress",
+      "outputs": [
         {
-          internalType: 'address',
-          name: '',
-          type: 'address',
-        },
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
       ],
-      stateMutability: 'view',
-      type: 'function',
+      "stateMutability": "view",
+      "type": "function"
     },
     {
-      inputs: [
+      "inputs": [
         {
-          internalType: 'uint256',
-          name: 'index',
-          type: 'uint256',
-        },
+          "internalType": "address",
+          "name": "starter",
+          "type": "address"
+        }
       ],
-      name: '_removeStarterIndex',
-      outputs: [],
-      stateMutability: 'nonpayable',
-      type: 'function',
+      "name": "addStarter",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
     },
     {
-      inputs: [
+      "inputs": [
         {
-          internalType: 'address',
-          name: 'starter',
-          type: 'address',
-        },
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
       ],
-      name: 'addStarter',
-      outputs: [],
-      stateMutability: 'nonpayable',
-      type: 'function',
+      "name": "deployedVotes",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
     },
     {
-      inputs: [
+      "inputs": [],
+      "name": "deployedVotesLength",
+      "outputs": [
         {
-          internalType: 'uint256',
-          name: '',
-          type: 'uint256',
-        },
+          "internalType": "uint256",
+          "name": "len",
+          "type": "uint256"
+        }
       ],
-      name: 'deployedVotes',
-      outputs: [
-        {
-          internalType: 'address',
-          name: '',
-          type: 'address',
-        },
-      ],
-      stateMutability: 'view',
-      type: 'function',
+      "stateMutability": "view",
+      "type": "function"
     },
     {
-      inputs: [],
-      name: 'owner',
-      outputs: [
+      "inputs": [],
+      "name": "owner",
+      "outputs": [
         {
-          internalType: 'address',
-          name: '',
-          type: 'address',
-        },
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
       ],
-      stateMutability: 'view',
-      type: 'function',
+      "stateMutability": "view",
+      "type": "function"
     },
     {
-      inputs: [
+      "inputs": [
         {
-          internalType: 'address',
-          name: 'starter',
-          type: 'address',
-        },
+          "internalType": "address",
+          "name": "starter",
+          "type": "address"
+        }
       ],
-      name: 'removeStarter',
-      outputs: [],
-      stateMutability: 'nonpayable',
-      type: 'function',
+      "name": "removeStarter",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
     },
     {
-      inputs: [
+      "inputs": [
         {
-          internalType: 'uint32',
-          name: 'length',
-          type: 'uint32',
+          "internalType": "uint32",
+          "name": "length",
+          "type": "uint32"
         },
         {
-          internalType: 'uint32',
-          name: 'fipNum',
-          type: 'uint32',
+          "internalType": "uint32",
+          "name": "fipNum",
+          "type": "uint32"
         },
         {
-          internalType: 'bool',
-          name: 'doubleYesOption',
-          type: 'bool',
+          "internalType": "string[2]",
+          "name": "yesOptions",
+          "type": "string[2]"
         },
         {
-          internalType: 'address[]',
-          name: 'lsdTokens',
-          type: 'address[]',
+          "internalType": "address[]",
+          "name": "lsdTokens",
+          "type": "address[]"
         },
         {
-          internalType: 'string',
-          name: 'question',
-          type: 'string',
-        },
+          "internalType": "string",
+          "name": "question",
+          "type": "string"
+        }
       ],
-      name: 'startVote',
-      outputs: [
+      "name": "startVote",
+      "outputs": [
         {
-          internalType: 'address',
-          name: 'vote',
-          type: 'address',
-        },
+          "internalType": "address",
+          "name": "vote",
+          "type": "address"
+        }
       ],
-      stateMutability: 'nonpayable',
-      type: 'function',
+      "stateMutability": "nonpayable",
+      "type": "function"
     },
     {
-      inputs: [
+      "inputs": [
         {
-          internalType: 'uint256',
-          name: '',
-          type: 'uint256',
-        },
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
       ],
-      name: 'starters',
-      outputs: [
+      "name": "starters",
+      "outputs": [
         {
-          internalType: 'address',
-          name: '',
-          type: 'address',
-        },
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
       ],
-      stateMutability: 'view',
-      type: 'function',
+      "stateMutability": "view",
+      "type": "function"
     },
     {
-      inputs: [
+      "inputs": [
         {
-          internalType: 'address',
-          name: 'newOwner',
-          type: 'address',
-        },
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
       ],
-      name: 'transferOwnership',
-      outputs: [],
-      stateMutability: 'nonpayable',
-      type: 'function',
-    },
+      "name": "transferOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
   ],
 } as const;

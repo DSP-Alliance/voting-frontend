@@ -2,21 +2,30 @@ import React from 'react';
 import { Dialog, DialogTitle, DialogContent } from '@mui/material';
 
 import VoteFactory from './VoteFactory';
-import type { Address } from './Home';
 
 function VoteFactoryModal({
   open,
   closeModal,
+  getFipData,
+  initialVotesLength,
+  setLastFipNum,
 }: {
-  address: Address;
   open: boolean;
   closeModal: () => void;
+  getFipData: () => void;
+  initialVotesLength: number;
+  setLastFipNum: React.Dispatch<React.SetStateAction<number | undefined>>;
 }) {
   return (
     <Dialog open={open} onClose={closeModal} fullWidth maxWidth='sm'>
       <DialogTitle>Create Vote</DialogTitle>
       <DialogContent dividers>
-        <VoteFactory closeModal={closeModal} />
+        <VoteFactory
+          closeModal={closeModal}
+          getFipData={getFipData}
+          initialVotesLength={initialVotesLength}
+          setLastFipNum={setLastFipNum}
+        />
       </DialogContent>
     </Dialog>
   );

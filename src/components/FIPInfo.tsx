@@ -11,11 +11,18 @@ const InfoContainer = styled.div`
 `;
 
 const Link = styled.a`
-  color: var(--blue);
+  color: var(--primary);
   word-break: break-all;
 `;
 
+const ErrorMessage = styled.div`
+  font-size: 14px;
+  align-self: center;
+  color: var(--error);
+`;
+
 function FIPInfo({ num }: { num: number }) {
+  const [errorMessage, setErrorMessage] = useState<string>('');
   const [fipData, setFipData] = useState<FipData>();
 
   useEffect(() => {
@@ -23,13 +30,13 @@ function FIPInfo({ num }: { num: number }) {
       try {
         const response = await getFip(num);
         setFipData(response);
-      } catch (error) {
-        console.error(error);
+      } catch (error: any) {
+        setErrorMessage(JSON.stringify(error));
       }
     }
 
     getFIPInfo();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [num]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const renderDiscussionLinks = (links: string | undefined) => {
     if (links) {
@@ -51,7 +58,9 @@ function FIPInfo({ num }: { num: number }) {
 
   return (
     <InfoContainer>
-      <span>{fipData?.fip?.replace(/\"/g, '')}</span>
+      <span>
+        {'#' + fipData?.fip?.replace(/(\"|)/g, '').replace(/^0+/, '')}
+      </span>
       <span>{fipData?.title}</span>
       <span>{`Authors: ${fipData?.author?.replace(/\"/g, '')}`}</span>
       <span>{`Status: ${fipData ? fipData.status : '-'}`}</span>
@@ -59,6 +68,7 @@ function FIPInfo({ num }: { num: number }) {
         Discussions:
         <ul>{fipData && renderDiscussionLinks(fipData['discussions-to'])}</ul>
       </span>
+      {errorMessage && <ErrorMessage>Error: {errorMessage}</ErrorMessage>}
     </InfoContainer>
   );
 }

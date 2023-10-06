@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
+import { useContractWrite, useWaitForTransaction } from 'wagmi';
 
-import { publicClient } from 'services/clients';
 import { voteTrackerConfig } from 'constants/voteTrackerConfig';
 import type { Address } from './Home';
 
@@ -11,47 +11,95 @@ const VotePickerContainer = styled.div`
   gap: 12px;
 `;
 
+const ErrorMessage = styled.div`
+  font-size: 14px;
+  align-self: center;
+  word-wrap: break-word;
+  max-width: 50ch;
+  color: var(--error);
+`;
+
 function VotePicker({
-  address,
-  minerIds,
+  lastFipAddress,
+  setHasVoted,
+  yesOption1,
+  yesOption2,
 }: {
-  address: Address | undefined;
-  minerIds: string[];
+  lastFipAddress: Address | undefined;
+  setHasVoted: React.Dispatch<React.SetStateAction<boolean>>;
+  yesOption1: string;
+  yesOption2: string;
 }) {
-  const [vote, setVote] = useState(0);
-  const [glifPool, setGlifPool] = useState('0');
+  const [vote, setVote] = useState<bigint | undefined>();
 
-  async function sendVote() {
-    const encodedVote = encodeVote(vote);
-  }
+  const {
+    data,
+    error,
+    isLoading: isLoadingWrite,
+    write,
+  } = useContractWrite({
+    abi: voteTrackerConfig.abi,
+    address: lastFipAddress,
+    functionName: 'castVote',
+    args: [vote || BigInt(0)],
+  });
 
-  function encodeVote(vote: number) {
-    return vote;
-    // switch (vote % 3) {
-    //   // yes Vote
-    //   case 0: { // If we have two yes options then (vote % 6) can only equal 0 or 3
-    //     if (doubleYesVote && vote % 6 >= 3) {
-    //       // If it is 3 then it is for option 2
-    //       yesVoteOption2 += weight;
-    //     } else {
-    //       // If it is 0 or there is no second yes option
-    //       yesVoteOption1 += weight;
-    //     }
-    //   }
-    //   // no Vote
-    //   case 1:
-    //     noVote += weight;
-    //   // abstain Vote
-    //   case 2:
-    //     abstainVote += weight;
-    // }
+  const { isLoading: isLoadingWait, isSuccess } = useWaitForTransaction({
+    hash: data?.hash,
+  });
+
+  useEffect(() => {
+    if (isSuccess) {
+      setHasVoted(true);
+    }
+  }, [isSuccess]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  function submitVote(vote: bigint) {
+    setVote(vote);
+    write?.();
   }
 
   return (
     <VotePickerContainer>
-      <button>Yes</button>
-      <button>No</button>
-      <button>Abstain</button>
+      <button
+        type='button'
+        disabled={isLoadingWrite || isLoadingWait}
+        onClick={() => {
+          submitVote(BigInt(0));
+        }}
+      >
+        {yesOption1}
+      </button>
+      {yesOption2 && (
+        <button
+          type='button'
+          disabled={isLoadingWrite || isLoadingWait}
+          onClick={() => {
+            submitVote(BigInt(3));
+          }}
+        >
+          {yesOption2}
+        </button>
+      )}
+      <button
+        type='button'
+        disabled={isLoadingWrite || isLoadingWait}
+        onClick={(e) => {
+          submitVote(BigInt(1));
+        }}
+      >
+        No
+      </button>
+      <button
+        type='button'
+        disabled={isLoadingWrite || isLoadingWait}
+        onClick={(e) => {
+          submitVote(BigInt(2));
+        }}
+      >
+        Abstain
+      </button>
+      {error && <ErrorMessage>{error.message}</ErrorMessage>}
     </VotePickerContainer>
   );
 }
