@@ -54,6 +54,7 @@ function VoteActions({
   useEffect(() => {
     async function getVoteInfo() {
       if (lastFipAddress) {
+        console.log('hi lisa VoteActions lastFipAddress ', lastFipAddress);
         try {
           const question = await publicClient.readContract({
             address: lastFipAddress,
@@ -95,7 +96,6 @@ function VoteActions({
             lastFipAddress={lastFipAddress}
             loadingFipData={loadingFipData}
             yesOption1={yesOptions[0]}
-            yesOption2={yesOptions[1]}
           />
         </>
       )}

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Cell, PieChart, Pie, Tooltip } from 'recharts';
 import styled from 'styled-components';
 import ClipLoader from 'react-spinners/ClipLoader';
+import { formatEther } from 'viem';
 
 import { publicClient } from 'services/clients';
 import { voteTrackerConfig } from 'constants/voteTrackerConfig';
@@ -29,23 +30,26 @@ function VoteResults({
   lastFipAddress,
   loadingFipData,
   yesOption1,
-  yesOption2,
 }: {
   lastFipNum: number | undefined;
   lastFipAddress: Address | undefined;
   loadingFipData: boolean;
   yesOption1: string;
-  yesOption2: string;
 }) {
   const [data, setData] = useState<{ [key: string]: string | number }[]>([]);
   const [totalRbp, setTotalRbp] = useState('');
   const [totalTokens, setTotalTokens] = useState('');
   const [totalMinerTokens, setTotalMinerTokens] = useState('');
-  // const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (lastFipAddress) {
       Promise.all([
+        publicClient.readContract({
+          address: lastFipAddress,
+          abi: voteTrackerConfig.abi,
+          functionName: 'yesOptions',
+          args: [BigInt(1)],
+        }),
         publicClient.readContract({
           abi: voteTrackerConfig.abi,
           address: lastFipAddress,
@@ -61,55 +65,49 @@ function VoteResults({
           address: lastFipAddress,
           functionName: 'getVoteResultsToken',
         }),
-      ]).then(([rbpVotes, minerTokenVotes, tokenVotes]) => {
+      ]).then(([yesOption2, rbpVotes, minerTokenVotes, tokenVotes]) => {
         setTotalRbp(
           formatBytesWithLabel(rbpVotes.reduce((a, b) => a + Number(b), 0)),
         );
         setTotalTokens(
-          formatBytesWithLabel(tokenVotes.reduce((a, b) => a + Number(b), 0)),
+          formatEther(tokenVotes.reduce((a, b) => a + b, BigInt(0))),
         );
         setTotalMinerTokens(
-          formatBytesWithLabel(
-            minerTokenVotes.reduce((a, b) => a + Number(b), 0),
-          ),
+          formatEther(minerTokenVotes.reduce((a, b) => a + b, BigInt(0))),
         );
         setData([
           {
             name: yesOption1,
-            RPB: Number(rbpVotes[0]),
-            Tokens: Number(minerTokenVotes[0]),
-            'Miner Tokens': Number(tokenVotes[0]),
+            RBP: Number(rbpVotes[0]),
+            Tokens: Number(tokenVotes[0]),
+            'Miner Tokens': Number(minerTokenVotes[0]),
           },
           ...(yesOption2
             ? [
                 {
                   name: yesOption2,
-                  RPB: Number(rbpVotes[1]),
-                  Tokens: Number(minerTokenVotes[1]),
-                  'Miner Tokens': Number(tokenVotes[1]),
+                  RBP: Number(rbpVotes[1]),
+                  Tokens: Number(tokenVotes[1]),
+                  'Miner Tokens': Number(minerTokenVotes[1]),
                 },
               ]
             : []),
           {
             name: 'No',
-            RPB: Number(rbpVotes[2]),
-            Tokens: Number(minerTokenVotes[2]),
-            'Miner Tokens': Number(tokenVotes[2]),
+            RBP: Number(rbpVotes[2]),
+            Tokens: Number(tokenVotes[2]),
+            'Miner Tokens': Number(minerTokenVotes[2]),
           },
           {
             name: 'Abstain',
-            RPB: Number(rbpVotes[3]),
-            Tokens: Number(minerTokenVotes[3]),
-            'Miner Tokens': Number(tokenVotes[3]),
+            RBP: Number(rbpVotes[3]),
+            Tokens: Number(tokenVotes[3]),
+            'Miner Tokens': Number(minerTokenVotes[3]),
           },
         ]);
-
-        console.log('hi lisa useeffect', rbpVotes);
-
-        // setLoading(false);
       });
     }
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [lastFipAddress]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (loadingFipData) return <ClipLoader color='var(--primary)' />;
 
