@@ -78,6 +78,8 @@ function VoteResults({
           functionName: 'getVoteResultsToken',
         }),
       ]).then(([yesOption2, rbpVotes, minerTokenVotes, tokenVotes]) => {
+        console.log(yesOption2, rbpVotes, minerTokenVotes, tokenVotes)
+
         setTotalRbp(
           formatBytesWithLabel(rbpVotes.reduce((a, b) => a + Number(b), 0)),
         );

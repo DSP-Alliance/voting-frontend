@@ -144,7 +144,7 @@ function VoteHistory({ fips }: { fips: number[] }) {
               setData([
                 {
                   name: yesOption1,
-                  RPB: formatBytes(Number(rbpVotes[0]), unit),
+                  RBP: formatBytes(Number(rbpVotes[0]), unit),
                   Tokens: formatEther(tokenVotes[0]),
                   'Miner Tokens': formatEther(minerTokenVotes[0]),
                 },
@@ -152,7 +152,7 @@ function VoteHistory({ fips }: { fips: number[] }) {
                   ? [
                       {
                         name: yesOption2,
-                        RPB: formatBytes(Number(rbpVotes[1]), unit),
+                        RBP: formatBytes(Number(rbpVotes[1]), unit),
                         Tokens: formatEther(tokenVotes[1]),
                         'Miner Tokens': formatEther(minerTokenVotes[1]),
                       },
@@ -160,13 +160,13 @@ function VoteHistory({ fips }: { fips: number[] }) {
                   : []),
                 {
                   name: 'No',
-                  RPB: formatBytes(Number(rbpVotes[2]), unit),
+                  RBP: formatBytes(Number(rbpVotes[2]), unit),
                   Tokens: formatEther(tokenVotes[2]),
                   'Miner Tokens': formatEther(minerTokenVotes[2]),
                 },
                 {
                   name: 'Abstain',
-                  RPB: formatBytes(Number(rbpVotes[3]), unit),
+                  RBP: formatBytes(Number(rbpVotes[3]), unit),
                   Tokens: formatEther(tokenVotes[3]),
                   'Miner Tokens': formatEther(minerTokenVotes[3]),
                 },
@@ -238,7 +238,7 @@ function VoteHistory({ fips }: { fips: number[] }) {
             </YAxis>
             <Tooltip />
             <Legend />
-            <Bar dataKey='RPB' fill='var(--rbpcount)' />
+            <Bar dataKey='RBP' fill='var(--rbpcount)' />
             <Bar dataKey='Tokens' fill='var(--tokencount)' />
             <Bar dataKey='Miner Tokens' fill='var(--minertokencount)' />
           </BarChart>
