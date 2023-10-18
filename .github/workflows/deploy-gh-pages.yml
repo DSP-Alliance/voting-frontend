@@ -3,6 +3,7 @@ name: Deploy to github pages
 permissions:
   deployments: write
   id-token: write
+  pages: write
 
 on:
   push:
