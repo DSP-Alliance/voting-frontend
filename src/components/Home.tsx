@@ -57,7 +57,7 @@ const VoteContent = styled.div`
 
 function Home() {
   const { address, isConnected } = useAccount();
-  const [countdownValue, setCountdownValue] = useState<number | undefined>();
+  const [countdownValue, setCountdownValue] = useState<number | undefined>(0);
   const [fipAddresses, setFipAddresses] = useState<Address[]>([]);
   const [fipList, setFipList] = useState<number[]>([]);
   const [initialVotesLength, setInitialVotesLength] = useState<number>(0);

@@ -14,6 +14,7 @@ import FIPInfo from 'components/FIPInfo';
 import VoteActions from 'components/VoteActions';
 import VotingPower from 'components/VotingPower';
 import type { Address } from './Home';
+import { voteFactoryConfig } from 'constants/voteFactoryConfig';
 
 const VoteDataContainer = styled.div`
   display: flex;
@@ -72,9 +73,9 @@ function VoteData({
       if (lastFipAddress) {
         try {
           const userHasRegistered = await publicClient.readContract({
-            address: lastFipAddress,
-            abi: voteTrackerConfig.abi,
-            functionName: 'hasRegistered',
+            address: voteFactoryConfig.address,
+            abi: voteFactoryConfig.abi,
+            functionName: 'registered',
             args: [address || `0x`],
           });
 
@@ -118,8 +119,6 @@ function VoteData({
             functionName: 'getVotingPower',
             args: [
               address || ZERO_ADDRESS,
-              getAddress(agentAddress.length > 0 ? agentAddress : ZERO_ADDRESS),
-              minerIds.map((id) => BigInt(id.replace('f0', ''))),
             ],
           });
 
@@ -143,9 +142,9 @@ function VoteData({
     isLoading: isLoadingWrite,
     write,
   } = useContractWrite({
-    abi: voteTrackerConfig.abi,
-    address: lastFipAddress,
-    functionName: 'registerVoter',
+    abi: voteFactoryConfig.abi,
+    address: voteFactoryConfig.address,
+    functionName: 'register',
     args: [agentAddress, minerIds.map((id) => BigInt(id.replace('f0', '')))],
   });
 
@@ -205,22 +204,21 @@ function VoteData({
         }
       }
 
-      const [tokenPower, bytePower] = await publicClient.readContract({
+      const [tokenPower, bytePower, minerTokenPower] = await publicClient.readContract({
         address: lastFipAddress || ZERO_ADDRESS,
         abi: voteTrackerConfig.abi,
         functionName: 'getVotingPower',
         args: [
           address || ZERO_ADDRESS,
-          getAddress(agentAddress.length > 0 ? agentAddress : ZERO_ADDRESS),
-          minerIds.map((id) => BigInt(id.replace('f0', ''))),
         ],
       });
 
-      console.log(tokenPower, bytePower);
+      console.log(tokenPower, bytePower, minerTokenPower);
 
       setRawBytePower(formatBytesWithLabel(rawBytes));
       setTokenPower(tokenPower);
     } catch (error) {
+      console.error(error)
       setErrorMessage('Error registering you to vote');
     } finally {
       setLoading(false);
