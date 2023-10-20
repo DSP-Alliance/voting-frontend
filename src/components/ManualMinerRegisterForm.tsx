@@ -25,8 +25,10 @@ function ManualMinerRegisterForm({
   closeModal: () => void;
 }) {
   const [factoryFilAddress, setFactoryFilAddress] = useState<string>("");
+  const [voterInput, setVoterInput] = useState<string>(ZERO_ADDRESS);
   const [voterAddress, setVoterAddress] = useState<Address>(ZERO_ADDRESS);
   const [minerId, setMinerId] = useState<bigint>(BigInt(0));
+  const [minerIdInput, setMinerIdInput] = useState<string>("0");
   const [inputError, setInputError] = useState<boolean>(false);
 
   useEffect(() => {
@@ -45,23 +47,30 @@ function ManualMinerRegisterForm({
           <TextField
             id="outlined-controlled"
             label="Voter Address"
-            value={voterAddress}
+            value={voterInput}
             onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-              setVoterAddress(getAddress(event.target.value));
+              try {
+                setVoterAddress(getAddress(event.target.value));
+                setVoterInput(event.target.value);
+              } catch {
+                setVoterInput(event.target.value);
+              }
             }}
           />
           <TextField
             id="outlined-controlled"
             label="Miner ID"
-            value={minerId.toString()}
+            value={minerIdInput}
             error={inputError}
             helperText={inputError ? "Invalid Miner ID" : ""}
             inputProps={{ inputMode: 'text', pattern: '[0-9]*' }}
             onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
               try {
                 setMinerId(BigInt(event.target.value));
+                setMinerIdInput(event.target.value);
                 setInputError(false);
               } catch {
+                setMinerIdInput(event.target.value);
                 setInputError(true);
               }
             }}
