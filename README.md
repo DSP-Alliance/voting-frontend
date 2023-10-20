@@ -1,3 +1,5 @@
+# Voting Tool Usage
+
 ## Starting Vote
 
 Users with wallet addresses authorized to initiate voting will see the "Start Vote" button upon logging in and connecting through MetaMask. Clicking this button will bring up the "Create Vote" popup.
