@@ -9,6 +9,8 @@ import Connectors from './Connectors';
 import VoteData from './VoteData';
 import VoteHistory from './VoteHistory';
 import VoteFactoryModal from './VoteFactoryModal';
+import MultisigRegisterModal from './MultisigRegister';
+import ManualMinerRegisterModal from './ManualMinerRegister';
 
 export type Address = `0x${string}`;
 
@@ -39,12 +41,19 @@ const HeaderText = styled.div`
 const ButtonContainer = styled.div`
   display: flex;
   justify-content: center;
+  gap: 1rem;
   height: 34px;
 `;
 
 const StartVoteButton = styled.button`
   grid-column-start: 2;
   width: 100px;
+  justify-self: center;
+`;
+
+const MultisigRegisterButton = styled.button`
+  grid-column-start: 2;
+  width: 120px;
   justify-self: center;
 `;
 
@@ -65,6 +74,8 @@ function Home() {
   const [lastFipNum, setLastFipNum] = useState<number>();
   const [loadingFipData, setLoadingFipData] = useState(true);
   const [showVoteFactory, setShowVoteFactory] = useState(false);
+  const [showMultisigRegister, setShowMultisigRegister] = useState(false);
+  const [showMinerRegister, setShowMinerRegister] = useState(false);
 
   useEffect(() => {
     async function getOwner() {
@@ -172,6 +183,12 @@ function Home() {
             Start Vote
           </StartVoteButton>
         )}
+        <MultisigRegisterButton onClick={() => setShowMultisigRegister(true)}>
+          Register Multisig
+        </MultisigRegisterButton>
+        <MultisigRegisterButton onClick={() => setShowMinerRegister(true)}>
+          Register Miner
+        </MultisigRegisterButton>
       </ButtonContainer>
       {showVoteFactory && (
         <VoteFactoryModal
@@ -180,6 +197,19 @@ function Home() {
           getFipData={getFipData}
           initialVotesLength={initialVotesLength}
           setLastFipNum={setLastFipNum}
+        />
+      )}
+      {showMultisigRegister && (
+        <MultisigRegisterModal
+          open={showMultisigRegister}
+          closeModal={() => setShowMultisigRegister(false)}
+          currentVoteAddress={fipAddresses[fipAddresses.length - 1]}
+        />
+      )}
+      {showMinerRegister && (
+        <ManualMinerRegisterModal
+          open={showMinerRegister}
+          closeModal={() => setShowMinerRegister(false)}
         />
       )}
       <VoteContent>
