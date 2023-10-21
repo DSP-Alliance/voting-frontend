@@ -119,7 +119,12 @@ function VoteResults({
         );
         setYesOption2(yesOption22);
 
-        const VOTES = ['Yes', 'Yes', 'No', 'Abstain'];
+        const VOTES = [
+          yesOption1 && yesOption1.length > 0 ? yesOption1 : "Yes", 
+          yesOption22 && yesOption22.length > 0 ? yesOption22 : "Yes 2", 
+          'No', 
+          'Abstain'
+        ];
 
         setWinningRbp(
           VOTES[
