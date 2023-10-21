@@ -31,6 +31,8 @@ function MultisigRegisterForm({
   const [factoryFilAddress, setFactoryFilAddress] = useState<string>("");
   const [voteFilAddress, setVoteFilAddress] = useState<string>("");
   const [msigAddress, setMsigAddress] = useState<string>("");
+  const [txId, setTxId] = useState<string>("");
+  const [proposerAddress, setProposerAddress] = useState<string>("");
 
   useEffect(() => {
     axios.get(
@@ -50,6 +52,7 @@ function MultisigRegisterForm({
     <>
       <Form>
         <p>In order to use a multisignature wallet as a voter, you must propose a new transaction in order to register as a voter.</p>
+        <p>1) Create the registration proposal</p>
         <FormControl fullWidth>
           <TextField
             id="outlined-controlled"
@@ -64,7 +67,32 @@ function MultisigRegisterForm({
         <Code>
           {`lotus msig propose ${msigAddress} ${factoryFilAddress} 0 3844450837`} {encodeFunctionData({abi: voteFactoryConfig.abi, functionName: 'register', args: [ZERO_ADDRESS, []]}).slice(2)}
         </Code>
+        <p>Depending on your multisig approval threshold, N of M signers must run the approval command.</p>
+        <p>2) Approve the registration proposal with signers</p>
+        <FormControl fullWidth>
+          <TextField
+            id="outlined-controlled"
+            label="Transaction ID"
+            value={txId}
+            onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+              setTxId(event.target.value);
+            }}
+          />
+          <TextField
+            id="outlined-controlled"
+            label="Proposer Address"
+            value={proposerAddress}
+            onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+              setProposerAddress(event.target.value);
+            }}
+          />
+        </FormControl>
+        {/* Stylize this command */}
+        <Code>
+          {`lotus msig approve ${msigAddress} ${txId} ${proposerAddress} ${factoryFilAddress} 0`}
+        </Code>
         <p>After proposing and approving the registration transaction, propose and approve another transaction. Use this form to generate the call data to include in your proposal.</p>
+        <p>3) Create the vote proposal</p>
         <FormControl fullWidth>
           <InputLabel id="demo-simple-select-label">Vote</InputLabel>
           <Select
@@ -83,6 +111,30 @@ function MultisigRegisterForm({
         {/* Stylize this command */}
         <Code>
           {`lotus msig propose ${msigAddress} ${voteFilAddress} 0 3844450837`} {encodeFunctionData({abi: voteTrackerConfig.abi, functionName: 'castVote', args: [BigInt(vote)]}).slice(2)}
+        </Code>
+        <p>Once the proposer creates the proposal using the command above, N of M signers must also approve the vote proposal.</p>
+        <p>4) Approve the vote proposal</p>
+        <FormControl fullWidth>
+          <TextField
+            id="outlined-controlled"
+            label="Transaction ID"
+            value={txId}
+            onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+              setTxId(event.target.value);
+            }}
+          />
+          <TextField
+            id="outlined-controlled"
+            label="Proposer Address"
+            value={proposerAddress}
+            onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+              setProposerAddress(event.target.value);
+            }}
+          />
+        </FormControl>
+        {/* Stylize this command */}
+        <Code>
+          {`lotus msig approve ${msigAddress} ${txId} ${proposerAddress} ${voteFilAddress} 0`}
         </Code>
         <DialogActions>
           <button onClick={closeModal}>Okay</button>

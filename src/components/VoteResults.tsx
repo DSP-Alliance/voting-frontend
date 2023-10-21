@@ -35,21 +35,6 @@ const DataText = styled.div`
   color: var(--caption);
 `;
 
-function format_name(vote: number, yesOption1: string, yesOption2: string): string {
-  switch (vote) {
-    case 0:
-      return yesOption1;
-    case 1:
-      return "No";
-    case 2:
-      return "Abstain";
-    case 3:
-      return yesOption2;
-    default:
-      return ""
-  }
-}
-
 function format_value(value: ValueType, name: NameType, props: Payload<ValueType, NameType>): string {
   switch (props.dataKey) {
     case "RBP":
@@ -67,12 +52,12 @@ function VoteResults({
   lastFipNum,
   lastFipAddress,
   loading,
-  yesOption1,
+  yesOptions,
 }: {
   lastFipNum: number | undefined;
   lastFipAddress: Address | undefined;
   loading: boolean;
-  yesOption1: string;
+  yesOptions: string[];
 }) {
   const [data, setData] = useState<{ [key: string]: string | number }[]>([]);
   const [totalRbp, setTotalRbp] = useState('');
@@ -81,17 +66,10 @@ function VoteResults({
   const [winningRbp, setWinningRbp] = useState('');
   const [winningTokens, setWinningTokens] = useState('');
   const [winningMinerTokens, setWinningMinerTokens] = useState('');
-  const [yesOption2, setYesOption2] = useState('');
 
   useEffect(() => {
     if (lastFipAddress) {
       Promise.all([
-        publicClient.readContract({
-          address: lastFipAddress,
-          abi: voteTrackerConfig.abi,
-          functionName: 'yesOptions',
-          args: [BigInt(1)],
-        }),
         publicClient.readContract({
           abi: voteTrackerConfig.abi,
           address: lastFipAddress,
@@ -107,7 +85,7 @@ function VoteResults({
           address: lastFipAddress,
           functionName: 'getVoteResultsToken',
         }),
-      ]).then(([yesOption22, rbpVotes, minerTokenVotes, tokenVotes]) => {
+      ]).then(([rbpVotes, minerTokenVotes, tokenVotes]) => {
         setTotalRbp(
           formatBytesWithLabel(rbpVotes.reduce((a, b) => a + Number(b), 0)),
         );
@@ -117,11 +95,13 @@ function VoteResults({
         setTotalMinerTokens(
           formatEther(minerTokenVotes.reduce((a, b) => a + b, BigInt(0))),
         );
-        setYesOption2(yesOption22);
+
+        let yesOption1 = yesOptions[0]
+        let yesOption2 = yesOptions[1]
 
         const VOTES = [
           yesOption1 && yesOption1.length > 0 ? yesOption1 : "Yes", 
-          yesOption22 && yesOption22.length > 0 ? yesOption22 : "Yes 2", 
+          yesOption2 && yesOption2.length > 0 ? yesOption2 : "Yes 2", 
           'No', 
           'Abstain'
         ];
@@ -155,10 +135,10 @@ function VoteResults({
             Tokens: Number(tokenVotes[0]),
             'Miner Tokens': Number(minerTokenVotes[0]),
           },
-          ...(yesOption22
+          ...(yesOption2
             ? [
                 {
-                  name: yesOption22,
+                  name: yesOption2,
                   RBP: Number(rbpVotes[1]),
                   Tokens: Number(tokenVotes[1]),
                   'Miner Tokens': Number(minerTokenVotes[1]),
@@ -190,7 +170,7 @@ function VoteResults({
     return (
       <ChartArea>
         <PieChart width={300} height={300}>
-          <Tooltip separator=': ' formatter={(value, name, props) => [format_value(value, name, props), format_name(parseInt(name.toString()), yesOption1, yesOption2)]} />
+          <Tooltip separator=': ' formatter={(value, name, props) => [format_value(value, name, props), name]} />
           <Pie
             data={data}
             dataKey='RBP'

@@ -95,8 +95,11 @@ function VoteActions({
               break
           }
 
+          console.log(yesOption1, yesOption2)
+
           setYesOptions([yesOption1, ...(yesOption2 ? [yesOption2] : [])]);
-        } catch {
+        } catch (err) {
+          console.error(err);
           setYesOptions([]);
         }
       }
@@ -107,7 +110,7 @@ function VoteActions({
 
   return (
     <>
-      {(!Boolean(countdownValue) || hasVoted) && (
+      {((!Boolean(countdownValue) || hasVoted) && yesOptions.length > 0) && (
         <>
           <h4>Latest Vote Results</h4>
           <QuestionText>{questionText}</QuestionText>
@@ -116,7 +119,7 @@ function VoteActions({
             lastFipNum={lastFipNum}
             lastFipAddress={lastFipAddress}
             loading={loadingFipData || countdownValue === undefined}
-            yesOption1={yesOptions[0]}
+            yesOptions={yesOptions}
           />
         </>
       )}

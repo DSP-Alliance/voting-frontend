@@ -30,7 +30,8 @@ function VotePicker({
   yesOption1: string;
   yesOption2: string;
 }) {
-  const [vote, setVote] = useState<bigint | undefined>();
+  const [vote, setVote] = useState<bigint>(BigInt(0));
+  const [hasClicked, setHasClicked] = useState(false);
 
   const {
     data,
@@ -41,7 +42,7 @@ function VotePicker({
     abi: voteTrackerConfig.abi,
     address: lastFipAddress,
     functionName: 'castVote',
-    args: [vote || BigInt(0)],
+    args: [vote],
   });
 
   const { isLoading: isLoadingWait, isSuccess } = useWaitForTransaction({
@@ -55,9 +56,17 @@ function VotePicker({
   }, [isSuccess]); // eslint-disable-line react-hooks/exhaustive-deps
 
   function submitVote(vote: bigint) {
+    setHasClicked(true);
     setVote(vote);
-    write?.();
   }
+
+  useEffect(() => {
+    if (!hasClicked) return;
+
+    console.log(vote)
+    setHasClicked(false);
+    write?.();
+  }, [vote, hasClicked]);
 
   return (
     <VotePickerContainer>
