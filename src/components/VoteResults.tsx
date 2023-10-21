@@ -8,6 +8,7 @@ import { publicClient } from 'services/clients';
 import { voteTrackerConfig } from 'constants/voteTrackerConfig';
 import { formatBytesWithLabel } from 'utilities/helpers';
 import type { Address } from './Home';
+import { NameType, Payload, ValueType } from 'recharts/types/component/DefaultTooltipContent';
 
 const InfoText = styled.span`
   font-style: italic;
@@ -34,6 +35,34 @@ const DataText = styled.div`
   color: var(--caption);
 `;
 
+function format_name(vote: number, yesOption1: string, yesOption2: string): string {
+  switch (vote) {
+    case 0:
+      return yesOption1;
+    case 1:
+      return "No";
+    case 2:
+      return "Abstain";
+    case 3:
+      return yesOption2;
+    default:
+      return ""
+  }
+}
+
+function format_value(value: ValueType, name: NameType, props: Payload<ValueType, NameType>): string {
+  switch (props.dataKey) {
+    case "RBP":
+      return formatBytesWithLabel(Number(value))
+    case "Tokens":
+      return formatEther(BigInt(value.toString()))
+    case "Miner Tokens":
+      return formatEther(BigInt(value.toString()))
+    default:
+      return ""
+  }
+}
+
 function VoteResults({
   lastFipNum,
   lastFipAddress,
@@ -52,6 +81,7 @@ function VoteResults({
   const [winningRbp, setWinningRbp] = useState('');
   const [winningTokens, setWinningTokens] = useState('');
   const [winningMinerTokens, setWinningMinerTokens] = useState('');
+  const [yesOption2, setYesOption2] = useState('');
 
   useEffect(() => {
     if (lastFipAddress) {
@@ -78,8 +108,6 @@ function VoteResults({
           functionName: 'getVoteResultsToken',
         }),
       ]).then(([yesOption2, rbpVotes, minerTokenVotes, tokenVotes]) => {
-        console.log(yesOption2, rbpVotes, minerTokenVotes, tokenVotes)
-
         setTotalRbp(
           formatBytesWithLabel(rbpVotes.reduce((a, b) => a + Number(b), 0)),
         );
@@ -89,6 +117,7 @@ function VoteResults({
         setTotalMinerTokens(
           formatEther(minerTokenVotes.reduce((a, b) => a + b, BigInt(0))),
         );
+        setYesOption2(yesOption2);
 
         const VOTES = ['Yes', 'Yes', 'No', 'Abstain'];
 
@@ -156,6 +185,7 @@ function VoteResults({
     return (
       <ChartArea>
         <PieChart width={300} height={300}>
+          <Tooltip separator=': ' formatter={(value, name, props) => [format_value(value, name, props), format_name(parseInt(name.toString()), yesOption1, yesOption2)]} />
           <Pie
             data={data}
             dataKey='RBP'

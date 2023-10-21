@@ -49,6 +49,7 @@ function VoteActions({
   write,
 }: VoteActionsProps) {
   const [questionText, setQuestionText] = useState('');
+  const [winningVote, setWinningVote] = useState('');
   const [yesOptions, setYesOptions] = useState<string[]>([]);
 
   useEffect(() => {
@@ -72,8 +73,30 @@ function VoteActions({
             functionName: 'yesOptions',
             args: [BigInt(1)],
           });
+          const winningVote = await publicClient.readContract({
+            address: lastFipAddress,
+            abi: voteTrackerConfig.abi,
+            functionName: 'winningVote',
+          });
+
+          console.log(winningVote)
 
           setQuestionText(question);
+          switch (winningVote) {
+            case 0:
+              setWinningVote(yesOption1.length > 0 ? yesOption1 : "Yes")
+              break
+            case 1:
+              setWinningVote("No")
+              break
+            case 2:
+              setWinningVote("Abstain")
+              break
+            case 3:
+              setWinningVote(yesOption2.length > 0 ? yesOption2 : "Yes 2")
+              break
+          }
+
           setYesOptions([yesOption1, ...(yesOption2 ? [yesOption2] : [])]);
         } catch {
           setYesOptions([]);
@@ -90,6 +113,7 @@ function VoteActions({
         <>
           <h4>Latest Vote Results</h4>
           <QuestionText>{questionText}</QuestionText>
+          <QuestionText>Winning vote: {winningVote}</QuestionText>
           <VoteResults
             lastFipNum={lastFipNum}
             lastFipAddress={lastFipAddress}
