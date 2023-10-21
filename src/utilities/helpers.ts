@@ -70,3 +70,18 @@ export function timeLength(length: number) {
 
   return timeStringArray.join(', ');
 }
+
+export function get_winning_text(vote: number, options: string[]): string {
+  switch (vote) {
+    case 0:
+      return options[0].length > 0 ? options[0] : "Yes";
+    case 1:
+      return "No";
+    case 2:
+      return "Abstain";
+    case 3:
+      return options[1].length > 0 ? options[1] : "Yes 2";
+    default:
+      return "";
+  }
+}

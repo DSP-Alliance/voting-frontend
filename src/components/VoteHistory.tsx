@@ -13,11 +13,12 @@ import {
 } from 'recharts';
 import ClipLoader from 'react-spinners/ClipLoader';
 
-import { voteTrackerConfig } from 'constants/voteTrackerConfig';
 import { publicClient } from 'services/clients';
 import { voteFactoryConfig } from 'constants/voteFactoryConfig';
-import { formatBytes, getLargestUnit, timeLength } from 'utilities/helpers';
-import { formatEther } from 'viem';
+import VoteResults from './VoteResults';
+import { Address } from 'viem';
+import { ZERO_ADDRESS, get_winning_text, timeLength } from 'utilities/helpers';
+import { voteTrackerConfig } from 'constants/voteTrackerConfig';
 
 const Container = styled.div`
   display: grid;
@@ -47,14 +48,14 @@ const ChartArea = styled.div`
 `;
 
 function VoteHistory({ fips }: { fips: number[] }) {
-  const [data, setData] = useState<{ [key: string]: string | number }[]>([]);
-  const [length, setLength] = useState<number>(0);
   const [loading, setLoading] = useState(false);
-  const [questionText, setQuestionText] = useState('');
   const [selectedFip, setSelectedFip] = useState('');
-  const [startTime, setStartTime] = useState<number>(0);
-  const [yAxisUnit, setYAxisUnit] = useState<string>('');
+  const [voteAddress, setVoteAddress] = useState<Address>(ZERO_ADDRESS);
+  const [yesOptions, setYesOptions] = useState<string[]>([]);
+  const [questionText, setQuestionText] = useState('');
   const [winningVoteText, setWinningVoteText] = useState('');
+  const [startTime, setStartTime] = useState<number>(0);
+  const [length, setLength] = useState<number>(0);
 
   useEffect(() => {
     if (selectedFip) {
@@ -73,6 +74,18 @@ function VoteHistory({ fips }: { fips: number[] }) {
             publicClient.readContract({
               abi: voteTrackerConfig.abi,
               address: addr,
+              functionName: "yesOptions",
+              args: [BigInt(0)]
+            }),
+            publicClient.readContract({
+              abi: voteTrackerConfig.abi,
+              address: addr,
+              functionName: "yesOptions",
+              args: [BigInt(1)]
+            }),
+            publicClient.readContract({
+              abi: voteTrackerConfig.abi,
+              address: addr,
               functionName: 'voteStart',
             }),
             publicClient.readContract({
@@ -88,97 +101,24 @@ function VoteHistory({ fips }: { fips: number[] }) {
             publicClient.readContract({
               abi: voteTrackerConfig.abi,
               address: addr,
-              functionName: 'getVoteResultsRBP',
-            }),
-            publicClient.readContract({
-              abi: voteTrackerConfig.abi,
-              address: addr,
-              functionName: 'getVoteResultsMinerToken',
-            }),
-            publicClient.readContract({
-              abi: voteTrackerConfig.abi,
-              address: addr,
-              functionName: 'getVoteResultsToken',
-            }),
-            publicClient.readContract({
-              abi: voteTrackerConfig.abi,
-              address: addr,
               functionName: 'winningVote',
             }),
-            publicClient.readContract({
-              abi: voteTrackerConfig.abi,
-              address: addr,
-              functionName: 'yesOptions',
-              args: [BigInt(0)],
-            }),
-            publicClient.readContract({
-              abi: voteTrackerConfig.abi,
-              address: addr,
-              functionName: 'yesOptions',
-              args: [BigInt(1)],
-            }),
-          ]).then(
-            ([
-              startTime,
-              length,
-              question,
-              rbpVotes,
-              minerTokenVotes,
-              tokenVotes,
-              winningVote,
-              yesOption1,
-              yesOption2,
-            ]) => {
-              setQuestionText(question);
-              setStartTime(startTime);
-              setLength(length);
+          ]).then(([yesOption1, yesOption2, voteStart, voteLength, question, winningVote]) => {
+            let yesOptions = [yesOption1, yesOption2];
+            setYesOptions(yesOptions);
 
-              if (winningVote === 0) setWinningVoteText(yesOption1);
-              if (winningVote === 1) setWinningVoteText('No');
-              if (winningVote === 2) setWinningVoteText('Abstain');
-              if (winningVote === 3) setWinningVoteText(yesOption2);
+            setStartTime(voteStart);
+            setLength(voteLength);
+            setQuestionText(question);
+            setWinningVoteText(get_winning_text(winningVote, yesOptions));
 
-              const unit = getLargestUnit([...rbpVotes]);
-              setYAxisUnit(unit);
-
-              setData([
-                {
-                  name: yesOption1,
-                  RBP: formatBytes(Number(rbpVotes[0]), unit),
-                  Tokens: formatEther(tokenVotes[0]),
-                  'Miner Tokens': formatEther(minerTokenVotes[0]),
-                },
-                ...(yesOption2
-                  ? [
-                      {
-                        name: yesOption2,
-                        RBP: formatBytes(Number(rbpVotes[1]), unit),
-                        Tokens: formatEther(tokenVotes[1]),
-                        'Miner Tokens': formatEther(minerTokenVotes[1]),
-                      },
-                    ]
-                  : []),
-                {
-                  name: 'No',
-                  RBP: formatBytes(Number(rbpVotes[2]), unit),
-                  Tokens: formatEther(tokenVotes[2]),
-                  'Miner Tokens': formatEther(minerTokenVotes[2]),
-                },
-                {
-                  name: 'Abstain',
-                  RBP: formatBytes(Number(rbpVotes[3]), unit),
-                  Tokens: formatEther(tokenVotes[3]),
-                  'Miner Tokens': formatEther(minerTokenVotes[3]),
-                },
-              ]);
-
-              setLoading(false);
-            },
-          );
+            setVoteAddress(addr);
+            setLoading(false);
+          })
         });
     }
   }, [selectedFip]);
-
+  
   const timestamp = new Date(startTime * 1000).toLocaleString();
 
   return (
@@ -208,41 +148,21 @@ function VoteHistory({ fips }: { fips: number[] }) {
           <ClipLoader color='var(--primary)' />
         </LoaderContainer>
       )}
-      {!loading && (
-        <div>
-          {questionText && <QuestionText>{questionText}</QuestionText>}
-          {Boolean(startTime) && <p>Started: {timestamp}</p>}
-          {Boolean(length) && <p>Length of time: {timeLength(length / 60)}</p>}
-          {winningVoteText && <p>Winning vote: {winningVoteText}</p>}
-        </div>
-      )}
-      {data.length > 0 && !loading && (
-        <ChartArea>
-          <BarChart width={800} height={300} data={data}>
-            <CartesianGrid strokeDasharray='3 3' />
-            <XAxis
-              dataKey='name'
-              tickFormatter={(value: string) => {
-                const limit = 20;
-                if (value.length < limit) return value;
-                return `${value.substring(0, limit)}...`;
-              }}
-            />
-            <YAxis width={50}>
-              <Label
-                angle={90}
-                value={yAxisUnit}
-                position='insideLeft'
-                style={{ textAnchor: 'middle' }}
-              />
-            </YAxis>
-            <Tooltip />
-            <Legend />
-            <Bar dataKey='RBP' fill='var(--rbpcount)' />
-            <Bar dataKey='Tokens' fill='var(--tokencount)' />
-            <Bar dataKey='Miner Tokens' fill='var(--minertokencount)' />
-          </BarChart>
-        </ChartArea>
+      {(!loading && voteAddress != ZERO_ADDRESS) && (
+        <>
+          <div>
+            {questionText && <QuestionText>{questionText}</QuestionText>}
+            {Boolean(startTime) && <p>Started: {timestamp}</p>}
+            {Boolean(length) && <p>Length of time: {timeLength(length / 60)}</p>}
+            {winningVoteText && <p>Winning vote: {winningVoteText}</p>}
+          </div>
+          <VoteResults
+            lastFipAddress={voteAddress}
+            lastFipNum={parseInt(selectedFip)}
+            loading={false}
+            yesOptions={yesOptions}
+          />
+        </>
       )}
     </Container>
   );
