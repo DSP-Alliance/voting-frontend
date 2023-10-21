@@ -79,8 +79,6 @@ function VoteActions({
             functionName: 'winningVote',
           });
 
-          console.log(winningVote)
-
           setQuestionText(question);
           switch (winningVote) {
             case 0:

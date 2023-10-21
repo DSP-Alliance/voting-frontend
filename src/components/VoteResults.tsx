@@ -55,9 +55,9 @@ function format_value(value: ValueType, name: NameType, props: Payload<ValueType
     case "RBP":
       return formatBytesWithLabel(Number(value))
     case "Tokens":
-      return formatEther(BigInt(value.toString()))
+      return `${formatEther(BigInt(value.toString())).slice(0, 8)} $FIL`
     case "Miner Tokens":
-      return formatEther(BigInt(value.toString()))
+      return `${formatEther(BigInt(value.toString())).slice(0, 8)} $FIL`
     default:
       return ""
   }
@@ -107,7 +107,7 @@ function VoteResults({
           address: lastFipAddress,
           functionName: 'getVoteResultsToken',
         }),
-      ]).then(([yesOption2, rbpVotes, minerTokenVotes, tokenVotes]) => {
+      ]).then(([yesOption22, rbpVotes, minerTokenVotes, tokenVotes]) => {
         setTotalRbp(
           formatBytesWithLabel(rbpVotes.reduce((a, b) => a + Number(b), 0)),
         );
@@ -117,7 +117,7 @@ function VoteResults({
         setTotalMinerTokens(
           formatEther(minerTokenVotes.reduce((a, b) => a + b, BigInt(0))),
         );
-        setYesOption2(yesOption2);
+        setYesOption2(yesOption22);
 
         const VOTES = ['Yes', 'Yes', 'No', 'Abstain'];
 
@@ -150,10 +150,10 @@ function VoteResults({
             Tokens: Number(tokenVotes[0]),
             'Miner Tokens': Number(minerTokenVotes[0]),
           },
-          ...(yesOption2
+          ...(yesOption22
             ? [
                 {
-                  name: yesOption2,
+                  name: yesOption22,
                   RBP: Number(rbpVotes[1]),
                   Tokens: Number(tokenVotes[1]),
                   'Miner Tokens': Number(minerTokenVotes[1]),

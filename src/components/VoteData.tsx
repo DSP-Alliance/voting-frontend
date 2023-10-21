@@ -213,8 +213,6 @@ function VoteData({
         ],
       });
 
-      console.log(tokenPower, bytePower, minerTokenPower);
-
       setRawBytePower(formatBytesWithLabel(rawBytes));
       setTokenPower(tokenPower);
     } catch (error) {
