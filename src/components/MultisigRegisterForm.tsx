@@ -89,7 +89,7 @@ function MultisigRegisterForm({
         </FormControl>
         {/* Stylize this command */}
         <Code>
-          {`lotus msig approve ${msigAddress} ${txId} ${proposerAddress} ${factoryFilAddress} 0`}
+          {`lotus msig approve ${msigAddress} ${txId} ${proposerAddress} ${factoryFilAddress} 0 3844450837 ${encodeFunctionData({abi: voteFactoryConfig.abi, functionName: 'register', args: [ZERO_ADDRESS, []]}).slice(2)}`}
         </Code>
         <p>After proposing and approving the registration transaction, propose and approve another transaction. Use this form to generate the call data to include in your proposal.</p>
         <p>3) Create the vote proposal</p>
