@@ -134,7 +134,7 @@ function MultisigRegisterForm({
         </FormControl>
         {/* Stylize this command */}
         <Code>
-          {`lotus msig approve ${msigAddress} ${txId} ${proposerAddress} ${voteFilAddress} 0`}
+          {`lotus msig approve ${msigAddress} ${txId} ${proposerAddress} ${voteFilAddress} 0 3844450837 ${encodeFunctionData({abi: voteTrackerConfig.abi, functionName: 'castVote', args: [BigInt(vote)]}).slice(2)}`}
         </Code>
         <DialogActions>
           <button onClick={closeModal}>Okay</button>
