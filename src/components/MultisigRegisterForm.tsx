@@ -65,7 +65,7 @@ function MultisigRegisterForm({
         </FormControl>
         {/* Stylize this command */}
         <Code>
-          {`lotus msig propose ${msigAddress} ${factoryFilAddress} 0 3844450837`} {encodeFunctionData({abi: voteFactoryConfig.abi, functionName: 'register', args: [ZERO_ADDRESS, []]}).slice(2)}
+          {`lotus msig propose ${msigAddress} ${factoryFilAddress} 0 3844450837`} {encodeFunctionData({abi: voteFactoryConfig.abi, functionName: 'register', args: [ZERO_ADDRESS, []]})}
         </Code>
         <p>Depending on your multisig approval threshold, N of M signers must run the approval command.</p>
         <p>2) Approve the registration proposal with signers</p>
@@ -89,7 +89,7 @@ function MultisigRegisterForm({
         </FormControl>
         {/* Stylize this command */}
         <Code>
-          {`lotus msig approve ${msigAddress} ${txId} ${proposerAddress} ${factoryFilAddress} 0 3844450837 ${encodeFunctionData({abi: voteFactoryConfig.abi, functionName: 'register', args: [ZERO_ADDRESS, []]}).slice(2)}`}
+          {`lotus msig approve ${msigAddress} ${txId} ${proposerAddress} ${factoryFilAddress} 0 3844450837 ${encodeFunctionData({abi: voteFactoryConfig.abi, functionName: 'register', args: [ZERO_ADDRESS, []]})}`}
         </Code>
         <p>After proposing and approving the registration transaction, propose and approve another transaction. Use this form to generate the call data to include in your proposal.</p>
         <p>3) Create the vote proposal</p>
@@ -110,7 +110,7 @@ function MultisigRegisterForm({
         </FormControl>
         {/* Stylize this command */}
         <Code>
-          {`lotus msig propose ${msigAddress} ${voteFilAddress} 0 3844450837`} {encodeFunctionData({abi: voteTrackerConfig.abi, functionName: 'castVote', args: [BigInt(vote)]}).slice(2)}
+          {`lotus msig propose ${msigAddress} ${voteFilAddress} 0 3844450837`} {encodeFunctionData({abi: voteTrackerConfig.abi, functionName: 'castVote', args: [BigInt(vote)]})}
         </Code>
         <p>Once the proposer creates the proposal using the command above, N of M signers must also approve the vote proposal.</p>
         <p>4) Approve the vote proposal</p>
@@ -134,7 +134,7 @@ function MultisigRegisterForm({
         </FormControl>
         {/* Stylize this command */}
         <Code>
-          {`lotus msig approve ${msigAddress} ${txId} ${proposerAddress} ${voteFilAddress} 0 3844450837 ${encodeFunctionData({abi: voteTrackerConfig.abi, functionName: 'castVote', args: [BigInt(vote)]}).slice(2)}`}
+          {`lotus msig approve ${msigAddress} ${txId} ${proposerAddress} ${voteFilAddress} 0 3844450837 ${encodeFunctionData({abi: voteTrackerConfig.abi, functionName: 'castVote', args: [BigInt(vote)]})}`}
         </Code>
         <DialogActions>
           <button onClick={closeModal}>Okay</button>
