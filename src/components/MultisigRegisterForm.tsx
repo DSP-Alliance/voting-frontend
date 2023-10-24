@@ -72,7 +72,7 @@ function MultisigRegisterForm({
         <p>2) Approve the registration proposal with signers</p>
         <FormControl fullWidth>
           <TextField
-            id="outlined-controlled"t
+            id="outlined-controlled"
             label="Transaction ID"
             value={txId}
             onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
