@@ -1,5 +1,4 @@
 import React from 'react';
-import styled from 'styled-components';
 import { WagmiConfig, createConfig } from 'wagmi';
 import { CoinbaseWalletConnector } from 'wagmi/connectors/coinbaseWallet';
 import { MetaMaskConnector } from 'wagmi/connectors/metaMask';
@@ -7,6 +6,7 @@ import { MetaMaskConnector } from 'wagmi/connectors/metaMask';
 import GlobalStyle from './globalStyles';
 import { publicClient } from './services/clients';
 import Home from './components/Home';
+import { CountdownContextProvider } from './components/CountdownContext';
 
 const config = createConfig({
   autoConnect: true,
@@ -21,12 +21,12 @@ const config = createConfig({
 
 function App() {
   return (
-    <>
+    <CountdownContextProvider>
       <GlobalStyle />
       <WagmiConfig config={config}>
         <Home />
       </WagmiConfig>
-    </>
+    </CountdownContextProvider>
   );
 }
 

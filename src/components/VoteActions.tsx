@@ -7,11 +7,11 @@ import VoteResults from 'components/VoteResults';
 import VotePicker from 'components/VotePicker';
 import Register from 'components/Register';
 import type { Address } from './Home';
+import { get_winning_text } from 'utilities/helpers';
+import { useCountdownValueContext } from './CountdownContext';
 
 interface VoteActionsProps {
-  address: Address | undefined;
   addVotingPower: (agentAddress: string) => void;
-  countdownValue: number | undefined;
   errorMessage: string | undefined;
   hasRegistered: boolean;
   hasVoted: boolean;
@@ -33,7 +33,6 @@ const QuestionText = styled.div`
 
 function VoteActions({
   addVotingPower,
-  countdownValue,
   errorMessage,
   hasRegistered,
   hasVoted,
@@ -51,6 +50,8 @@ function VoteActions({
   const [questionText, setQuestionText] = useState('');
   const [winningVote, setWinningVote] = useState('');
   const [yesOptions, setYesOptions] = useState<string[]>([]);
+
+  const { countdownValue } = useCountdownValueContext();
 
   useEffect(() => {
     async function getVoteInfo() {
@@ -80,22 +81,9 @@ function VoteActions({
           });
 
           setQuestionText(question);
-          switch (winningVote) {
-            case 0:
-              setWinningVote(yesOption1.length > 0 ? yesOption1 : "Yes")
-              break
-            case 1:
-              setWinningVote("No")
-              break
-            case 2:
-              setWinningVote("Abstain")
-              break
-            case 3:
-              setWinningVote(yesOption2.length > 0 ? yesOption2 : "Yes 2")
-              break
-          }
-
-          console.log(yesOption1, yesOption2)
+          setWinningVote(
+            get_winning_text(winningVote, [yesOption1, yesOption2]),
+          );
 
           setYesOptions([yesOption1, ...(yesOption2 ? [yesOption2] : [])]);
         } catch (err) {
@@ -110,7 +98,7 @@ function VoteActions({
 
   return (
     <>
-      {((!Boolean(countdownValue) || hasVoted) && yesOptions.length > 0) && (
+      {(!Boolean(countdownValue) || hasVoted) && yesOptions.length > 0 && (
         <>
           <h4>Latest Vote Results</h4>
           <QuestionText>{questionText}</QuestionText>
