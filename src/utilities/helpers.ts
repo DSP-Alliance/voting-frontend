@@ -74,14 +74,34 @@ export function timeLength(length: number) {
 export function get_winning_text(vote: number, options: string[]): string {
   switch (vote) {
     case 0:
-      return options[0].length > 0 ? options[0] : "Yes";
+      return options[0].length > 0 ? options[0] : 'Yes';
     case 1:
-      return "No";
+      return 'No';
     case 2:
-      return "Abstain";
+      return 'Abstain';
     case 3:
-      return options[1].length > 0 ? options[1] : "Yes 2";
+      return options[1].length > 0 ? options[1] : 'Yes 2';
     default:
-      return "";
+      return '';
   }
+}
+
+export function indexOfMax(arr: [bigint, bigint, bigint, bigint]) {
+  let max = arr[0];
+  let maxIndex = 0;
+  let allEqual = true;
+
+  for (let i = 1; i < arr.length; i++) {
+    if (arr[i] > max) {
+      maxIndex = i;
+      max = arr[i];
+      allEqual = false;
+    } else if (arr[i] < max) {
+      allEqual = false;
+    }
+  }
+
+  if (allEqual) return -1;
+
+  return maxIndex;
 }

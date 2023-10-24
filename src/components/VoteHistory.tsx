@@ -1,16 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { FormControl, InputLabel, MenuItem, Select } from '@mui/material';
-import {
-  Bar,
-  BarChart,
-  CartesianGrid,
-  Label,
-  Legend,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from 'recharts';
 import ClipLoader from 'react-spinners/ClipLoader';
 
 import { publicClient } from 'services/clients';
@@ -74,14 +64,14 @@ function VoteHistory({ fips }: { fips: number[] }) {
             publicClient.readContract({
               abi: voteTrackerConfig.abi,
               address: addr,
-              functionName: "yesOptions",
-              args: [BigInt(0)]
+              functionName: 'yesOptions',
+              args: [BigInt(0)],
             }),
             publicClient.readContract({
               abi: voteTrackerConfig.abi,
               address: addr,
-              functionName: "yesOptions",
-              args: [BigInt(1)]
+              functionName: 'yesOptions',
+              args: [BigInt(1)],
             }),
             publicClient.readContract({
               abi: voteTrackerConfig.abi,
@@ -103,22 +93,31 @@ function VoteHistory({ fips }: { fips: number[] }) {
               address: addr,
               functionName: 'winningVote',
             }),
-          ]).then(([yesOption1, yesOption2, voteStart, voteLength, question, winningVote]) => {
-            let yesOptions = [yesOption1, yesOption2];
-            setYesOptions(yesOptions);
+          ]).then(
+            ([
+              yesOption1,
+              yesOption2,
+              voteStart,
+              voteLength,
+              question,
+              winningVote,
+            ]) => {
+              const yesOptions = [yesOption1, yesOption2];
+              setYesOptions(yesOptions);
 
-            setStartTime(voteStart);
-            setLength(voteLength);
-            setQuestionText(question);
-            setWinningVoteText(get_winning_text(winningVote, yesOptions));
+              setStartTime(voteStart);
+              setLength(voteLength);
+              setQuestionText(question);
+              setWinningVoteText(get_winning_text(winningVote, yesOptions));
 
-            setVoteAddress(addr);
-            setLoading(false);
-          })
+              setVoteAddress(addr);
+              setLoading(false);
+            },
+          );
         });
     }
   }, [selectedFip]);
-  
+
   const timestamp = new Date(startTime * 1000).toLocaleString();
 
   return (
@@ -148,12 +147,14 @@ function VoteHistory({ fips }: { fips: number[] }) {
           <ClipLoader color='var(--primary)' />
         </LoaderContainer>
       )}
-      {(!loading && voteAddress != ZERO_ADDRESS) && (
+      {!loading && voteAddress != ZERO_ADDRESS && (
         <>
           <div>
             {questionText && <QuestionText>{questionText}</QuestionText>}
             {Boolean(startTime) && <p>Started: {timestamp}</p>}
-            {Boolean(length) && <p>Length of time: {timeLength(length / 60)}</p>}
+            {Boolean(length) && (
+              <p>Length of time: {timeLength(length / 60)}</p>
+            )}
             {winningVoteText && <p>Winning vote: {winningVoteText}</p>}
           </div>
           <VoteResults

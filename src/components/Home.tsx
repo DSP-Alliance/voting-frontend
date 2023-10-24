@@ -11,6 +11,7 @@ import VoteHistory from './VoteHistory';
 import VoteFactoryModal from './VoteFactoryModal';
 import MultisigRegisterModal from './MultisigRegister';
 import ManualMinerRegisterModal from './ManualMinerRegister';
+import { useCountdownValueContext } from './CountdownContext';
 
 export type Address = `0x${string}`;
 
@@ -66,7 +67,6 @@ const VoteContent = styled.div`
 
 function Home() {
   const { address, isConnected } = useAccount();
-  const [countdownValue, setCountdownValue] = useState<number | undefined>(0);
   const [fipAddresses, setFipAddresses] = useState<Address[]>([]);
   const [fipList, setFipList] = useState<number[]>([]);
   const [initialVotesLength, setInitialVotesLength] = useState<number>(0);
@@ -76,6 +76,8 @@ function Home() {
   const [showVoteFactory, setShowVoteFactory] = useState(false);
   const [showMultisigRegister, setShowMultisigRegister] = useState(false);
   const [showMinerRegister, setShowMinerRegister] = useState(false);
+
+  const { getCountdownValue, countdownValue } = useCountdownValueContext();
 
   useEffect(() => {
     async function getOwner() {
@@ -145,84 +147,62 @@ function Home() {
   }, []);
 
   useEffect(() => {
-    async function isLastVoteRunning() {
-      const voteStartTime = await publicClient.readContract({
-        abi: voteTrackerConfig.abi,
-        address: fipAddresses[fipAddresses.length - 1],
-        functionName: 'voteStart',
-      });
-
-      const voteLength = await publicClient.readContract({
-        abi: voteTrackerConfig.abi,
-        address: fipAddresses[fipAddresses.length - 1],
-        functionName: 'voteLength',
-      });
-
-      const voteEndTime = voteStartTime + voteLength;
-      const currentTime = Math.floor(Date.now() / 1000);
-
-      if (currentTime < voteEndTime) {
-        setCountdownValue(voteEndTime - currentTime);
-      } else {
-        setCountdownValue(0);
-      }
-    }
-
-    if (lastFipNum) isLastVoteRunning();
+    if (lastFipNum) getCountdownValue(fipAddresses[fipAddresses.length - 1]);
   }, [lastFipNum, fipAddresses]);
 
   return (
-    <HomeContainer>
-      <Header>
-        <HeaderText>FIP Voting Dashboard</HeaderText>
-        <Connectors />
-      </Header>
-      <ButtonContainer>
-        {isOwner && countdownValue === 0 && (
-          <StartVoteButton onClick={() => setShowVoteFactory(true)}>
-            Start Vote
-          </StartVoteButton>
+    <>
+      <HomeContainer>
+        <Header>
+          <HeaderText>FIP Voting Dashboard</HeaderText>
+          <Connectors />
+        </Header>
+        <ButtonContainer>
+          {isOwner && countdownValue === 0 && (
+            <StartVoteButton onClick={() => setShowVoteFactory(true)}>
+              Start Vote
+            </StartVoteButton>
+          )}
+          <MultisigRegisterButton onClick={() => setShowMultisigRegister(true)}>
+            Register Multisig
+          </MultisigRegisterButton>
+          <MultisigRegisterButton onClick={() => setShowMinerRegister(true)}>
+            Register Miner
+          </MultisigRegisterButton>
+        </ButtonContainer>
+        {showVoteFactory && (
+          <VoteFactoryModal
+            open={showVoteFactory}
+            closeModal={() => setShowVoteFactory(false)}
+            getFipData={getFipData}
+            initialVotesLength={initialVotesLength}
+            setLastFipNum={setLastFipNum}
+          />
         )}
-        <MultisigRegisterButton onClick={() => setShowMultisigRegister(true)}>
-          Register Multisig
-        </MultisigRegisterButton>
-        <MultisigRegisterButton onClick={() => setShowMinerRegister(true)}>
-          Register Miner
-        </MultisigRegisterButton>
-      </ButtonContainer>
-      {showVoteFactory && (
-        <VoteFactoryModal
-          open={showVoteFactory}
-          closeModal={() => setShowVoteFactory(false)}
-          getFipData={getFipData}
-          initialVotesLength={initialVotesLength}
-          setLastFipNum={setLastFipNum}
-        />
-      )}
-      {showMultisigRegister && (
-        <MultisigRegisterModal
-          open={showMultisigRegister}
-          closeModal={() => setShowMultisigRegister(false)}
-          currentVoteAddress={fipAddresses[fipAddresses.length - 1]}
-        />
-      )}
-      {showMinerRegister && (
-        <ManualMinerRegisterModal
-          open={showMinerRegister}
-          closeModal={() => setShowMinerRegister(false)}
-        />
-      )}
-      <VoteContent>
-        <VoteData
-          address={address}
-          lastFipAddress={fipAddresses[fipAddresses.length - 1]}
-          lastFipNum={lastFipNum}
-          countdownValue={countdownValue}
-          loadingFipData={loadingFipData}
-        />
-        <VoteHistory fips={fipList} />
-      </VoteContent>
-    </HomeContainer>
+        {showMultisigRegister && (
+          <MultisigRegisterModal
+            open={showMultisigRegister}
+            closeModal={() => setShowMultisigRegister(false)}
+            currentVoteAddress={fipAddresses[fipAddresses.length - 1]}
+          />
+        )}
+        {showMinerRegister && (
+          <ManualMinerRegisterModal
+            open={showMinerRegister}
+            closeModal={() => setShowMinerRegister(false)}
+          />
+        )}
+        <VoteContent>
+          <VoteData
+            address={address}
+            lastFipAddress={fipAddresses[fipAddresses.length - 1]}
+            lastFipNum={lastFipNum}
+            loadingFipData={loadingFipData}
+          />
+          <VoteHistory fips={fipList} />
+        </VoteContent>
+      </HomeContainer>
+    </>
   );
 }
 

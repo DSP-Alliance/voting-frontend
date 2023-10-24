@@ -15,6 +15,7 @@ import VoteActions from 'components/VoteActions';
 import VotingPower from 'components/VotingPower';
 import type { Address } from './Home';
 import { voteFactoryConfig } from 'constants/voteFactoryConfig';
+import { useCountdownValueContext } from './CountdownContext';
 
 const VoteDataContainer = styled.div`
   display: flex;
@@ -50,13 +51,11 @@ function VoteData({
   lastFipAddress,
   lastFipNum,
   loadingFipData,
-  countdownValue,
 }: {
   address: Address | undefined;
   lastFipAddress: Address | undefined;
   lastFipNum: number | undefined;
   loadingFipData: boolean;
-  countdownValue: number | undefined;
 }) {
   const { isConnected } = useAccount();
   const [agentAddress, setAgentAddress] = useState<Address>(ZERO_ADDRESS);
@@ -68,41 +67,43 @@ function VoteData({
   const [rawBytePower, setRawBytePower] = useState('');
   const [tokenPower, setTokenPower] = useState<bigint>(BigInt(0));
 
+  const { countdownValue } = useCountdownValueContext();
+
+  async function getHasRegistered() {
+    if (lastFipAddress) {
+      try {
+        const userHasRegistered = await publicClient.readContract({
+          address: voteFactoryConfig.address,
+          abi: voteFactoryConfig.abi,
+          functionName: 'registered',
+          args: [address || `0x`],
+        });
+
+        setHasRegistered(userHasRegistered);
+      } catch {
+        setHasRegistered(false);
+      }
+    }
+  }
+
+  async function getHasVoted() {
+    if (lastFipAddress) {
+      try {
+        const userHasVoted = await publicClient.readContract({
+          address: lastFipAddress,
+          abi: voteTrackerConfig.abi,
+          functionName: 'hasVoted',
+          args: [address || `0x`],
+        });
+
+        setHasVoted(userHasVoted);
+      } catch {
+        setHasVoted(false);
+      }
+    }
+  }
+
   useEffect(() => {
-    async function getHasRegistered() {
-      if (lastFipAddress) {
-        try {
-          const userHasRegistered = await publicClient.readContract({
-            address: voteFactoryConfig.address,
-            abi: voteFactoryConfig.abi,
-            functionName: 'registered',
-            args: [address || `0x`],
-          });
-
-          setHasRegistered(userHasRegistered);
-        } catch {
-          setHasRegistered(false);
-        }
-      }
-    }
-
-    async function getHasVoted() {
-      if (lastFipAddress) {
-        try {
-          const userHasVoted = await publicClient.readContract({
-            address: lastFipAddress,
-            abi: voteTrackerConfig.abi,
-            functionName: 'hasVoted',
-            args: [address || `0x`],
-          });
-
-          setHasVoted(userHasVoted);
-        } catch {
-          setHasVoted(false);
-        }
-      }
-    }
-
     if (isConnected) {
       getHasRegistered();
       getHasVoted();
@@ -117,9 +118,7 @@ function VoteData({
             address: lastFipAddress || ZERO_ADDRESS,
             abi: voteTrackerConfig.abi,
             functionName: 'getVotingPower',
-            args: [
-              address || ZERO_ADDRESS,
-            ],
+            args: [address || ZERO_ADDRESS],
           });
 
           setRawBytePower(formatBytesWithLabel(parseInt(bytePower.toString())));
@@ -204,19 +203,18 @@ function VoteData({
         }
       }
 
-      const [tokenPower, bytePower, minerTokenPower] = await publicClient.readContract({
-        address: lastFipAddress || ZERO_ADDRESS,
-        abi: voteTrackerConfig.abi,
-        functionName: 'getVotingPower',
-        args: [
-          address || ZERO_ADDRESS,
-        ],
-      });
+      const [tokenPower, bytePower, minerTokenPower] =
+        await publicClient.readContract({
+          address: lastFipAddress || ZERO_ADDRESS,
+          abi: voteTrackerConfig.abi,
+          functionName: 'getVotingPower',
+          args: [address || ZERO_ADDRESS],
+        });
 
       setRawBytePower(formatBytesWithLabel(rawBytes));
       setTokenPower(tokenPower);
     } catch (error) {
-      console.error(error)
+      console.error(error);
       setErrorMessage('Error registering you to vote');
     } finally {
       setLoading(false);
@@ -255,8 +253,6 @@ function VoteData({
         <VoteSection>
           <VoteActions
             addVotingPower={addVotingPower}
-            address={address}
-            countdownValue={countdownValue}
             errorMessage={errorMessage || error?.message}
             hasRegistered={hasRegistered}
             hasVoted={hasVoted}

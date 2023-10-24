@@ -317,11 +317,7 @@ function VoteFactory({
             <LoaderWithMargin color='var(--primary)' size='20px' />
           )}
           {!isLoadingWrite && !isLoadingWait && !isCheckingForDeployed && (
-            <button
-              type='submit'
-              // disabled={isLoadingWrite || isLoadingWait || isCheckingForDeployed || disableButton}
-              onClick={onSubmit}
-            >
+            <button type='submit' onClick={onSubmit}>
               Start Vote
             </button>
           )}

@@ -6,9 +6,13 @@ import { formatEther } from 'viem';
 
 import { publicClient } from 'services/clients';
 import { voteTrackerConfig } from 'constants/voteTrackerConfig';
-import { formatBytesWithLabel } from 'utilities/helpers';
+import { formatBytesWithLabel, indexOfMax } from 'utilities/helpers';
 import type { Address } from './Home';
-import { NameType, Payload, ValueType } from 'recharts/types/component/DefaultTooltipContent';
+import {
+  NameType,
+  Payload,
+  ValueType,
+} from 'recharts/types/component/DefaultTooltipContent';
 
 const InfoText = styled.span`
   font-style: italic;
@@ -35,16 +39,20 @@ const DataText = styled.div`
   color: var(--caption);
 `;
 
-function format_value(value: ValueType, name: NameType, props: Payload<ValueType, NameType>): string {
+function format_value(
+  value: ValueType,
+  name: NameType,
+  props: Payload<ValueType, NameType>,
+): string {
   switch (props.dataKey) {
-    case "RBP":
-      return formatBytesWithLabel(Number(value))
-    case "Tokens":
-      return `${formatEther(BigInt(value.toString())).slice(0, 8)} $FIL`
-    case "Miner Tokens":
-      return `${formatEther(BigInt(value.toString())).slice(0, 8)} $FIL`
+    case 'RBP':
+      return formatBytesWithLabel(Number(value));
+    case 'Tokens':
+      return `${formatEther(BigInt(value.toString())).slice(0, 8)} $FIL`;
+    case 'Miner Tokens':
+      return `${formatEther(BigInt(value.toString())).slice(0, 8)} $FIL`;
     default:
-      return ""
+      return '';
   }
 }
 
@@ -96,37 +104,19 @@ function VoteResults({
           formatEther(minerTokenVotes.reduce((a, b) => a + b, BigInt(0))),
         );
 
-        let yesOption1 = yesOptions[0]
-        let yesOption2 = yesOptions[1]
+        const yesOption1 = yesOptions[0];
+        const yesOption2 = yesOptions[1];
 
         const VOTES = [
-          yesOption1 && yesOption1.length > 0 ? yesOption1 : "Yes", 
-          yesOption2 && yesOption2.length > 0 ? yesOption2 : "Yes 2", 
-          'No', 
-          'Abstain'
+          yesOption1 && yesOption1.length > 0 ? yesOption1 : 'Yes',
+          yesOption2 && yesOption2.length > 0 ? yesOption2 : 'Yes 2',
+          'No',
+          'Abstain',
         ];
 
-        setWinningRbp(
-          VOTES[
-            rbpVotes.indexOf(
-              BigInt(Math.max(...rbpVotes.map((rbp) => Number(rbp)))),
-            )
-          ],
-        );
-        setWinningTokens(
-          VOTES[
-            tokenVotes.indexOf(
-              BigInt(Math.max(...tokenVotes.map((rbp) => Number(rbp)))),
-            )
-          ],
-        );
-        setWinningMinerTokens(
-          VOTES[
-            minerTokenVotes.indexOf(
-              BigInt(Math.max(...minerTokenVotes.map((rbp) => Number(rbp)))),
-            )
-          ],
-        );
+        setWinningRbp(VOTES[indexOfMax([...rbpVotes])]);
+        setWinningTokens(VOTES[indexOfMax([...tokenVotes])]);
+        setWinningMinerTokens(VOTES[indexOfMax([...minerTokenVotes])]);
 
         setData([
           {
@@ -170,7 +160,13 @@ function VoteResults({
     return (
       <ChartArea>
         <PieChart width={300} height={300}>
-          <Tooltip separator=': ' formatter={(value, name, props) => [format_value(value, name, props), name]} />
+          <Tooltip
+            separator=': '
+            formatter={(value, name, props) => [
+              format_value(value, name, props),
+              name,
+            ]}
+          />
           <Pie
             data={data}
             dataKey='RBP'
