@@ -42,6 +42,11 @@ const VoteSection = styled.div`
   padding: 24px;
 `;
 
+const LoaderContainer = styled.div`
+  display: flex;
+  justify-content: center;
+`;
+
 const InfoText = styled.span`
   font-style: italic;
 `;
@@ -87,7 +92,10 @@ function VoteData({
   }
 
   async function getHasVoted() {
-    if (lastFipAddress) {
+    if (
+      lastFipAddress &&
+      lastFipAddress !== localStorage.getItem('lastFipVoted')
+    ) {
       try {
         const userHasVoted = await publicClient.readContract({
           address: lastFipAddress,
@@ -100,6 +108,11 @@ function VoteData({
       } catch {
         setHasVoted(false);
       }
+    } else if (
+      lastFipAddress &&
+      lastFipAddress === localStorage.getItem('lastFipVoted')
+    ) {
+      setHasVoted(true);
     }
   }
 
@@ -245,7 +258,9 @@ function VoteData({
         <VoteSection>
           <h4>Latest Vote FIP</h4>
           {loadingFipData ? (
-            <ClipLoader color='var(--primary)' />
+            <LoaderContainer>
+              <ClipLoader color='var(--primary)' />
+            </LoaderContainer>
           ) : (
             renderLatestVote()
           )}
