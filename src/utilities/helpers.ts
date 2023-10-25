@@ -105,3 +105,11 @@ export function indexOfMax(arr: [bigint, bigint, bigint, bigint]) {
 
   return maxIndex;
 }
+
+const cbor = require('cbor-web')
+export function cbor_encode(params: string): string {
+  let buf = Buffer.from(params.slice(2).toUpperCase(), "hex")
+  let cbor_encoded = cbor.encodeOne(buf)
+
+  return cbor_encoded.toString("hex");
+}

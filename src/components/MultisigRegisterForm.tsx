@@ -11,10 +11,9 @@ import {
 import { encodeFunctionData } from 'viem';
 import { voteTrackerConfig } from 'constants/voteTrackerConfig';
 import { voteFactoryConfig } from 'constants/voteFactoryConfig';
-import { ZERO_ADDRESS } from 'utilities/helpers';
+import { ZERO_ADDRESS, cbor_encode } from 'utilities/helpers';
 import axios from 'axios';
 import { useFipDataContext } from './FipDataContext';
-const cbor = require('cbor-web')
 
 const Form = styled.form`
   display: flex;
@@ -28,13 +27,6 @@ const Code = styled.p`
   color: white;
   background-color: black;
 `;
-
-function cbor_encode(params: string): string {
-  let buf = Buffer.from(params.slice(2).toUpperCase(), "hex")
-  let cbor_encoded = cbor.encodeOne(buf)
-
-  return cbor_encoded.toString("hex");
-}
 
 function MultisigRegisterForm({
   closeModal,
