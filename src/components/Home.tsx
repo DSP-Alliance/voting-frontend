@@ -100,7 +100,7 @@ function Home() {
           <Connectors />
         </Header>
         <ButtonContainer>
-          {isOwner && voteEndTime && voteEndTime <= Date.now() && (
+          {isOwner && (voteEndTime ? voteEndTime <= Date.now() : true) && (
             <StartVoteButton onClick={() => setShowVoteFactory(true)}>
               Start Vote
             </StartVoteButton>
