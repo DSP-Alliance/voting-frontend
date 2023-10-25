@@ -118,13 +118,13 @@ function MultisigRegisterForm({
         </FormControl>
         {/* Stylize this command */}
         <Code>
-          {`lotus msig approve ${msigAddress} ${txId} ${proposerAddress} ${factoryFilAddress} 0 3844450837 ${encode(
-            cbor_encode(encodeFunctionData({
+          {`lotus msig approve ${msigAddress} ${txId} ${proposerAddress} ${factoryFilAddress} 0 3844450837 ${cbor_encode(
+            encodeFunctionData({
               abi: voteFactoryConfig.abi,
               functionName: 'register',
               args: [ZERO_ADDRESS, []],
             }),
-          ))}`}
+          )}`}
         </Code>
         <p>
           After proposing and approving the registration transaction, propose
@@ -185,13 +185,13 @@ function MultisigRegisterForm({
         </FormControl>
         {/* Stylize this command */}
         <Code>
-          {`lotus msig approve ${msigAddress} ${txId} ${proposerAddress} ${voteFilAddress} 0 3844450837 ${encode(
-            cbor_encode(encodeFunctionData({
+          {`lotus msig approve ${msigAddress} ${txId} ${proposerAddress} ${voteFilAddress} 0 3844450837 ${cbor_encode(
+            encodeFunctionData({
               abi: voteTrackerConfig.abi,
               functionName: 'castVote',
               args: [BigInt(vote)],
             }),
-          ))}`}
+          )}`}
         </Code>
         <DialogActions>
           <button onClick={closeModal}>Okay</button>
