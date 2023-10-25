@@ -8,6 +8,7 @@ import ClipLoader from 'react-spinners/ClipLoader';
 import { publicClient } from 'services/clients';
 import { voteFactoryConfig } from 'constants/voteFactoryConfig';
 import type { Address } from './Home';
+import { useFipDataContext } from './FipDataContext';
 
 const Form = styled.form`
   display: flex;
@@ -45,20 +46,12 @@ const ErrorMessage = styled.div`
   word-wrap: break-word;
 `;
 
-function VoteFactory({
-  closeModal,
-  getFipData,
-  initialVotesLength,
-  setLastFipNum,
-}: {
-  closeModal: () => void;
-  getFipData: () => void;
-  initialVotesLength: number;
-  setLastFipNum: React.Dispatch<React.SetStateAction<number | undefined>>;
-}) {
+function VoteFactory({ closeModal }: { closeModal: () => void }) {
   const [allLsdTokens, setAllLsdTokens] = useState<Address[]>([]);
   const [errorMessage, setErrorMessage] = useState('');
   const [isCheckingForDeployed, setIsCheckingForDeployed] = useState(false);
+
+  const { getFipData, initialVotesLength } = useFipDataContext();
 
   const { control, getValues, setValue, trigger, watch } = useForm({
     mode: 'onTouched',
@@ -114,7 +107,6 @@ function VoteFactory({
 
           if (deployedCount && deployedCount > initialVotesLength) {
             getFipData();
-            setLastFipNum(parseInt(watch('fipNum')));
             setIsCheckingForDeployed(false);
             closeModal();
           }

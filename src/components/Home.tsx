@@ -3,7 +3,6 @@ import { useAccount } from 'wagmi';
 import styled from 'styled-components';
 
 import { voteFactoryConfig } from 'constants/voteFactoryConfig';
-import { voteTrackerConfig } from 'constants/voteTrackerConfig';
 import { publicClient } from 'services/clients';
 import Connectors from './Connectors';
 import VoteData from './VoteData';
@@ -11,7 +10,7 @@ import VoteHistory from './VoteHistory';
 import VoteFactoryModal from './VoteFactoryModal';
 import MultisigRegisterModal from './MultisigRegister';
 import ManualMinerRegisterModal from './ManualMinerRegister';
-import { useCountdownValueContext } from './CountdownContext';
+import { useVoteEndContext } from './VoteEndContext';
 
 export type Address = `0x${string}`;
 
@@ -67,17 +66,12 @@ const VoteContent = styled.div`
 
 function Home() {
   const { address, isConnected } = useAccount();
-  const [fipAddresses, setFipAddresses] = useState<Address[]>([]);
-  const [fipList, setFipList] = useState<number[]>([]);
-  const [initialVotesLength, setInitialVotesLength] = useState<number>(0);
   const [isOwner, setIsOwner] = useState(false);
-  const [lastFipNum, setLastFipNum] = useState<number>();
-  const [loadingFipData, setLoadingFipData] = useState(true);
   const [showVoteFactory, setShowVoteFactory] = useState(false);
   const [showMultisigRegister, setShowMultisigRegister] = useState(false);
   const [showMinerRegister, setShowMinerRegister] = useState(false);
 
-  const { getCountdownValue, countdownValue } = useCountdownValueContext();
+  const { voteEndTime } = useVoteEndContext();
 
   useEffect(() => {
     async function getOwner() {
@@ -98,58 +92,6 @@ function Home() {
     if (isConnected) getOwner();
   }, [isConnected]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  async function getFipData() {
-    try {
-      const deployedCount: bigint = await publicClient.readContract({
-        abi: voteFactoryConfig.abi,
-        address: voteFactoryConfig.address,
-        functionName: 'deployedVotesLength',
-      });
-
-      const promises = [];
-      for (let i = 0; i < deployedCount; i++) {
-        promises.push(
-          publicClient.readContract({
-            abi: voteFactoryConfig.abi,
-            address: voteFactoryConfig.address,
-            functionName: 'deployedVotes',
-            args: [BigInt(i)],
-          }),
-        );
-      }
-      const voteAddresses: Address[] = await Promise.all(promises);
-
-      setFipAddresses(voteAddresses);
-      setInitialVotesLength(voteAddresses.length);
-
-      const fips = await Promise.all(
-        voteAddresses.map((fipAddress) => {
-          return publicClient.readContract({
-            abi: voteTrackerConfig.abi,
-            address: fipAddress,
-            functionName: 'FIP',
-          });
-        }),
-      );
-
-      setFipList(fips);
-      setLastFipNum(fips[fips.length - 1]);
-      setLoadingFipData(false);
-    } catch (error) {
-      setFipAddresses([]);
-      setLastFipNum(undefined);
-      setLoadingFipData(false);
-    }
-  }
-
-  useEffect(() => {
-    getFipData();
-  }, []);
-
-  useEffect(() => {
-    if (lastFipNum) getCountdownValue(fipAddresses[fipAddresses.length - 1]);
-  }, [lastFipNum, fipAddresses]);
-
   return (
     <>
       <HomeContainer>
@@ -158,7 +100,7 @@ function Home() {
           <Connectors />
         </Header>
         <ButtonContainer>
-          {isOwner && countdownValue === 0 && (
+          {isOwner && voteEndTime && voteEndTime <= Date.now() && (
             <StartVoteButton onClick={() => setShowVoteFactory(true)}>
               Start Vote
             </StartVoteButton>
@@ -174,16 +116,12 @@ function Home() {
           <VoteFactoryModal
             open={showVoteFactory}
             closeModal={() => setShowVoteFactory(false)}
-            getFipData={getFipData}
-            initialVotesLength={initialVotesLength}
-            setLastFipNum={setLastFipNum}
           />
         )}
         {showMultisigRegister && (
           <MultisigRegisterModal
             open={showMultisigRegister}
             closeModal={() => setShowMultisigRegister(false)}
-            currentVoteAddress={fipAddresses[fipAddresses.length - 1]}
           />
         )}
         {showMinerRegister && (
@@ -193,13 +131,8 @@ function Home() {
           />
         )}
         <VoteContent>
-          <VoteData
-            address={address}
-            lastFipAddress={fipAddresses[fipAddresses.length - 1]}
-            lastFipNum={lastFipNum}
-            loadingFipData={loadingFipData}
-          />
-          <VoteHistory fips={fipList} />
+          <VoteData address={address} />
+          <VoteHistory />
         </VoteContent>
       </HomeContainer>
     </>

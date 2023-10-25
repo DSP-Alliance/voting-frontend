@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { useContractWrite, useWaitForTransaction } from 'wagmi';
 
 import { voteTrackerConfig } from 'constants/voteTrackerConfig';
-import type { Address } from './Home';
+import { useFipDataContext } from './FipDataContext';
 
 const VotePickerContainer = styled.div`
   display: flex;
@@ -20,18 +20,18 @@ const ErrorMessage = styled.div`
 `;
 
 function VotePicker({
-  lastFipAddress,
   setHasVoted,
   yesOption1,
   yesOption2,
 }: {
-  lastFipAddress: Address | undefined;
   setHasVoted: React.Dispatch<React.SetStateAction<boolean>>;
   yesOption1: string;
   yesOption2: string;
 }) {
   const [vote, setVote] = useState<bigint>(BigInt(0));
   const [hasClicked, setHasClicked] = useState(false);
+
+  const { lastFipAddress } = useFipDataContext();
 
   const {
     data,
