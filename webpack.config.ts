@@ -36,7 +36,9 @@ module.exports = {
       constants: path.resolve(__dirname, 'src/constants/'),
       services: path.resolve(__dirname, 'src/services/'),
       utilities: path.resolve(__dirname, 'src/utilities/'),
+      process: path.resolve(__dirname, "./node_modules/process/"),
     },
+    fallback: { "stream": require.resolve("stream-browserify"), process: require.resolve('process/browser') }
   },
   devtool: prod ? undefined : 'cheap-module-source-map',
   plugins: [

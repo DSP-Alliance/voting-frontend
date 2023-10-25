@@ -13,8 +13,8 @@ import { voteTrackerConfig } from 'constants/voteTrackerConfig';
 import { voteFactoryConfig } from 'constants/voteFactoryConfig';
 import { ZERO_ADDRESS } from 'utilities/helpers';
 import axios from 'axios';
-import { encode } from '@ipld/dag-cbor';
 import { useFipDataContext } from './FipDataContext';
+const cbor = require('cbor-web')
 
 const Form = styled.form`
   display: flex;
@@ -29,7 +29,18 @@ const Code = styled.p`
   background-color: black;
 `;
 
-function MultisigRegisterForm({ closeModal }: { closeModal: () => void }) {
+function cbor_encode(params: string): string {
+  let buf = Buffer.from(params.slice(2).toUpperCase(), "hex")
+  let cbor_encoded = cbor.encodeOne(buf)
+
+  return cbor_encoded.toString("hex");
+}
+
+function MultisigRegisterForm({
+  closeModal,
+}: {
+  closeModal: () => void;
+}) {
   const [vote, setVote] = useState<number | string>(0);
   const [factoryFilAddress, setFactoryFilAddress] = useState<string>('');
   const [voteFilAddress, setVoteFilAddress] = useState<string>('');
@@ -74,7 +85,7 @@ function MultisigRegisterForm({ closeModal }: { closeModal: () => void }) {
         {/* Stylize this command */}
         <Code>
           {`lotus msig propose ${msigAddress} ${factoryFilAddress} 0 3844450837`}{' '}
-          {encode(
+          {cbor_encode(
             encodeFunctionData({
               abi: voteFactoryConfig.abi,
               functionName: 'register',
@@ -108,12 +119,12 @@ function MultisigRegisterForm({ closeModal }: { closeModal: () => void }) {
         {/* Stylize this command */}
         <Code>
           {`lotus msig approve ${msigAddress} ${txId} ${proposerAddress} ${factoryFilAddress} 0 3844450837 ${encode(
-            encodeFunctionData({
+            cbor_encode(encodeFunctionData({
               abi: voteFactoryConfig.abi,
               functionName: 'register',
               args: [ZERO_ADDRESS, []],
             }),
-          )}`}
+          ))}`}
         </Code>
         <p>
           After proposing and approving the registration transaction, propose
@@ -141,7 +152,7 @@ function MultisigRegisterForm({ closeModal }: { closeModal: () => void }) {
         {/* Stylize this command */}
         <Code>
           {`lotus msig propose ${msigAddress} ${voteFilAddress} 0 3844450837`}{' '}
-          {encode(
+          {cbor_encode(
             encodeFunctionData({
               abi: voteTrackerConfig.abi,
               functionName: 'castVote',
@@ -175,12 +186,12 @@ function MultisigRegisterForm({ closeModal }: { closeModal: () => void }) {
         {/* Stylize this command */}
         <Code>
           {`lotus msig approve ${msigAddress} ${txId} ${proposerAddress} ${voteFilAddress} 0 3844450837 ${encode(
-            encodeFunctionData({
+            cbor_encode(encodeFunctionData({
               abi: voteTrackerConfig.abi,
               functionName: 'castVote',
               args: [BigInt(vote)],
             }),
-          )}`}
+          ))}`}
         </Code>
         <DialogActions>
           <button onClick={closeModal}>Okay</button>
