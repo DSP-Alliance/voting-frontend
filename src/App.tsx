@@ -6,7 +6,8 @@ import { MetaMaskConnector } from 'wagmi/connectors/metaMask';
 import GlobalStyle from './globalStyles';
 import { publicClient } from './services/clients';
 import Home from './components/Home';
-import { CountdownContextProvider } from './components/CountdownContext';
+import { FipDataContextProvider } from './components/FipDataContext';
+import { VoteEndContextProvider } from './components/VoteEndContext';
 
 const config = createConfig({
   autoConnect: true,
@@ -21,12 +22,16 @@ const config = createConfig({
 
 function App() {
   return (
-    <CountdownContextProvider>
-      <GlobalStyle />
-      <WagmiConfig config={config}>
-        <Home />
-      </WagmiConfig>
-    </CountdownContextProvider>
+    <>
+      <FipDataContextProvider>
+        <VoteEndContextProvider>
+          <GlobalStyle />
+          <WagmiConfig config={config}>
+            <Home />
+          </WagmiConfig>
+        </VoteEndContextProvider>
+      </FipDataContextProvider>
+    </>
   );
 }
 

@@ -3,6 +3,7 @@ import styled from 'styled-components';
 
 import { getFip } from 'services/fipService';
 import type { FipData } from 'services/fipService';
+import { useFipDataContext } from './FipDataContext';
 
 const InfoContainer = styled.div`
   display: flex;
@@ -21,17 +22,21 @@ const ErrorMessage = styled.div`
   color: var(--error);
 `;
 
-function FIPInfo({ num }: { num: number }) {
+function FIPInfo() {
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [fipData, setFipData] = useState<FipData>();
 
+  const { lastFipNum: num } = useFipDataContext();
+
   useEffect(() => {
     async function getFIPInfo() {
-      try {
-        const response = await getFip(num);
-        setFipData(response);
-      } catch (error: any) {
-        setErrorMessage(JSON.stringify(error));
+      if (num) {
+        try {
+          const response = await getFip(num);
+          setFipData(response);
+        } catch (error: any) {
+          setErrorMessage(JSON.stringify(error));
+        }
       }
     }
 

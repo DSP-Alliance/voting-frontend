@@ -15,7 +15,8 @@ import VoteActions from 'components/VoteActions';
 import VotingPower from 'components/VotingPower';
 import type { Address } from './Home';
 import { voteFactoryConfig } from 'constants/voteFactoryConfig';
-import { useCountdownValueContext } from './CountdownContext';
+import { useVoteEndContext } from './VoteEndContext';
+import { useFipDataContext } from './FipDataContext';
 
 const VoteDataContainer = styled.div`
   display: flex;
@@ -51,17 +52,7 @@ const InfoText = styled.span`
   font-style: italic;
 `;
 
-function VoteData({
-  address,
-  lastFipAddress,
-  lastFipNum,
-  loadingFipData,
-}: {
-  address: Address | undefined;
-  lastFipAddress: Address | undefined;
-  lastFipNum: number | undefined;
-  loadingFipData: boolean;
-}) {
+function VoteData({ address }: { address: Address | undefined }) {
   const { isConnected } = useAccount();
   const [agentAddress, setAgentAddress] = useState<Address>(ZERO_ADDRESS);
   const [errorMessage, setErrorMessage] = useState('');
@@ -72,7 +63,8 @@ function VoteData({
   const [rawBytePower, setRawBytePower] = useState('');
   const [tokenPower, setTokenPower] = useState<bigint>(BigInt(0));
 
-  const { countdownValue } = useCountdownValueContext();
+  const { lastFipAddress, lastFipNum, loadingFipData } = useFipDataContext();
+  const { voteEndTime } = useVoteEndContext();
 
   async function getHasRegistered() {
     if (lastFipAddress) {
@@ -241,16 +233,16 @@ function VoteData({
   }, [isSuccess]);
 
   function renderLatestVote() {
-    if (lastFipNum) return <FIPInfo num={lastFipNum} />;
+    if (lastFipNum) return <FIPInfo />;
     return <InfoText>Last vote data does not exist</InfoText>;
   }
 
   return (
     <VoteDataContainer>
       <CountdownContainer>
-        {countdownValue !== undefined && countdownValue !== 0 && (
+        {voteEndTime && voteEndTime > Date.now() && (
           <span>
-            Time left: <Countdown date={Date.now() + countdownValue * 1000} />
+            Time left: <Countdown date={voteEndTime} />
           </span>
         )}
       </CountdownContainer>
@@ -271,9 +263,6 @@ function VoteData({
             errorMessage={errorMessage || error?.message}
             hasRegistered={hasRegistered}
             hasVoted={hasVoted}
-            loadingFipData={loadingFipData}
-            lastFipNum={lastFipNum}
-            lastFipAddress={lastFipAddress}
             loading={loading}
             minerIds={minerIds}
             rawBytePower={rawBytePower}
@@ -285,7 +274,6 @@ function VoteData({
         </VoteSection>
         <VoteSection>
           <VotingPower
-            hasVoted={hasVoted}
             hasRegistered={hasRegistered}
             rawBytePower={rawBytePower}
             tokenPower={tokenPower}

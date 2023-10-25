@@ -7,18 +7,15 @@ import { voteTrackerConfig } from 'constants/voteTrackerConfig';
 import VoteResults from 'components/VoteResults';
 import VotePicker from 'components/VotePicker';
 import Register from 'components/Register';
-import type { Address } from './Home';
 import { getWinningText } from 'utilities/helpers';
-import { useCountdownValueContext } from './CountdownContext';
+import { useVoteEndContext } from './VoteEndContext';
+import { useFipDataContext } from './FipDataContext';
 
 interface VoteActionsProps {
   addVotingPower: (agentAddress: string) => void;
   errorMessage: string | undefined;
   hasRegistered: boolean;
   hasVoted: boolean;
-  loadingFipData: boolean;
-  lastFipNum: number | undefined;
-  lastFipAddress: Address | undefined;
   loading: boolean;
   minerIds: string[];
   rawBytePower: string;
@@ -43,9 +40,6 @@ function VoteActions({
   errorMessage,
   hasRegistered,
   hasVoted,
-  loadingFipData,
-  lastFipNum,
-  lastFipAddress,
   loading,
   minerIds,
   rawBytePower,
@@ -58,7 +52,9 @@ function VoteActions({
   const [winningVoteText, setWinningVoteText] = useState('');
   const [yesOptions, setYesOptions] = useState<string[]>([]);
 
-  const { countdownValue } = useCountdownValueContext();
+  const { loadingFipData, lastFipNum, lastFipAddress } = useFipDataContext();
+
+  const { voteEndTime } = useVoteEndContext();
 
   useEffect(() => {
     async function getVoteInfo() {
@@ -108,27 +104,27 @@ function VoteActions({
           <ClipLoader color='var(--primary)' />
         </LoaderContainer>
       )}
-      {(!Boolean(countdownValue) || hasVoted) && yesOptions.length > 0 && (
-        <>
-          <h4>Latest Vote Results</h4>
-          <QuestionText>{questionText}</QuestionText>
-          <QuestionText>Winning vote: {winningVoteText}</QuestionText>
-          <VoteResults
-            lastFipNum={lastFipNum}
-            lastFipAddress={lastFipAddress}
-            loading={countdownValue === undefined}
-            yesOptions={yesOptions}
-          />
-        </>
-      )}
-      {Boolean(countdownValue) && !hasVoted && (
+      {(!voteEndTime || voteEndTime <= Date.now() || hasVoted) &&
+        yesOptions.length > 0 && (
+          <>
+            <h4>Latest Vote Results</h4>
+            <QuestionText>{questionText}</QuestionText>
+            <QuestionText>Winning vote: {winningVoteText}</QuestionText>
+            <VoteResults
+              lastFipAddress={lastFipAddress}
+              lastFipNum={lastFipNum}
+              loading={voteEndTime === undefined}
+              yesOptions={yesOptions}
+            />
+          </>
+        )}
+      {voteEndTime && voteEndTime > Date.now() && !hasVoted && (
         <>
           <h4>Choose Vote</h4>
           <QuestionText>{questionText}</QuestionText>
           {hasRegistered && (
             <VotePicker
               setHasVoted={setHasVoted}
-              lastFipAddress={lastFipAddress}
               yesOption1={yesOptions[0]}
               yesOption2={yesOptions[1]}
             />

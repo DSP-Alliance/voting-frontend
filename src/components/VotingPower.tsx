@@ -9,12 +9,10 @@ const InfoText = styled.span`
 
 function VotingPower({
   hasRegistered,
-  hasVoted,
   rawBytePower,
   tokenPower,
 }: {
   hasRegistered: boolean;
-  hasVoted: boolean;
   rawBytePower: string;
   tokenPower: bigint | null;
 }) {

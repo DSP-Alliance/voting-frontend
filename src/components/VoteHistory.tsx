@@ -9,6 +9,7 @@ import VoteResults from './VoteResults';
 import { Address } from 'viem';
 import { ZERO_ADDRESS, getWinningText, timeLength } from 'utilities/helpers';
 import { voteTrackerConfig } from 'constants/voteTrackerConfig';
+import { useFipDataContext } from './FipDataContext';
 
 const Container = styled.div`
   display: grid;
@@ -29,15 +30,7 @@ const QuestionText = styled.div`
   margin-top: 24px;
 `;
 
-const ChartArea = styled.div`
-  margin: 24px;
-
-  @media (max-width: 1080px) {
-    grid-column-start: 1;
-  }
-`;
-
-function VoteHistory({ fips }: { fips: number[] }) {
+function VoteHistory() {
   const [loading, setLoading] = useState(false);
   const [selectedFip, setSelectedFip] = useState('');
   const [voteAddress, setVoteAddress] = useState<Address>(ZERO_ADDRESS);
@@ -46,6 +39,8 @@ function VoteHistory({ fips }: { fips: number[] }) {
   const [winningVoteText, setWinningVoteText] = useState('');
   const [startTime, setStartTime] = useState<number>(0);
   const [length, setLength] = useState<number>(0);
+
+  const { fipList: fips } = useFipDataContext();
 
   useEffect(() => {
     if (selectedFip) {
