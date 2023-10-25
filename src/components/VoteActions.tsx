@@ -83,10 +83,12 @@ function VoteActions({
             functionName: 'winningVote',
           });
 
-          setQuestionText(question);
-          setWinningVoteText(getWinningText(winningVote, yesOptions));
+          let newYesOptions = [yesOption1, ...(yesOption2 ? [yesOption2] : [])]
 
-          setYesOptions([yesOption1, ...(yesOption2 ? [yesOption2] : [])]);
+          setQuestionText(question);
+          setWinningVoteText(getWinningText(winningVote, newYesOptions));
+
+          setYesOptions(newYesOptions);
         } catch (err) {
           console.error(err);
           setYesOptions([]);
