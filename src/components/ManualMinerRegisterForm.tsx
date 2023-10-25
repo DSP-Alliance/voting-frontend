@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { DialogActions, Select, InputLabel, FormControl, MenuItem, TextField } from '@mui/material';
 import { encodeFunctionData, Address, getAddress } from 'viem';
 import { voteFactoryConfig } from 'constants/voteFactoryConfig';
-import { ZERO_ADDRESS } from 'utilities/helpers';
+import { ZERO_ADDRESS, cbor_encode } from 'utilities/helpers';
 import axios from 'axios';
 
 const Form = styled.form`
@@ -78,7 +78,7 @@ function ManualMinerRegisterForm({
         </FormControl>
         {/* Stylize this command */}
         <Code>
-          {`lotus send --method 3844450837 --params-hex`} {encodeFunctionData({abi: voteFactoryConfig.abi, functionName: 'addMiner', args: [voterAddress, minerId]})} {factoryFilAddress} 0
+          {`lotus send --method 3844450837 --params-hex`} {cbor_encode(encodeFunctionData({abi: voteFactoryConfig.abi, functionName: 'addMiner', args: [voterAddress, minerId]}))} {factoryFilAddress} 0
         </Code>
         <DialogActions>
           <button onClick={closeModal}>Okay</button>
