@@ -7,7 +7,7 @@ import { publicClient } from 'services/clients';
 import { voteFactoryConfig } from 'constants/voteFactoryConfig';
 import VoteResults from './VoteResults';
 import { Address } from 'viem';
-import { ZERO_ADDRESS, get_winning_text, timeLength } from 'utilities/helpers';
+import { ZERO_ADDRESS, getWinningText, timeLength } from 'utilities/helpers';
 import { voteTrackerConfig } from 'constants/voteTrackerConfig';
 
 const Container = styled.div`
@@ -108,7 +108,7 @@ function VoteHistory({ fips }: { fips: number[] }) {
               setStartTime(voteStart);
               setLength(voteLength);
               setQuestionText(question);
-              setWinningVoteText(get_winning_text(winningVote, yesOptions));
+              setWinningVoteText(getWinningText(winningVote, yesOptions));
 
               setVoteAddress(addr);
               setLoading(false);

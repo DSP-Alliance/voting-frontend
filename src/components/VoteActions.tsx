@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
+import ClipLoader from 'react-spinners/ClipLoader';
 
 import { publicClient } from 'services/clients';
 import { voteTrackerConfig } from 'constants/voteTrackerConfig';
@@ -7,7 +8,7 @@ import VoteResults from 'components/VoteResults';
 import VotePicker from 'components/VotePicker';
 import Register from 'components/Register';
 import type { Address } from './Home';
-import { get_winning_text } from 'utilities/helpers';
+import { getWinningText } from 'utilities/helpers';
 import { useCountdownValueContext } from './CountdownContext';
 
 interface VoteActionsProps {
@@ -26,6 +27,12 @@ interface VoteActionsProps {
   tokenPower: bigint | null;
   write: () => void;
 }
+
+const LoaderContainer = styled.div`
+  margin-top: 60px;
+  display: flex;
+  justify-content: center;
+`;
 
 const QuestionText = styled.div`
   margin-bottom: 12px;
@@ -48,7 +55,7 @@ function VoteActions({
   write,
 }: VoteActionsProps) {
   const [questionText, setQuestionText] = useState('');
-  const [winningVote, setWinningVote] = useState('');
+  const [winningVoteText, setWinningVoteText] = useState('');
   const [yesOptions, setYesOptions] = useState<string[]>([]);
 
   const { countdownValue } = useCountdownValueContext();
@@ -81,9 +88,7 @@ function VoteActions({
           });
 
           setQuestionText(question);
-          setWinningVote(
-            get_winning_text(winningVote, [yesOption1, yesOption2]),
-          );
+          setWinningVoteText(getWinningText(winningVote, yesOptions));
 
           setYesOptions([yesOption1, ...(yesOption2 ? [yesOption2] : [])]);
         } catch (err) {
@@ -98,15 +103,20 @@ function VoteActions({
 
   return (
     <>
+      {loadingFipData && (
+        <LoaderContainer>
+          <ClipLoader color='var(--primary)' />
+        </LoaderContainer>
+      )}
       {(!Boolean(countdownValue) || hasVoted) && yesOptions.length > 0 && (
         <>
           <h4>Latest Vote Results</h4>
           <QuestionText>{questionText}</QuestionText>
-          <QuestionText>Winning vote: {winningVote}</QuestionText>
+          <QuestionText>Winning vote: {winningVoteText}</QuestionText>
           <VoteResults
             lastFipNum={lastFipNum}
             lastFipAddress={lastFipAddress}
-            loading={loadingFipData || countdownValue === undefined}
+            loading={countdownValue === undefined}
             yesOptions={yesOptions}
           />
         </>

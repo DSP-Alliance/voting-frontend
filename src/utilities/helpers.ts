@@ -71,7 +71,7 @@ export function timeLength(length: number) {
   return timeStringArray.join(', ');
 }
 
-export function get_winning_text(vote: number, options: string[]): string {
+export function getWinningText(vote: number, options: string[]): string {
   switch (vote) {
     case 0:
       return options[0].length > 0 ? options[0] : 'Yes';

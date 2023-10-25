@@ -51,6 +51,7 @@ function VotePicker({
 
   useEffect(() => {
     if (isSuccess) {
+      localStorage.setItem('lastFipVoted', lastFipAddress || '');
       setHasVoted(true);
     }
   }, [isSuccess]); // eslint-disable-line react-hooks/exhaustive-deps
