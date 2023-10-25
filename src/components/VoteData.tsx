@@ -119,14 +119,16 @@ function VoteData({ address }: { address: Address | undefined }) {
     async function getByteAndTokenPower() {
       if (lastFipAddress) {
         try {
-          const [tokenPower, bytePower] = await publicClient.readContract({
+          const [tokenPower, bytePower, minerTokenPower] = await publicClient.readContract({
             address: lastFipAddress || ZERO_ADDRESS,
             abi: voteTrackerConfig.abi,
             functionName: 'getVotingPower',
             args: [address || ZERO_ADDRESS],
           });
 
+          console.log(tokenPower, bytePower, minerTokenPower)
           setRawBytePower(formatBytesWithLabel(parseInt(bytePower.toString())));
+          console.log("set rbp and token from getByteAndTokenPower")
           setTokenPower(tokenPower);
         } catch {
           setTokenPower(BigInt(0));
@@ -217,6 +219,7 @@ function VoteData({ address }: { address: Address | undefined }) {
         });
 
       setRawBytePower(formatBytesWithLabel(rawBytes));
+      console.log("set rbp and token from addVotingPower")
       setTokenPower(tokenPower);
     } catch (error) {
       console.error(error);
