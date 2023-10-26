@@ -21,6 +21,10 @@ const Form = styled.form`
   gap: 2px;
 `;
 
+const FormWithSpace = styled(FormControl)`
+  gap: 12px;
+`;
+
 const Code = styled.p`
   white-space: pre-wrap;
   overflow-wrap: break-word;
@@ -28,11 +32,14 @@ const Code = styled.p`
   background-color: black;
 `;
 
-function MultisigRegisterForm({
-  closeModal,
-}: {
-  closeModal: () => void;
-}) {
+const ErrorMessage = styled.div`
+  font-size: 14px;
+  align-self: center;
+  color: var(--error);
+`;
+
+function MultisigRegisterForm({ closeModal }: { closeModal: () => void }) {
+  const [errorMessage, setErrorMessage] = useState<string>('');
   const [vote, setVote] = useState<number | string>(0);
   const [factoryFilAddress, setFactoryFilAddress] = useState<string>('');
   const [voteFilAddress, setVoteFilAddress] = useState<string>('');
@@ -43,17 +50,23 @@ function MultisigRegisterForm({
   const { lastFipAddress: currentVoteAddress } = useFipDataContext();
 
   useEffect(() => {
-    axios
-      .get(`https://filfox.info/api/v1/address/${voteFactoryConfig.address}`)
-      .then((response) => {
-        setFactoryFilAddress(response.data.address);
-      });
+    async function getAddresses() {
+      try {
+        const addressResponse = await axios.get(
+          `https://filfox.info/api/v1/address/${voteFactoryConfig.address}`,
+        );
+        setFactoryFilAddress(addressResponse.data.address);
 
-    axios
-      .get(`https://filfox.info/api/v1/address/${currentVoteAddress}`)
-      .then((response) => {
-        setVoteFilAddress(response.data.address);
-      });
+        const voteAddress = await axios.get(
+          `https://filfox.info/api/v1/address/${currentVoteAddress}`,
+        );
+        setVoteFilAddress(voteAddress.data.address);
+      } catch (error) {
+        setErrorMessage(JSON.stringify(error));
+      }
+    }
+
+    getAddresses();
   }, []);
 
   return (
@@ -90,7 +103,7 @@ function MultisigRegisterForm({
           the approval command.
         </p>
         <p>2) Approve the registration proposal with signers</p>
-        <FormControl fullWidth>
+        <FormWithSpace fullWidth>
           <TextField
             id='outlined-controlled'
             label='Transaction ID'
@@ -107,7 +120,7 @@ function MultisigRegisterForm({
               setProposerAddress(event.target.value);
             }}
           />
-        </FormControl>
+        </FormWithSpace>
         {/* Stylize this command */}
         <Code>
           {`lotus msig approve ${msigAddress} ${txId} ${proposerAddress} ${factoryFilAddress} 0 3844450837 ${cbor_encode(
@@ -157,7 +170,7 @@ function MultisigRegisterForm({
           signers must also approve the vote proposal.
         </p>
         <p>4) Approve the vote proposal</p>
-        <FormControl fullWidth>
+        <FormWithSpace fullWidth>
           <TextField
             id='outlined-controlled'
             label='Transaction ID'
@@ -174,7 +187,7 @@ function MultisigRegisterForm({
               setProposerAddress(event.target.value);
             }}
           />
-        </FormControl>
+        </FormWithSpace>
         {/* Stylize this command */}
         <Code>
           {`lotus msig approve ${msigAddress} ${txId} ${proposerAddress} ${voteFilAddress} 0 3844450837 ${cbor_encode(
@@ -187,6 +200,7 @@ function MultisigRegisterForm({
         </Code>
         <DialogActions>
           <button onClick={closeModal}>Okay</button>
+          {errorMessage && <ErrorMessage>Error: {errorMessage}</ErrorMessage>}
         </DialogActions>
       </Form>
     </>
