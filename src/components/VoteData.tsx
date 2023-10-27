@@ -48,6 +48,10 @@ const VoteSection = styled.div`
 
 const VotingPowerSection = styled(VoteSection)`
   grid-column-start: span 2;
+
+  @media (max-width: 920px) {
+    grid-column-start: span 1;
+  }
 `;
 
 const Header = styled.h3`
