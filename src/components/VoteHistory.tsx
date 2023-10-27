@@ -130,7 +130,7 @@ function VoteHistory() {
               fips.map((fip) => {
                 return (
                   <MenuItem key={fip} value={fip}>
-                    {fip}
+                    {fip} - {'GET FIP TITLE'}
                   </MenuItem>
                 );
               })}

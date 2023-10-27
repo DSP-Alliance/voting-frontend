@@ -9,10 +9,12 @@ import {
   TextField,
 } from '@mui/material';
 import { encodeFunctionData } from 'viem';
+import axios from 'axios';
+
 import { voteTrackerConfig } from 'constants/voteTrackerConfig';
 import { voteFactoryConfig } from 'constants/voteFactoryConfig';
 import { ZERO_ADDRESS, cbor_encode } from 'utilities/helpers';
-import axios from 'axios';
+import CodeSnippet from 'components/CodeSnippet';
 import { useFipDataContext } from './FipDataContext';
 
 const Form = styled.form`
@@ -23,13 +25,6 @@ const Form = styled.form`
 
 const FormWithSpace = styled(FormControl)`
   gap: 12px;
-`;
-
-const Code = styled.p`
-  white-space: pre-wrap;
-  overflow-wrap: break-word;
-  color: white;
-  background-color: black;
 `;
 
 const ErrorMessage = styled.div`
@@ -61,8 +56,8 @@ function MultisigRegisterForm({ closeModal }: { closeModal: () => void }) {
           `https://filfox.info/api/v1/address/${currentVoteAddress}`,
         );
         setVoteFilAddress(voteAddress.data.address);
-      } catch (error) {
-        setErrorMessage(JSON.stringify(error));
+      } catch (error: any) {
+        setErrorMessage(error.message);
       }
     }
 
@@ -87,17 +82,18 @@ function MultisigRegisterForm({ closeModal }: { closeModal: () => void }) {
             }}
           />
         </FormControl>
-        {/* Stylize this command */}
-        <Code>
-          {`lotus msig propose ${msigAddress} ${factoryFilAddress} 0 3844450837`}{' '}
-          {cbor_encode(
-            encodeFunctionData({
-              abi: voteFactoryConfig.abi,
-              functionName: 'register',
-              args: [ZERO_ADDRESS, []],
-            }),
-          )}
-        </Code>
+        <CodeSnippet
+          code={
+            `lotus msig propose ${msigAddress} ${factoryFilAddress} 0 3844450837 ` +
+            cbor_encode(
+              encodeFunctionData({
+                abi: voteFactoryConfig.abi,
+                functionName: 'register',
+                args: [ZERO_ADDRESS, []],
+              }),
+            )
+          }
+        />
         <p>
           Depending on your multisig approval threshold, N of M signers must run
           the approval command.
@@ -121,16 +117,18 @@ function MultisigRegisterForm({ closeModal }: { closeModal: () => void }) {
             }}
           />
         </FormWithSpace>
-        {/* Stylize this command */}
-        <Code>
-          {`lotus msig approve ${msigAddress} ${txId} ${proposerAddress} ${factoryFilAddress} 0 3844450837 ${cbor_encode(
-            encodeFunctionData({
-              abi: voteFactoryConfig.abi,
-              functionName: 'register',
-              args: [ZERO_ADDRESS, []],
-            }),
-          )}`}
-        </Code>
+        <CodeSnippet
+          code={
+            `lotus msig approve ${msigAddress} ${txId} ${proposerAddress} ${factoryFilAddress} 0 3844450837 ` +
+            cbor_encode(
+              encodeFunctionData({
+                abi: voteFactoryConfig.abi,
+                functionName: 'register',
+                args: [ZERO_ADDRESS, []],
+              }),
+            )
+          }
+        />
         <p>
           After proposing and approving the registration transaction, propose
           and approve another transaction. Use this form to generate the call
@@ -154,17 +152,18 @@ function MultisigRegisterForm({ closeModal }: { closeModal: () => void }) {
             <MenuItem value={2}>Abstain</MenuItem>
           </Select>
         </FormControl>
-        {/* Stylize this command */}
-        <Code>
-          {`lotus msig propose ${msigAddress} ${voteFilAddress} 0 3844450837`}{' '}
-          {cbor_encode(
-            encodeFunctionData({
-              abi: voteTrackerConfig.abi,
-              functionName: 'castVote',
-              args: [BigInt(vote)],
-            }),
-          )}
-        </Code>
+        <CodeSnippet
+          code={
+            `lotus msig propose ${msigAddress} ${voteFilAddress} 0 3844450837 ` +
+            cbor_encode(
+              encodeFunctionData({
+                abi: voteTrackerConfig.abi,
+                functionName: 'castVote',
+                args: [BigInt(vote)],
+              }),
+            )
+          }
+        />
         <p>
           Once the proposer creates the proposal using the command above, N of M
           signers must also approve the vote proposal.
@@ -188,21 +187,23 @@ function MultisigRegisterForm({ closeModal }: { closeModal: () => void }) {
             }}
           />
         </FormWithSpace>
-        {/* Stylize this command */}
-        <Code>
-          {`lotus msig approve ${msigAddress} ${txId} ${proposerAddress} ${voteFilAddress} 0 3844450837 ${cbor_encode(
-            encodeFunctionData({
-              abi: voteTrackerConfig.abi,
-              functionName: 'castVote',
-              args: [BigInt(vote)],
-            }),
-          )}`}
-        </Code>
+        <CodeSnippet
+          code={
+            `lotus msig approve ${msigAddress} ${txId} ${proposerAddress} ${voteFilAddress} 0 3844450837 ` +
+            cbor_encode(
+              encodeFunctionData({
+                abi: voteTrackerConfig.abi,
+                functionName: 'castVote',
+                args: [BigInt(vote)],
+              }),
+            )
+          }
+        />
         <DialogActions>
           <button onClick={closeModal}>Okay</button>
-          {errorMessage && <ErrorMessage>Error: {errorMessage}</ErrorMessage>}
         </DialogActions>
       </Form>
+      {errorMessage && <ErrorMessage>Error: {errorMessage}</ErrorMessage>}
     </>
   );
 }
