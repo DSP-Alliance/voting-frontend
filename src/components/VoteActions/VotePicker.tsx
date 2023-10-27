@@ -3,20 +3,13 @@ import styled from 'styled-components';
 import { useContractWrite, useWaitForTransaction } from 'wagmi';
 
 import { voteTrackerConfig } from 'constants/voteTrackerConfig';
-import { useFipDataContext } from './FipDataContext';
+import { useFipDataContext } from 'common/FipDataContext';
+import ErrorMessage from 'common/ErrorMessage';
 
 const VotePickerContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: 12px;
-`;
-
-const ErrorMessage = styled.div`
-  font-size: 14px;
-  align-self: center;
-  word-wrap: break-word;
-  max-width: 50ch;
-  color: var(--error);
 `;
 
 function VotePicker({
@@ -108,7 +101,7 @@ function VotePicker({
       >
         Abstain
       </button>
-      {error && <ErrorMessage>{error.message}</ErrorMessage>}
+      {error && <ErrorMessage message={error.message} />}
     </VotePickerContainer>
   );
 }

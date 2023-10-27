@@ -1,29 +1,36 @@
 import { createGlobalStyle } from 'styled-components';
+import LatoLight from './fonts/Lato-Light.woff';
+import Lato from './fonts/Lato-Regular.woff';
 
 const GlobalStyle = createGlobalStyle`
   body {
+    @font-face {
+    font-family: 'Lato';
+    src: url(${Lato}) format('woff');
+  }
+
+  @font-face {
+    font-family: 'Lato-Light';
+    src: url(${LatoLight}) format('woff');
+  }
+
     --primary: #1976d2;
     --darkprimary: #0d47a1;
+    --black: #121212;
+    --blackshadow: #e5e5e5;
     --caption: #757575;
     --error: #d32f2f;
-    --rbpcount: #42a5f5;
-    --rbpcountlight0: #42a5f5;
-    --rbpcountlight1: #64b5f6;
-    --rbpcountlight2: #90caf9;
-    --rbpcountlight3: #bbdefb;
-    --tokencount: #3f51b5;
-    --tokencountlight0: #3f51b5;
-    --tokencountlight1: #7986cb;
-    --tokencountlight2: #c5cae9;
-    --tokencountlight3: #e8eaf6;
-    --minertokencount: #9575cd;
-    --minertokencountlight0: #9575cd;
-    --minertokencountlight1: #b39ddb;
-    --minertokencountlight2: #d1c4e9;
-    --minertokencountlight3: #ede7f6;
+    --error-bg: #ffebee;
+    --votecount0: #42a5f5;
+    --votecount1: #3f51b5;
+    --votecount2: #f44336;
+    --votecount3: #d1c4e9;
+    --titlefont: 'Lato';
+    --titlefontlight: 'Lato-Light';
     margin: 0;
     padding: 0;
     font-family: Roboto, Helvetica, Sans-Serif;
+    color: var(--black);
   }
 
   button {
@@ -44,7 +51,7 @@ const GlobalStyle = createGlobalStyle`
   }
 
   label.MuiInputLabel-root:not(.Mui-focused) {
-      font-size: 14px;
+    font-size: 14px;
   }
 `;
 

@@ -7,8 +7,9 @@ import ClipLoader from 'react-spinners/ClipLoader';
 
 import { publicClient } from 'services/clients';
 import { voteFactoryConfig } from 'constants/voteFactoryConfig';
-import type { Address } from './Home';
-import { useFipDataContext } from './FipDataContext';
+import { useFipDataContext } from 'common/FipDataContext';
+import ErrorMessage from 'components/common/ErrorMessage';
+import type { Address } from 'components/Home';
 
 const Form = styled.form`
   display: flex;
@@ -29,7 +30,7 @@ const AddTokenButton = styled.button`
 const DeleteTokenButton = styled.button`
   background-color: transparent;
   cursor: pointer;
-  color: #000;
+  color: var(--black);
 
   &:hover:enabled {
     background-color: transparent;
@@ -40,13 +41,7 @@ const LoaderWithMargin = styled(ClipLoader)`
   margin-left: 12px;
 `;
 
-const ErrorMessage = styled.div`
-  font-size: 14px;
-  color: var(--error);
-  word-wrap: break-word;
-`;
-
-function VoteFactory({ closeModal }: { closeModal: () => void }) {
+function VoteFactoryForm({ closeModal }: { closeModal: () => void }) {
   const [allLsdTokens, setAllLsdTokens] = useState<Address[]>([]);
   const [errorMessage, setErrorMessage] = useState('');
   const [isCheckingForDeployed, setIsCheckingForDeployed] = useState(false);
@@ -69,7 +64,6 @@ function VoteFactory({ closeModal }: { closeModal: () => void }) {
   const {
     data,
     error,
-    isError,
     isLoading: isLoadingWrite,
     write,
   } = useContractWrite({
@@ -315,10 +309,10 @@ function VoteFactory({ closeModal }: { closeModal: () => void }) {
           )}
         </DialogActions>
       </Form>
-      {isError && <ErrorMessage>Error: {error?.message}</ErrorMessage>}
-      {errorMessage && <ErrorMessage>Error: {errorMessage}</ErrorMessage>}
+      {error && <ErrorMessage message={error.message} />}
+      {errorMessage && <ErrorMessage message={errorMessage} />}
     </>
   );
 }
 
-export default VoteFactory;
+export default VoteFactoryForm;

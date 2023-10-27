@@ -3,6 +3,10 @@ import { formatEther } from 'viem';
 import { useAccount } from 'wagmi';
 import styled from 'styled-components';
 
+const Header = styled.h3`
+  font-family: var(--titlefont);
+`;
+
 const InfoText = styled.span`
   font-style: italic;
 `;
@@ -20,7 +24,7 @@ function VotingPower({
 
   return (
     <>
-      <h4>Wallet Voting Power</h4>
+      <Header>Wallet Voting Power</Header>
       {!isConnected && (
         <InfoText>Connect your account to display voting power</InfoText>
       )}

@@ -2,23 +2,43 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { FormControl, InputLabel, MenuItem, Select } from '@mui/material';
 import ClipLoader from 'react-spinners/ClipLoader';
+import { Address } from 'viem';
 
 import { publicClient } from 'services/clients';
+import { getFip } from 'services/fipService';
+import VoteResults from 'components/VoteResults';
+import ErrorMessage from 'common/ErrorMessage';
 import { voteFactoryConfig } from 'constants/voteFactoryConfig';
-import VoteResults from './VoteResults';
-import { Address } from 'viem';
-import { ZERO_ADDRESS, getWinningText, timeLength } from 'utilities/helpers';
 import { voteTrackerConfig } from 'constants/voteTrackerConfig';
-import { useFipDataContext } from './FipDataContext';
+import { ZERO_ADDRESS, getWinningText, timeLength } from 'utilities/helpers';
+import { useFipDataContext } from 'common/FipDataContext';
 
-const Container = styled.div`
+const VoteHistoryContainer = styled.div`
+  display: block;
+  margin: 24px;
+  padding: 24px;
+  border: 1px solid var(--blackshadow);
+  border-radius: 8px;
+  box-shadow: 0 5px 5px 0 var(--blackshadow);
+`;
+
+const ResultsContainer = styled.div`
   display: grid;
-  grid-template-columns: 150px 300px auto;
+  grid-template-columns: 300px auto;
   gap: 12px;
 
   @media (max-width: 920px) {
     grid-template-columns: 1fr;
   }
+`;
+
+const Header = styled.h3`
+  font-family: var(--titlefont);
+`;
+
+const SelectFipArea = styled.div`
+  display: flex;
+  flex-direction: row;
 `;
 
 const LoaderContainer = styled.div`
@@ -31,6 +51,8 @@ const QuestionText = styled.div`
 `;
 
 function VoteHistory() {
+  const [allFipData, setAllFipData] = useState<any[]>([]);
+  const [errorMessage, setErrorMessage] = useState<string>('');
   const [loading, setLoading] = useState(false);
   const [selectedFip, setSelectedFip] = useState('');
   const [voteAddress, setVoteAddress] = useState<Address>(ZERO_ADDRESS);
@@ -41,6 +63,19 @@ function VoteHistory() {
   const [length, setLength] = useState<number>(0);
 
   const { fipList: fips } = useFipDataContext();
+
+  useEffect(() => {
+    async function getFIPInfo() {
+      try {
+        const response = await Promise.all(fips.map((fip) => getFip(fip)));
+        setAllFipData(response);
+      } catch (error: any) {
+        setErrorMessage(JSON.stringify(error));
+      }
+    }
+
+    if (fips.length > 0) getFIPInfo();
+  }, [fips]);
 
   useEffect(() => {
     if (selectedFip) {
@@ -116,9 +151,9 @@ function VoteHistory() {
   const timestamp = new Date(startTime * 1000).toLocaleString();
 
   return (
-    <Container>
-      <div>
-        <h3>Vote History</h3>
+    <VoteHistoryContainer>
+      <Header>Vote History</Header>
+      <SelectFipArea>
         <FormControl sx={{ m: 1, minWidth: 120 }} size='small'>
           <InputLabel>FIP</InputLabel>
           <Select
@@ -130,37 +165,48 @@ function VoteHistory() {
               fips.map((fip) => {
                 return (
                   <MenuItem key={fip} value={fip}>
-                    {fip}
+                    {fip + ' - '}
+                    {
+                      allFipData.find(
+                        (f) =>
+                          parseInt(
+                            f.fip.replace(/"/g, '').replace(/^0+/, ''),
+                          ) === fip,
+                      )?.title
+                    }
                   </MenuItem>
                 );
               })}
           </Select>
         </FormControl>
-      </div>
-      {loading && (
-        <LoaderContainer>
-          <ClipLoader color='var(--primary)' />
-        </LoaderContainer>
-      )}
-      {!loading && voteAddress != ZERO_ADDRESS && (
-        <>
-          <div>
-            {questionText && <QuestionText>{questionText}</QuestionText>}
-            {Boolean(startTime) && <p>Started: {timestamp}</p>}
-            {Boolean(length) && (
-              <p>Length of time: {timeLength(length / 60)}</p>
-            )}
-            {winningVoteText && <p>Winning vote: {winningVoteText}</p>}
-          </div>
-          <VoteResults
-            lastFipAddress={voteAddress}
-            lastFipNum={parseInt(selectedFip)}
-            loading={false}
-            yesOptions={yesOptions}
-          />
-        </>
-      )}
-    </Container>
+        {loading && (
+          <LoaderContainer>
+            <ClipLoader color='var(--primary)' size='20px' />
+          </LoaderContainer>
+        )}
+        {errorMessage && <ErrorMessage message={errorMessage} />}
+      </SelectFipArea>
+      <ResultsContainer>
+        {!loading && voteAddress != ZERO_ADDRESS && (
+          <>
+            <div>
+              {questionText && <QuestionText>{questionText}</QuestionText>}
+              {Boolean(startTime) && <p>Started: {timestamp}</p>}
+              {Boolean(length) && (
+                <p>Length of time: {timeLength(length / 60)}</p>
+              )}
+              {winningVoteText && <p>Winning vote: {winningVoteText}</p>}
+            </div>
+            <VoteResults
+              lastFipAddress={voteAddress}
+              lastFipNum={parseInt(selectedFip)}
+              loading={false}
+              yesOptions={yesOptions}
+            />
+          </>
+        )}
+      </ResultsContainer>
+    </VoteHistoryContainer>
   );
 }
 

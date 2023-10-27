@@ -1,16 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import {
-  DialogActions,
-  FormControl,
-  TextField,
-  ToggleButtonGroup,
-  ToggleButton,
-} from '@mui/material';
+import { DialogActions, FormControl, TextField } from '@mui/material';
 import { encodeFunctionData, Address, getAddress } from 'viem';
+import axios from 'axios';
+
+import CodeSnippet from 'components/common/CodeSnippet';
+import ErrorMessage from 'components/common/ErrorMessage';
 import { voteFactoryConfig } from 'constants/voteFactoryConfig';
 import { ZERO_ADDRESS, cbor_encode } from 'utilities/helpers';
-import axios from 'axios';
 
 const Form = styled.form`
   display: flex;
@@ -22,28 +19,27 @@ const FormWithSpace = styled(FormControl)`
   gap: 12px;
 `;
 
-const Code = styled.p`
-  white-space: pre-wrap;
-  overflow-wrap: break-word;
-  color: white;
-  background-color: black;
-`;
-
-const ErrorMessage = styled.div`
-  font-size: 14px;
-  align-self: center;
-  color: var(--error);
-`;
-
 function ManualMinerRegisterForm({ closeModal }: { closeModal: () => void }) {
-  const [errorMessage, setErrorMessage] = useState<string>('');
+  const [errorMessage, setErrorMessage] = useState<string>();
   const [factoryFilAddress, setFactoryFilAddress] = useState<string>('');
   const [voterInput, setVoterInput] = useState<string>(ZERO_ADDRESS);
   const [voterAddress, setVoterAddress] = useState<Address>(ZERO_ADDRESS);
   const [minerId, setMinerId] = useState<bigint>(BigInt(0));
   const [minerIdInput, setMinerIdInput] = useState<string>('0');
   const [inputError, setInputError] = useState<boolean>(false);
-  const [version, setVersion] = useState<'lotus' | 'venus'>('lotus');
+
+  const CODE =
+    ` send --method 3844450837 --params-hex ` +
+    cbor_encode(
+      encodeFunctionData({
+        abi: voteFactoryConfig.abi,
+        functionName: 'addMiner',
+        args: [voterAddress, minerId],
+      }),
+    ) +
+    ` ` +
+    factoryFilAddress +
+    ` 0`;
 
   useEffect(() => {
     async function getAddress() {
@@ -52,8 +48,8 @@ function ManualMinerRegisterForm({ closeModal }: { closeModal: () => void }) {
           `https://filfox.info/api/v1/address/${voteFactoryConfig.address}`,
         );
         setFactoryFilAddress(address.data.address);
-      } catch (error) {
-        setErrorMessage(JSON.stringify(error));
+      } catch (error: any) {
+        setErrorMessage(error.message);
       }
     }
 
@@ -101,32 +97,12 @@ function ManualMinerRegisterForm({ closeModal }: { closeModal: () => void }) {
             }}
           />
         </FormWithSpace>
-        <ToggleButtonGroup
-          value={version}
-          onChange={(e, value) => setVersion(value)}
-          size='small'
-          exclusive
-        >
-          <ToggleButton value='lotus'>Lotus</ToggleButton>
-          <ToggleButton value='venus'>Venus</ToggleButton>
-        </ToggleButtonGroup>
-        {/* Stylize this command */}
-        <Code>
-          {`${version} send --method 3844450837 --params-hex`}{' '}
-          {cbor_encode(
-            encodeFunctionData({
-              abi: voteFactoryConfig.abi,
-              functionName: 'addMiner',
-              args: [voterAddress, minerId],
-            }),
-          )}{' '}
-          {factoryFilAddress} 0
-        </Code>
+        <CodeSnippet code={CODE} showOptions={true} />
         <DialogActions>
           <button onClick={closeModal}>Okay</button>
-          {errorMessage && <ErrorMessage>Error: {errorMessage}</ErrorMessage>}
         </DialogActions>
       </Form>
+      {errorMessage && <ErrorMessage message={errorMessage} />}
     </>
   );
 }

@@ -19,7 +19,10 @@ const AddressCheckbox = styled.div`
 
 const ErrorMessage = styled.div`
   font-size: 14px;
+  background-color: var(--error-bg);
   color: var(--error);
+  border-radius: 4px;
+  padding: 12px;
   word-wrap: break-word;
   max-width: 50ch;
   margin-top: 8px;

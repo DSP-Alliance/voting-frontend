@@ -5,11 +5,11 @@ import ClipLoader from 'react-spinners/ClipLoader';
 import { publicClient } from 'services/clients';
 import { voteTrackerConfig } from 'constants/voteTrackerConfig';
 import VoteResults from 'components/VoteResults';
-import VotePicker from 'components/VotePicker';
-import Register from 'components/Register';
 import { getWinningText } from 'utilities/helpers';
-import { useVoteEndContext } from './VoteEndContext';
-import { useFipDataContext } from './FipDataContext';
+import { useVoteEndContext } from 'common/VoteEndContext';
+import { useFipDataContext } from 'common/FipDataContext';
+import Register from './Register';
+import VotePicker from './VotePicker';
 
 interface VoteActionsProps {
   addVotingPower: (agentAddress: string) => void;
@@ -29,6 +29,10 @@ const LoaderContainer = styled.div`
   margin-top: 60px;
   display: flex;
   justify-content: center;
+`;
+
+const Header = styled.h3`
+  font-family: var(--titlefont);
 `;
 
 const QuestionText = styled.div`
@@ -83,7 +87,10 @@ function VoteActions({
             functionName: 'winningVote',
           });
 
-          let newYesOptions = [yesOption1, ...(yesOption2 ? [yesOption2] : [])]
+          const newYesOptions = [
+            yesOption1,
+            ...(yesOption2 ? [yesOption2] : []),
+          ];
 
           setQuestionText(question);
           setWinningVoteText(getWinningText(winningVote, newYesOptions));
@@ -109,7 +116,7 @@ function VoteActions({
       {(!voteEndTime || voteEndTime <= Date.now() || hasVoted) &&
         yesOptions.length > 0 && (
           <>
-            <h4>Latest Vote Results</h4>
+            <Header>Latest Vote Results</Header>
             <QuestionText>{questionText}</QuestionText>
             <QuestionText>Winning vote: {winningVoteText}</QuestionText>
             <VoteResults
@@ -122,7 +129,7 @@ function VoteActions({
         )}
       {voteEndTime && voteEndTime > Date.now() && !hasVoted && (
         <>
-          <h4>Choose Vote</h4>
+          <Header>Choose Vote</Header>
           <QuestionText>{questionText}</QuestionText>
           {hasRegistered && (
             <VotePicker
