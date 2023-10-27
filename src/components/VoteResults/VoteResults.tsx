@@ -6,7 +6,7 @@ import { publicClient } from 'services/clients';
 import { voteTrackerConfig } from 'constants/voteTrackerConfig';
 import { indexOfMax } from 'utilities/helpers';
 import ResultsChart from 'components/VoteResults/ResultsChart';
-import type { Address } from '../Home';
+import type { Address } from 'components/Home';
 
 const InfoText = styled.span`
   font-style: italic;
@@ -14,6 +14,7 @@ const InfoText = styled.span`
 
 const ChartContainer = styled.div`
   display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
 `;
 
 function VoteResults({
@@ -83,27 +84,23 @@ function VoteResults({
         setRbpData([
           {
             name: yesOption1,
-            // RBP: Number(rbpVotes[0]),
-            RBP: 3,
+            RBP: Number(rbpVotes[0]),
           },
           ...(yesOption2
             ? [
                 {
                   name: yesOption2,
-                  RBP: 5,
-                  // RBP: Number(rbpVotes[1]),
+                  RBP: Number(rbpVotes[1]),
                 },
               ]
             : []),
           {
             name: 'No',
-            RBP: 2,
-            // RBP: Number(rbpVotes[2]),
+            RBP: Number(rbpVotes[2]),
           },
           {
             name: 'Abstain',
-            RBP: 2,
-            // RBP: Number(rbpVotes[3]),
+            RBP: Number(rbpVotes[3]),
           },
         ]);
 
@@ -160,9 +157,9 @@ function VoteResults({
 
   if (lastFipNum) {
     if (
-      rbpData.length === 0 &&
-      tokenData.length === 0 &&
-      minerTokenData.length === 0
+      !Boolean(totalRbp) &&
+      !Boolean(totalTokens) &&
+      !Boolean(totalMinerTokens)
     )
       return <InfoText>No vote data</InfoText>;
 

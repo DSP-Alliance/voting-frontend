@@ -29,13 +29,14 @@ const Header = styled.div`
   height: 150px;
   font-size: 24px;
   margin-bottom: 24px;
-  background-color: #000;
+  background-color: var(--black);
   color: #fff;
 `;
 
 const HeaderText = styled.div`
   grid-column-start: 2;
   justify-self: center;
+  font-family: var(--titlefontlight);
 `;
 
 const ButtonContainer = styled.div`
@@ -61,7 +62,6 @@ const VoteContent = styled.div`
   margin: 24px;
   display: flex;
   flex-direction: column;
-  gap: 24px;
 `;
 
 function Home() {

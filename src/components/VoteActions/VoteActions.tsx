@@ -31,6 +31,10 @@ const LoaderContainer = styled.div`
   justify-content: center;
 `;
 
+const Header = styled.h3`
+  font-family: var(--titlefont);
+`;
+
 const QuestionText = styled.div`
   margin-bottom: 12px;
 `;
@@ -112,7 +116,7 @@ function VoteActions({
       {(!voteEndTime || voteEndTime <= Date.now() || hasVoted) &&
         yesOptions.length > 0 && (
           <>
-            <h4>Latest Vote Results</h4>
+            <Header>Latest Vote Results</Header>
             <QuestionText>{questionText}</QuestionText>
             <QuestionText>Winning vote: {winningVoteText}</QuestionText>
             <VoteResults
@@ -125,7 +129,7 @@ function VoteActions({
         )}
       {voteEndTime && voteEndTime > Date.now() && !hasVoted && (
         <>
-          <h4>Choose Vote</h4>
+          <Header>Choose Vote</Header>
           <QuestionText>{questionText}</QuestionText>
           {hasRegistered && (
             <VotePicker

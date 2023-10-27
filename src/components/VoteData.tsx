@@ -27,7 +27,7 @@ const VoteDataContainer = styled.div`
 const DataSections = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 12px;
+  gap: 24px;
 
   @media (max-width: 920px) {
     grid-template-columns: 1fr;
@@ -40,8 +40,18 @@ const CountdownContainer = styled.div`
 
 const VoteSection = styled.div`
   display: block;
-  border: 1px solid var(--primary);
+  border: 1px solid var(--blackshadow);
   padding: 24px;
+  border-radius: 8px;
+  box-shadow: 0 5px 5px 0 var(--blackshadow);
+`;
+
+const VotingPowerSection = styled(VoteSection)`
+  grid-column-start: span 2;
+`;
+
+const Header = styled.h3`
+  font-family: var(--titlefont);
 `;
 
 const LoaderContainer = styled.div`
@@ -253,7 +263,7 @@ function VoteData({ address }: { address: Address | undefined }) {
       </CountdownContainer>
       <DataSections>
         <VoteSection>
-          <h4>Latest Vote FIP</h4>
+          <Header>Latest Vote FIP</Header>
           {loadingFipData ? (
             <LoaderContainer>
               <ClipLoader color='var(--primary)' />
@@ -277,15 +287,13 @@ function VoteData({ address }: { address: Address | undefined }) {
             write={write}
           />
         </VoteSection>
-        {voteEndTime && voteEndTime > Date.now() && (
-          <VoteSection>
-            <VotingPower
-              hasRegistered={hasRegistered}
-              rawBytePower={rawBytePower}
-              tokenPower={tokenPower}
-            />
-          </VoteSection>
-        )}
+        <VotingPowerSection>
+          <VotingPower
+            hasRegistered={hasRegistered}
+            rawBytePower={rawBytePower}
+            tokenPower={tokenPower}
+          />
+        </VotingPowerSection>
       </DataSections>
     </VoteDataContainer>
   );

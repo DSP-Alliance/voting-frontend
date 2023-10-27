@@ -12,14 +12,13 @@ import {
 
 const ChartArea = styled.div`
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   align-items: center;
 `;
 
 const Legend = styled.div`
   display: flex;
-  flex-direction: column;
-  gap: 16px;
+  flex-direction: row;
 `;
 
 const Label = styled.div`
@@ -29,6 +28,10 @@ const Label = styled.div`
 const DataText = styled.div`
   margin-top: 4px;
   color: var(--caption);
+`;
+
+const InfoText = styled.span`
+  color: var(--black);
 `;
 
 function formatValue(
@@ -60,7 +63,7 @@ function ResultsChart({
 }) {
   return (
     <ChartArea>
-      <PieChart width={300} height={300}>
+      <PieChart width={280} height={280}>
         <Tooltip
           separator=': '
           formatter={(value, name, props) => [formatValue(value, props), name]}
@@ -85,9 +88,12 @@ function ResultsChart({
           <span>
             <Label>{type + ':'}</Label>
             <DataText>
-              Total: {formatValue(totalCount, { dataKey: type }) || '-'}
+              Total:{' '}
+              <InfoText>
+                {formatValue(totalCount, { dataKey: type }) || '-'}
+              </InfoText>
               <br />
-              Winning: {winning || '-'}
+              Winning: <InfoText>{winning || '-'}</InfoText>
             </DataText>
           </span>
         </div>

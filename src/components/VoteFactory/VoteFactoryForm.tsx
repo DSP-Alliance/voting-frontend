@@ -30,7 +30,7 @@ const AddTokenButton = styled.button`
 const DeleteTokenButton = styled.button`
   background-color: transparent;
   cursor: pointer;
-  color: #000;
+  color: var(--black);
 
   &:hover:enabled {
     background-color: transparent;
