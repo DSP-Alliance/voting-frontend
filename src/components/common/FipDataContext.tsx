@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { voteFactoryConfig } from 'constants/voteFactoryConfig';
 import { voteTrackerConfig } from 'constants/voteTrackerConfig';
 import { publicClient } from 'services/clients';
-import { Address } from './Home';
+import { Address } from '../Home';
 
 type ContextType = {
   getFipData: () => void;

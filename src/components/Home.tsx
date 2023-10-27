@@ -4,13 +4,13 @@ import styled from 'styled-components';
 
 import { voteFactoryConfig } from 'constants/voteFactoryConfig';
 import { publicClient } from 'services/clients';
-import Connectors from './Connectors';
-import VoteData from './VoteData';
-import VoteHistory from './VoteHistory';
-import VoteFactoryModal from './VoteFactoryModal';
-import MultisigRegisterModal from './MultisigRegister';
-import ManualMinerRegisterModal from './ManualMinerRegister';
-import { useVoteEndContext } from './VoteEndContext';
+import Connectors from 'components/Connectors';
+import VoteData from 'components/VoteData';
+import VoteHistory from 'components/VoteHistory';
+import VoteFactoryModal from 'components/VoteFactory';
+import MultisigRegisterModal from 'components/MultisigRegister';
+import ManualMinerRegisterModal from 'components/ManualMinerRegister';
+import { useVoteEndContext } from 'common/VoteEndContext';
 
 export type Address = `0x${string}`;
 

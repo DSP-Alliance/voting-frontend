@@ -13,6 +13,7 @@
     "target": "esnext",
     "baseUrl": "./",
     "paths": {
+      "common/*": ["src/components/common/*"],
       "components/*": ["src/components/*"],
       "constants/*": ["src/constants/*"],
       "services/*": ["src/services/*"],

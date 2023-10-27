@@ -32,13 +32,17 @@ module.exports = {
   },
   resolve: {
     alias: {
+      common: path.resolve(__dirname, 'src/components/common/'),
       components: path.resolve(__dirname, 'src/components/'),
       constants: path.resolve(__dirname, 'src/constants/'),
       services: path.resolve(__dirname, 'src/services/'),
       utilities: path.resolve(__dirname, 'src/utilities/'),
-      process: path.resolve(__dirname, "./node_modules/process/"),
+      process: path.resolve(__dirname, './node_modules/process/'),
     },
-    fallback: { "stream": require.resolve("stream-browserify"), process: require.resolve('process/browser') }
+    fallback: {
+      stream: require.resolve('stream-browserify'),
+      process: require.resolve('process/browser'),
+    },
   },
   devtool: prod ? undefined : 'cheap-module-source-map',
   plugins: [

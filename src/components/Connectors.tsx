@@ -2,6 +2,8 @@ import React from 'react';
 import { useAccount, useConnect, useDisconnect } from 'wagmi';
 import styled from 'styled-components';
 
+import ErrorMessage from 'components/common/ErrorMessage';
+
 const Container = styled.div`
   grid-column-start: 3;
   justify-self: end;
@@ -29,12 +31,6 @@ const ConnectButton = styled.button`
   margin-right: 12px;
 `;
 
-const ErrorMessage = styled.div`
-  font-size: 14px;
-  align-self: center;
-  color: var(--error);
-`;
-
 export function Connectors() {
   const { connector, isConnected } = useAccount();
   const { connect, connectors, error, isLoading, pendingConnector } =
@@ -60,6 +56,7 @@ export function Connectors() {
 
     return (
       <OptionsContainer>
+        {error && <ErrorMessage message={error.message} />}
         <ConnectorsContainer>
           {connectors.map((connector) => (
             <ConnectButton
@@ -77,7 +74,6 @@ export function Connectors() {
             </ConnectButton>
           ))}
         </ConnectorsContainer>
-        {error && <ErrorMessage>{error.message}</ErrorMessage>}
       </OptionsContainer>
     );
   }

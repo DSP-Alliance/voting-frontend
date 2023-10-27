@@ -4,7 +4,8 @@ import { DialogActions, FormControl, TextField } from '@mui/material';
 import { encodeFunctionData, Address, getAddress } from 'viem';
 import axios from 'axios';
 
-import CodeSnippet from 'components/CodeSnippet';
+import CodeSnippet from 'components/common/CodeSnippet';
+import ErrorMessage from 'components/common/ErrorMessage';
 import { voteFactoryConfig } from 'constants/voteFactoryConfig';
 import { ZERO_ADDRESS, cbor_encode } from 'utilities/helpers';
 
@@ -18,14 +19,8 @@ const FormWithSpace = styled(FormControl)`
   gap: 12px;
 `;
 
-const ErrorMessage = styled.div`
-  font-size: 14px;
-  align-self: center;
-  color: var(--error);
-`;
-
 function ManualMinerRegisterForm({ closeModal }: { closeModal: () => void }) {
-  const [errorMessage, setErrorMessage] = useState<string>('');
+  const [errorMessage, setErrorMessage] = useState<string>();
   const [factoryFilAddress, setFactoryFilAddress] = useState<string>('');
   const [voterInput, setVoterInput] = useState<string>(ZERO_ADDRESS);
   const [voterAddress, setVoterAddress] = useState<Address>(ZERO_ADDRESS);
@@ -107,7 +102,7 @@ function ManualMinerRegisterForm({ closeModal }: { closeModal: () => void }) {
           <button onClick={closeModal}>Okay</button>
         </DialogActions>
       </Form>
-      {errorMessage && <ErrorMessage>Error: {errorMessage}</ErrorMessage>}
+      {errorMessage && <ErrorMessage message={errorMessage} />}
     </>
   );
 }

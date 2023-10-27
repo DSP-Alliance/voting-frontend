@@ -2,14 +2,14 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { FormControl, InputLabel, MenuItem, Select } from '@mui/material';
 import ClipLoader from 'react-spinners/ClipLoader';
+import { Address } from 'viem';
 
 import { publicClient } from 'services/clients';
 import { voteFactoryConfig } from 'constants/voteFactoryConfig';
-import VoteResults from './VoteResults';
-import { Address } from 'viem';
+import VoteResults from 'components/VoteResults';
 import { ZERO_ADDRESS, getWinningText, timeLength } from 'utilities/helpers';
 import { voteTrackerConfig } from 'constants/voteTrackerConfig';
-import { useFipDataContext } from './FipDataContext';
+import { useFipDataContext } from 'common/FipDataContext';
 
 const Container = styled.div`
   display: grid;

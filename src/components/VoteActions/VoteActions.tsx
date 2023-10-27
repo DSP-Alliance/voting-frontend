@@ -5,11 +5,11 @@ import ClipLoader from 'react-spinners/ClipLoader';
 import { publicClient } from 'services/clients';
 import { voteTrackerConfig } from 'constants/voteTrackerConfig';
 import VoteResults from 'components/VoteResults';
-import VotePicker from 'components/VotePicker';
-import Register from 'components/Register';
 import { getWinningText } from 'utilities/helpers';
-import { useVoteEndContext } from './VoteEndContext';
-import { useFipDataContext } from './FipDataContext';
+import { useVoteEndContext } from 'common/VoteEndContext';
+import { useFipDataContext } from 'common/FipDataContext';
+import Register from './Register';
+import VotePicker from './VotePicker';
 
 interface VoteActionsProps {
   addVotingPower: (agentAddress: string) => void;
@@ -83,7 +83,10 @@ function VoteActions({
             functionName: 'winningVote',
           });
 
-          let newYesOptions = [yesOption1, ...(yesOption2 ? [yesOption2] : [])]
+          const newYesOptions = [
+            yesOption1,
+            ...(yesOption2 ? [yesOption2] : []),
+          ];
 
           setQuestionText(question);
           setWinningVoteText(getWinningText(winningVote, newYesOptions));

@@ -14,8 +14,9 @@ import axios from 'axios';
 import { voteTrackerConfig } from 'constants/voteTrackerConfig';
 import { voteFactoryConfig } from 'constants/voteFactoryConfig';
 import { ZERO_ADDRESS, cbor_encode } from 'utilities/helpers';
-import CodeSnippet from 'components/CodeSnippet';
-import { useFipDataContext } from './FipDataContext';
+import CodeSnippet from 'components/common/CodeSnippet';
+import ErrorMessage from 'components/common/ErrorMessage';
+import { useFipDataContext } from 'common/FipDataContext';
 
 const Form = styled.form`
   display: flex;
@@ -25,12 +26,6 @@ const Form = styled.form`
 
 const FormWithSpace = styled(FormControl)`
   gap: 12px;
-`;
-
-const ErrorMessage = styled.div`
-  font-size: 14px;
-  align-self: center;
-  color: var(--error);
 `;
 
 function MultisigRegisterForm({ closeModal }: { closeModal: () => void }) {
@@ -203,7 +198,7 @@ function MultisigRegisterForm({ closeModal }: { closeModal: () => void }) {
           <button onClick={closeModal}>Okay</button>
         </DialogActions>
       </Form>
-      {errorMessage && <ErrorMessage>Error: {errorMessage}</ErrorMessage>}
+      {errorMessage && <ErrorMessage message={errorMessage} />}
     </>
   );
 }

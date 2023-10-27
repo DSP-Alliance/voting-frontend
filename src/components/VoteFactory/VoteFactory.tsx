@@ -1,9 +1,9 @@
 import React from 'react';
 import { Dialog, DialogTitle, DialogContent } from '@mui/material';
 
-import VoteFactory from './VoteFactory';
+import VoteFactoryForm from './VoteFactoryForm';
 
-function VoteFactoryModal({
+function VoteFactory({
   open,
   closeModal,
 }: {
@@ -14,10 +14,10 @@ function VoteFactoryModal({
     <Dialog open={open} onClose={closeModal} fullWidth maxWidth='sm'>
       <DialogTitle>Create Vote</DialogTitle>
       <DialogContent dividers>
-        <VoteFactory closeModal={closeModal} />
+        <VoteFactoryForm closeModal={closeModal} />
       </DialogContent>
     </Dialog>
   );
 }
 
-export default VoteFactoryModal;
+export default VoteFactory;

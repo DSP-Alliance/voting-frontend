@@ -3,7 +3,8 @@ import styled from 'styled-components';
 
 import { getFip } from 'services/fipService';
 import type { FipData } from 'services/fipService';
-import { useFipDataContext } from './FipDataContext';
+import { useFipDataContext } from 'common/FipDataContext';
+import ErrorMessage from 'common/ErrorMessage';
 
 const InfoContainer = styled.div`
   display: flex;
@@ -14,12 +15,6 @@ const InfoContainer = styled.div`
 const Link = styled.a`
   color: var(--primary);
   word-break: break-all;
-`;
-
-const ErrorMessage = styled.div`
-  font-size: 14px;
-  align-self: center;
-  color: var(--error);
 `;
 
 function FIPInfo() {
@@ -64,16 +59,18 @@ function FIPInfo() {
   return (
     <InfoContainer>
       <span>
-        {'#' + fipData?.fip?.replace(/(\"|)/g, '').replace(/^0+/, '')}
+        {'#' +
+          fipData?.fip?.replace(/(\"|)/g, '').replace(/^0+/, '') +
+          ' ' +
+          fipData?.title}
       </span>
-      <span>{fipData?.title}</span>
       <span>{`Authors: ${fipData?.author?.replace(/\"/g, '')}`}</span>
       <span>{`Status: ${fipData ? fipData.status : '-'}`}</span>
       <span>
         Discussions:
         <ul>{fipData && renderDiscussionLinks(fipData['discussions-to'])}</ul>
       </span>
-      {errorMessage && <ErrorMessage>Error: {errorMessage}</ErrorMessage>}
+      {errorMessage && <ErrorMessage message={errorMessage} />}
     </InfoContainer>
   );
 }

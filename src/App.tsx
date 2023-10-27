@@ -5,9 +5,9 @@ import { MetaMaskConnector } from 'wagmi/connectors/metaMask';
 
 import GlobalStyle from './globalStyles';
 import { publicClient } from './services/clients';
-import Home from './components/Home';
-import { FipDataContextProvider } from './components/FipDataContext';
-import { VoteEndContextProvider } from './components/VoteEndContext';
+import Home from 'components/Home';
+import { FipDataContextProvider } from 'common/FipDataContext';
+import { VoteEndContextProvider } from 'common/VoteEndContext';
 
 const config = createConfig({
   autoConnect: true,
