@@ -73,7 +73,10 @@ function CodeSnippet({
           <ToggleButton value='venus'>Venus</ToggleButton>
         </Toggles>
       )}
-      <CopyToClipboard text={code} onCopy={() => setCopiedText(true)}>
+      <CopyToClipboard
+        text={showOptions ? `${version}${code}` : code}
+        onCopy={() => setCopiedText(true)}
+      >
         <CopyButton type='button'>
           {copiedText ? (
             <>
