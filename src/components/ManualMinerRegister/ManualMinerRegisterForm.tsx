@@ -29,17 +29,13 @@ function ManualMinerRegisterForm({ closeModal }: { closeModal: () => void }) {
   const [inputError, setInputError] = useState<boolean>(false);
 
   const CODE =
-    ` send --method 3844450837 --params-hex ` +
-    cbor_encode(
+    ` evm invoke ` +
+    factoryFilAddress + ` `
       encodeFunctionData({
         abi: voteFactoryConfig.abi,
         functionName: 'addMiner',
         args: [voterAddress, minerId],
-      }),
-    ) +
-    ` ` +
-    factoryFilAddress +
-    ` 0`;
+      }).slice(2);
 
   useEffect(() => {
     async function getAddress() {
