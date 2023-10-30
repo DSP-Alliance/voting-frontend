@@ -30,7 +30,7 @@ function ManualMinerRegisterForm({ closeModal }: { closeModal: () => void }) {
 
   const CODE =
     ` evm invoke ` +
-    factoryFilAddress + ` `
+    factoryFilAddress + ` ` +
       encodeFunctionData({
         abi: voteFactoryConfig.abi,
         functionName: 'addMiner',
