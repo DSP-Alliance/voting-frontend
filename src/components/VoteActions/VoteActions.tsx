@@ -8,21 +8,12 @@ import VoteResults from 'components/VoteResults';
 import { getWinningText } from 'utilities/helpers';
 import { useVoteEndContext } from 'common/VoteEndContext';
 import { useFipDataContext } from 'common/FipDataContext';
-import Register from './Register';
 import VotePicker from './VotePicker';
 
 interface VoteActionsProps {
-  addVotingPower: (agentAddress: string) => void;
-  errorMessage: string | undefined;
   hasRegistered: boolean;
   hasVoted: boolean;
-  loading: boolean;
-  minerIds: string[];
-  rawBytePower: string;
-  registering: boolean;
   setHasVoted: React.Dispatch<React.SetStateAction<boolean>>;
-  tokenPower: bigint | null;
-  write: () => void;
 }
 
 const LoaderContainer = styled.div`
@@ -40,17 +31,9 @@ const QuestionText = styled.div`
 `;
 
 function VoteActions({
-  addVotingPower,
-  errorMessage,
   hasRegistered,
   hasVoted,
-  loading,
-  minerIds,
-  rawBytePower,
-  registering,
   setHasVoted,
-  tokenPower,
-  write,
 }: VoteActionsProps) {
   const [questionText, setQuestionText] = useState('');
   const [winningVoteText, setWinningVoteText] = useState('');
@@ -139,16 +122,9 @@ function VoteActions({
             />
           )}
           {!hasRegistered && (
-            <Register
-              addVotingPower={addVotingPower}
-              error={errorMessage}
-              loading={loading}
-              minerIds={minerIds}
-              rawBytePower={rawBytePower}
-              registering={registering}
-              tokenPower={tokenPower}
-              write={write}
-            />
+            <p>
+              <i>Register in order to vote</i>
+            </p>
           )}
         </>
       )}
