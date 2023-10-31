@@ -142,10 +142,7 @@ function VoteData({ address }: { address: Address | undefined }) {
               args: [address || ZERO_ADDRESS],
             });
 
-          console.log(address, lastFipAddress);
-          console.log(tokenPower, bytePower, minerTokenPower);
           setRawBytePower(formatBytesWithLabel(parseInt(bytePower.toString())));
-          console.log('set rbp and token from getByteAndTokenPower');
           setTokenPower(bytePower > 0 ? minerTokenPower : tokenPower);
         } catch {
           setTokenPower(BigInt(0));

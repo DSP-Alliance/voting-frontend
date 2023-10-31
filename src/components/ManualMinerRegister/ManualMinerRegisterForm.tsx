@@ -7,7 +7,7 @@ import axios from 'axios';
 import CodeSnippet from 'components/common/CodeSnippet';
 import ErrorMessage from 'components/common/ErrorMessage';
 import { voteFactoryConfig } from 'constants/voteFactoryConfig';
-import { ZERO_ADDRESS, cbor_encode } from 'utilities/helpers';
+import { ZERO_ADDRESS } from 'utilities/helpers';
 
 const Form = styled.form`
   display: flex;
@@ -30,12 +30,13 @@ function ManualMinerRegisterForm({ closeModal }: { closeModal: () => void }) {
 
   const CODE =
     ` evm invoke ` +
-    factoryFilAddress + ` ` +
-      encodeFunctionData({
-        abi: voteFactoryConfig.abi,
-        functionName: 'addMiner',
-        args: [voterAddress, minerId],
-      }).slice(2);
+    factoryFilAddress +
+    ` ` +
+    encodeFunctionData({
+      abi: voteFactoryConfig.abi,
+      functionName: 'addMiner',
+      args: [voterAddress, minerId],
+    }).slice(2);
 
   useEffect(() => {
     async function getAddress() {

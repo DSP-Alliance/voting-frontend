@@ -31,7 +31,8 @@ const theme = createTheme({
       default: 'var(--bg-color)',
     },
     text: {
-      primary: 'var(--white)',
+      // Have to specify hex here to prevent breakage on MUI Toggles
+      primary: '#fcfdff',
     },
   },
   components: {
@@ -54,6 +55,20 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           color: 'var(--black)',
+        },
+      },
+    },
+    MuiPaper: {
+      styleOverrides: {
+        root: {
+          backgroundColor: 'var(--bg-color)',
+        },
+      },
+    },
+    MuiToggleButton: {
+      styleOverrides: {
+        root: {
+          color: 'var(--white)',
         },
       },
     },
