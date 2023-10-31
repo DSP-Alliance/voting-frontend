@@ -28,6 +28,12 @@ const ErrorMessage = styled.div`
   margin-top: 8px;
 `;
 
+const RegisterButtonContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  max-width: 200px;
+`;
+
 const ButtonContainer = styled.div`
   display: flex;
   flex-direction: row;
@@ -72,7 +78,7 @@ function Register({
     <div>
       <ActionArea>
         {!showConfirmation && (
-          <>
+          <RegisterButtonContainer>
             <button
               disabled={loading}
               onClick={() => {
@@ -103,7 +109,7 @@ function Register({
                 onChange={(e) => setAgentAddress(e.target.value)}
               />
             )}
-          </>
+          </RegisterButtonContainer>
         )}
         {loading && <ClipLoader color='var(--primary)' />}
         {showConfirmation && !loading && (

@@ -10,6 +10,11 @@ const VotePickerContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: 12px;
+  align-items: center;
+`;
+
+const VoteButton = styled.button`
+  min-width: 80px;
 `;
 
 function VotePicker({
@@ -63,7 +68,7 @@ function VotePicker({
 
   return (
     <VotePickerContainer>
-      <button
+      <VoteButton
         type='button'
         disabled={isLoadingWrite || isLoadingWait}
         onClick={() => {
@@ -71,9 +76,9 @@ function VotePicker({
         }}
       >
         {yesOption1}
-      </button>
+      </VoteButton>
       {yesOption2 && (
-        <button
+        <VoteButton
           type='button'
           disabled={isLoadingWrite || isLoadingWait}
           onClick={() => {
@@ -81,9 +86,9 @@ function VotePicker({
           }}
         >
           {yesOption2}
-        </button>
+        </VoteButton>
       )}
-      <button
+      <VoteButton
         type='button'
         disabled={isLoadingWrite || isLoadingWait}
         onClick={(e) => {
@@ -91,8 +96,8 @@ function VotePicker({
         }}
       >
         No
-      </button>
-      <button
+      </VoteButton>
+      <VoteButton
         type='button'
         disabled={isLoadingWrite || isLoadingWait}
         onClick={(e) => {
@@ -100,7 +105,7 @@ function VotePicker({
         }}
       >
         Abstain
-      </button>
+      </VoteButton>
       {error && <ErrorMessage message={error.message} />}
     </VotePickerContainer>
   );
