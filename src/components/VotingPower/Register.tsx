@@ -42,7 +42,7 @@ const ButtonContainer = styled.div`
 `;
 
 const BackButton = styled.button`
-  background-color: #fff;
+  background-color: var(--white);
   color: var(--primary);
   border: 1px solid var(--primary);
 
@@ -82,7 +82,7 @@ function Register({
             <button
               disabled={loading}
               onClick={() => {
-                addVotingPower(agentAddress);
+                addVotingPower(showAddressField ? agentAddress : '');
                 setShowConfirmation(true);
               }}
             >

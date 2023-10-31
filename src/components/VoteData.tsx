@@ -40,10 +40,10 @@ const CountdownContainer = styled.div`
 
 const VoteSection = styled.div`
   display: block;
-  border: 1px solid var(--blackshadow);
+  border: 1px solid var(--blueshadow);
   padding: 24px;
   border-radius: 8px;
-  box-shadow: 0 5px 5px 0 var(--blackshadow);
+  box-shadow: 0 3px 3px 0 var(--blueshadow);
 `;
 
 const VotingPowerSection = styled(VoteSection)`
@@ -278,10 +278,16 @@ function VoteData({ address }: { address: Address | undefined }) {
         </VoteSection>
         <VoteSection>
           <VoteActions
+            hasRegistered={hasRegistered}
+            hasVoted={hasVoted}
+            setHasVoted={setHasVoted}
+          />
+        </VoteSection>
+        <VotingPowerSection>
+          <VotingPower
             addVotingPower={addVotingPower}
             errorMessage={errorMessage || error?.message}
             hasRegistered={hasRegistered}
-            hasVoted={hasVoted}
             loading={loading}
             minerIds={minerIds}
             rawBytePower={rawBytePower}
@@ -289,13 +295,6 @@ function VoteData({ address }: { address: Address | undefined }) {
             setHasVoted={setHasVoted}
             tokenPower={tokenPower}
             write={write}
-          />
-        </VoteSection>
-        <VotingPowerSection>
-          <VotingPower
-            hasRegistered={hasRegistered}
-            rawBytePower={rawBytePower}
-            tokenPower={tokenPower}
           />
         </VotingPowerSection>
       </DataSections>

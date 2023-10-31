@@ -3,6 +3,21 @@ import { formatEther } from 'viem';
 import { useAccount } from 'wagmi';
 import styled from 'styled-components';
 
+import Register from './Register';
+
+interface VotingPowerProps {
+  addVotingPower: (agentAddress: string) => void;
+  errorMessage: string | undefined;
+  hasRegistered: boolean;
+  loading: boolean;
+  minerIds: string[];
+  rawBytePower: string;
+  registering: boolean;
+  setHasVoted: React.Dispatch<React.SetStateAction<boolean>>;
+  tokenPower: bigint | null;
+  write: () => void;
+}
+
 const Header = styled.h3`
   font-family: var(--titlefont);
 `;
@@ -12,14 +27,16 @@ const InfoText = styled.span`
 `;
 
 function VotingPower({
+  addVotingPower,
+  errorMessage,
   hasRegistered,
+  loading,
+  minerIds,
   rawBytePower,
+  registering,
   tokenPower,
-}: {
-  hasRegistered: boolean;
-  rawBytePower: string;
-  tokenPower: bigint | null;
-}) {
+  write,
+}: VotingPowerProps) {
   const { isConnected } = useAccount();
 
   return (
@@ -30,6 +47,18 @@ function VotingPower({
       )}
       {isConnected && (
         <>
+          {!hasRegistered && (
+            <Register
+              addVotingPower={addVotingPower}
+              error={errorMessage}
+              loading={loading}
+              minerIds={minerIds}
+              rawBytePower={rawBytePower}
+              registering={registering}
+              tokenPower={tokenPower}
+              write={write}
+            />
+          )}
           {hasRegistered && (
             <>
               <div>{rawBytePower && <p>RBP: {rawBytePower}</p>}</div>
@@ -39,9 +68,6 @@ function VotingPower({
                 ) : null}
               </div>
             </>
-          )}
-          {!hasRegistered && (
-            <InfoText>Register when a vote is active</InfoText>
           )}
         </>
       )}

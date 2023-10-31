@@ -14,10 +14,13 @@ const GlobalStyle = createGlobalStyle`
     src: url(${LatoLight}) format('woff');
   }
 
+    --bg-color: #12182d;
     --primary: #1976d2;
     --darkprimary: #0d47a1;
+    --disabled: #d9d9d9;
+    --white: #fcfdff;
     --black: #121212;
-    --blackshadow: #e5e5e5;
+    --blueshadow: #2c3b737b;
     --caption: #757575;
     --error: #d32f2f;
     --error-bg: #ffebee;
@@ -30,7 +33,6 @@ const GlobalStyle = createGlobalStyle`
     margin: 0;
     padding: 0;
     font-family: Roboto, Helvetica, Sans-Serif;
-    color: var(--black);
   }
 
   button {
@@ -38,10 +40,10 @@ const GlobalStyle = createGlobalStyle`
     border-radius: 4px;
     border: none;
     background-color: var(--primary);
-    color: #fff;
+    color: var(--white);
 
     &:disabled {
-      background-color: #d9d9d9;
+      background-color: var(--disabled);
     }
     
     &:hover:enabled {

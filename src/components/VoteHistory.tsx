@@ -17,9 +17,9 @@ const VoteHistoryContainer = styled.div`
   display: block;
   margin: 24px;
   padding: 24px;
-  border: 1px solid var(--blackshadow);
+  border: 1px solid var(--blueshadow);
   border-radius: 8px;
-  box-shadow: 0 5px 5px 0 var(--blackshadow);
+  box-shadow: 0 3px 3px 0 var(--blueshadow);
 `;
 
 const ResultsContainer = styled.div`

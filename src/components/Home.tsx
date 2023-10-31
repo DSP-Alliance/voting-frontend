@@ -27,16 +27,16 @@ const Header = styled.div`
   align-items: center;
   gap: 100px;
   height: 150px;
-  font-size: 24px;
   margin-bottom: 24px;
-  background-color: var(--black);
-  color: #fff;
+  background-color: var(--bg-color);
+  color: var(--white);
 `;
 
 const HeaderText = styled.div`
   grid-column-start: 2;
   justify-self: center;
   font-family: var(--titlefontlight);
+  font-size: 32px;
 `;
 
 const ButtonContainer = styled.div`
