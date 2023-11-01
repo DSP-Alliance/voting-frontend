@@ -27,6 +27,7 @@ const config = createConfig({
 
 const theme = createTheme({
   palette: {
+    mode: 'dark',
     background: {
       default: 'var(--bg-color)',
     },
@@ -36,39 +37,10 @@ const theme = createTheme({
     },
   },
   components: {
-    MuiOutlinedInput: {
-      styleOverrides: {
-        root: {
-          backgroundColor: 'var(--white)',
-          color: 'var(--black);',
-        },
-      },
-    },
-    MuiSelect: {
-      styleOverrides: {
-        root: {
-          backgroundColor: 'var(--white)',
-        },
-      },
-    },
-    MuiMenuItem: {
-      styleOverrides: {
-        root: {
-          color: 'var(--black)',
-        },
-      },
-    },
     MuiPaper: {
       styleOverrides: {
         root: {
           backgroundColor: 'var(--bg-color)',
-        },
-      },
-    },
-    MuiToggleButton: {
-      styleOverrides: {
-        root: {
-          color: 'var(--white)',
         },
       },
     },
