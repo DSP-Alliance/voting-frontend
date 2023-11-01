@@ -34,14 +34,14 @@ const GlobalStyle = createGlobalStyle`
     padding: 0;
     font-family: Roboto, Helvetica, Sans-Serif;
   }
-
+  
   button {
     padding: 8px;
     border-radius: 4px;
     border: none;
     background-color: var(--primary);
     color: var(--white);
-
+    
     &:disabled {
       background-color: var(--disabled);
     }
@@ -50,10 +50,6 @@ const GlobalStyle = createGlobalStyle`
       cursor: pointer;
       background-color: var(--darkprimary);
     }
-  }
-
-  label.MuiInputLabel-root:not(.Mui-focused) {
-    font-size: 14px;
   }
 `;
 

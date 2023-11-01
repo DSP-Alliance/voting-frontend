@@ -31,7 +31,7 @@ const DataText = styled.div`
 `;
 
 const InfoText = styled.span`
-  color: var(--black);
+  color: var(--white);
 `;
 
 function formatValue(
