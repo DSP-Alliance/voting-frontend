@@ -117,7 +117,6 @@ function VoteData({
   }, [currentAddress]); // eslint-disable-line react-hooks/exhaustive-deps
 
   function loadAddress() {
-    console.log({ fipData });
     publicClient
       .readContract({
         abi: voteFactoryConfig.abi,
@@ -175,7 +174,7 @@ function VoteData({
             Time left: <Countdown date={voteEndTime} />
           </span>
         )}
-        {questionText && (
+        {showDetails && questionText && (
           <div>
             <QuestionText>{questionText}</QuestionText>
             <Content>

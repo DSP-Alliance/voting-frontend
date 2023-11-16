@@ -38,8 +38,6 @@ function VoteHistory() {
 
   const { fipList: fips, loadingFipData } = useFipDataContext();
 
-  console.log({ allFipData });
-
   useEffect(() => {
     async function getFIPInfo() {
       setLoading(true);
