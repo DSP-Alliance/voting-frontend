@@ -1,22 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import Countdown from 'react-countdown';
 import { useAccount, useContractWrite, useWaitForTransaction } from 'wagmi';
 import { getAddress } from 'viem';
 import axios from 'axios';
-import ClipLoader from 'react-spinners/ClipLoader';
 
 import { voteTrackerConfig } from 'constants/voteTrackerConfig';
 import { ownableConfig } from 'constants/ownableConfig';
 import { RPC_URL, publicClient } from 'services/clients';
 import { formatBytesWithLabel, ZERO_ADDRESS } from 'utilities/helpers';
-import FIPInfo from 'components/FIPInfo';
-import VoteActions from 'components/VoteActions';
 import VotingPower from 'components/VotingPower';
 import type { Address } from 'components/Home';
 import { voteFactoryConfig } from 'constants/voteFactoryConfig';
-import { useVoteEndContext } from 'common/VoteEndContext';
 import { useFipDataContext } from 'common/FipDataContext';
+import VoteData from 'components/VoteData';
 
 const VoteDataContainer = styled.div`
   display: flex;
@@ -25,8 +21,8 @@ const VoteDataContainer = styled.div`
 `;
 
 const DataSections = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  display: flex;
+  flex-direction: column;
   gap: 24px;
 
   @media (max-width: 920px) {
@@ -34,17 +30,7 @@ const DataSections = styled.div`
   }
 `;
 
-const CountdownContainer = styled.div`
-  height: 20px;
-`;
-
-const VoteSection = styled.div`
-  display: block;
-  border: 1px solid var(--blueshadow);
-  padding: 24px;
-  border-radius: 8px;
-  box-shadow: 0 3px 3px 0 var(--blueshadow);
-`;
+const VoteSection = styled.div``;
 
 const VotingPowerSection = styled(VoteSection)`
   grid-column-start: span 2;
@@ -58,16 +44,7 @@ const Header = styled.h3`
   font-family: var(--titlefont);
 `;
 
-const LoaderContainer = styled.div`
-  display: flex;
-  justify-content: center;
-`;
-
-const InfoText = styled.span`
-  font-style: italic;
-`;
-
-function VoteData({ address }: { address: Address | undefined }) {
+function LatestVote({ address }: { address: Address | undefined }) {
   const { isConnected } = useAccount();
   const [agentAddress, setAgentAddress] = useState<Address>(ZERO_ADDRESS);
   const [errorMessage, setErrorMessage] = useState('');
@@ -78,8 +55,7 @@ function VoteData({ address }: { address: Address | undefined }) {
   const [rawBytePower, setRawBytePower] = useState('');
   const [tokenPower, setTokenPower] = useState<bigint>(BigInt(0));
 
-  const { lastFipAddress, lastFipNum, loadingFipData } = useFipDataContext();
-  const { voteEndTime } = useVoteEndContext();
+  const { lastFipAddress } = useFipDataContext();
 
   async function getHasRegistered() {
     if (lastFipAddress) {
@@ -248,38 +224,20 @@ function VoteData({ address }: { address: Address | undefined }) {
     }
   }, [isSuccess]);
 
-  function renderLatestVote() {
-    if (lastFipNum) return <FIPInfo />;
-    return <InfoText>Last vote data does not exist</InfoText>;
-  }
-
   return (
     <VoteDataContainer>
-      <CountdownContainer>
-        {voteEndTime && voteEndTime > Date.now() && (
-          <span>
-            Time left: <Countdown date={voteEndTime} />
-          </span>
-        )}
-      </CountdownContainer>
       <DataSections>
         <VoteSection>
-          <Header>Latest Vote FIP</Header>
-          {loadingFipData ? (
-            <LoaderContainer>
-              <ClipLoader color='var(--primary)' />
-            </LoaderContainer>
-          ) : (
-            renderLatestVote()
-          )}
+          <Header>Latest Vote</Header>
+          <VoteData />
         </VoteSection>
-        <VoteSection>
+        {/* <VoteSection>
           <VoteActions
             hasRegistered={hasRegistered}
             hasVoted={hasVoted}
             setHasVoted={setHasVoted}
           />
-        </VoteSection>
+        </VoteSection> */}
         <VotingPowerSection>
           <VotingPower
             addVotingPower={addVotingPower}
@@ -299,4 +257,4 @@ function VoteData({ address }: { address: Address | undefined }) {
   );
 }
 
-export default VoteData;
+export default LatestVote;
