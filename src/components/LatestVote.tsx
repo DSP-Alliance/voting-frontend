@@ -3,10 +3,13 @@ import styled from 'styled-components';
 import { useAccount, useContractWrite, useWaitForTransaction } from 'wagmi';
 import { getAddress } from 'viem';
 import axios from 'axios';
+import ClipLoader from 'react-spinners/ClipLoader';
 
 import { voteTrackerConfig } from 'constants/voteTrackerConfig';
 import { ownableConfig } from 'constants/ownableConfig';
 import { RPC_URL, publicClient } from 'services/clients';
+import { getFip } from 'services/fipService';
+import type { FipData } from 'services/fipService';
 import { formatBytesWithLabel, ZERO_ADDRESS } from 'utilities/helpers';
 import VotingPower from 'components/VotingPower';
 import type { Address } from 'components/Home';
@@ -14,20 +17,15 @@ import { voteFactoryConfig } from 'constants/voteFactoryConfig';
 import { useFipDataContext } from 'common/FipDataContext';
 import VoteData from 'components/VoteData';
 
+const LoaderContainer = styled.div`
+  display: flex;
+  justify-content: center;
+`;
+
 const VoteDataContainer = styled.div`
   display: flex;
   flex-direction: column;
   margin: 24px;
-`;
-
-const DataSections = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-
-  @media (max-width: 920px) {
-    grid-template-columns: 1fr;
-  }
 `;
 
 const VoteSection = styled.div``;
@@ -41,7 +39,10 @@ const VotingPowerSection = styled(VoteSection)`
 `;
 
 const Header = styled.h3`
-  font-family: var(--titlefont);
+  font-family: var(--font-color);
+  font-size: 40px;
+  font-weight: 600;
+  margin: 0;
 `;
 
 function LatestVote({ address }: { address: Address | undefined }) {
@@ -54,8 +55,24 @@ function LatestVote({ address }: { address: Address | undefined }) {
   const [minerIds, setMinerIds] = useState<string[]>([]);
   const [rawBytePower, setRawBytePower] = useState('');
   const [tokenPower, setTokenPower] = useState<bigint>(BigInt(0));
+  const [fipData, setFipData] = useState<FipData>();
 
-  const { lastFipAddress } = useFipDataContext();
+  const { loadingFipData, lastFipAddress, lastFipNum } = useFipDataContext();
+
+  useEffect(() => {
+    async function getFIPInfo() {
+      if (lastFipNum) {
+        try {
+          const response = await getFip(lastFipNum);
+          setFipData(response);
+        } catch (error: any) {
+          setErrorMessage(JSON.stringify(error));
+        }
+      }
+    }
+
+    getFIPInfo();
+  }, [lastFipNum]); // eslint-disable-line react-hooks/exhaustive-deps
 
   async function getHasRegistered() {
     if (lastFipAddress) {
@@ -226,19 +243,23 @@ function LatestVote({ address }: { address: Address | undefined }) {
 
   return (
     <VoteDataContainer>
-      <DataSections>
-        <VoteSection>
-          <Header>Latest Vote</Header>
-          <VoteData />
-        </VoteSection>
-        {/* <VoteSection>
+      <VoteSection>
+        <Header>Latest Vote</Header>
+        {loadingFipData && (
+          <LoaderContainer>
+            <ClipLoader color='var(--primary)' />
+          </LoaderContainer>
+        )}
+        {fipData && <VoteData fipData={fipData} address={lastFipAddress} />}
+      </VoteSection>
+      {/* <VoteSection>
           <VoteActions
             hasRegistered={hasRegistered}
             hasVoted={hasVoted}
             setHasVoted={setHasVoted}
           />
         </VoteSection> */}
-        <VotingPowerSection>
+      {/* <VotingPowerSection>
           <VotingPower
             addVotingPower={addVotingPower}
             errorMessage={errorMessage || error?.message}
@@ -251,8 +272,7 @@ function LatestVote({ address }: { address: Address | undefined }) {
             tokenPower={tokenPower}
             write={write}
           />
-        </VotingPowerSection>
-      </DataSections>
+        </VotingPowerSection> */}
     </VoteDataContainer>
   );
 }

@@ -13,7 +13,7 @@ const GlobalStyle = createGlobalStyle`
     --white: #fcfdff;
     --black: #121212;
     --blueshadow: #2c3b737b;
-    --caption: #757575;
+    --caption: #595959;
     --divider: #BDBDBD;
     --error: #d32f2f;
     --error-bg: #ffebee;

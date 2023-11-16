@@ -1,19 +1,28 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import ClipLoader from 'react-spinners/ClipLoader';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import Countdown from 'react-countdown';
+import type { Address } from 'components/Home';
 import { useVoteEndContext } from 'common/VoteEndContext';
-import { useFipDataContext } from 'common/FipDataContext';
 import VoteStatus from 'components/VoteStatus';
 import VoteResults from 'components/VoteResults';
 import { voteTrackerConfig } from 'constants/voteTrackerConfig';
+import { voteFactoryConfig } from 'constants/voteFactoryConfig';
 import { publicClient } from 'services/clients';
-import { getFip } from 'services/fipService';
 import type { FipData } from 'services/fipService';
 
-const LoaderContainer = styled.div`
+const TitleWithIcons = styled.div`
   display: flex;
-  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  justify-content: space-between;
+`;
+
+const TitleContainer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 10px;
 `;
 
 const Title = styled.span`
@@ -50,52 +59,40 @@ const Link = styled.a`
   word-break: break-all;
 `;
 
-function VoteData() {
-  const [errorMessage, setErrorMessage] = useState<string>('');
+function VoteData({
+  address,
+  fipData,
+  showExpandButton = false,
+}: {
+  address: Address | undefined;
+  fipData: FipData;
+  showExpandButton?: boolean;
+}) {
   const [questionText, setQuestionText] = useState('');
+  const [currentAddress, setCurrentAddress] = useState<Address | undefined>(
+    address,
+  );
   const [yesOptions, setYesOptions] = useState<string[]>([]);
-  const [fipData, setFipData] = useState<FipData>();
+  const [showDetails, setShowDetails] = useState(address === undefined);
   const { voteEndTime } = useVoteEndContext();
-
-  const {
-    lastFipNum: num,
-    loadingFipData,
-    lastFipAddress,
-    lastFipNum,
-  } = useFipDataContext();
-
-  useEffect(() => {
-    async function getFIPInfo() {
-      if (num) {
-        try {
-          const response = await getFip(num);
-          setFipData(response);
-        } catch (error: any) {
-          setErrorMessage(JSON.stringify(error));
-        }
-      }
-    }
-
-    getFIPInfo();
-  }, [num]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     async function getVoteInfo() {
-      if (lastFipAddress) {
+      if (currentAddress) {
         try {
           const question = await publicClient.readContract({
-            address: lastFipAddress,
+            address: currentAddress,
             abi: voteTrackerConfig.abi,
             functionName: 'question',
           });
           const yesOption1 = await publicClient.readContract({
-            address: lastFipAddress,
+            address: currentAddress,
             abi: voteTrackerConfig.abi,
             functionName: 'yesOptions',
             args: [BigInt(0)],
           });
           const yesOption2 = await publicClient.readContract({
-            address: lastFipAddress,
+            address: currentAddress,
             abi: voteTrackerConfig.abi,
             functionName: 'yesOptions',
             args: [BigInt(1)],
@@ -117,9 +114,23 @@ function VoteData() {
     }
 
     getVoteInfo();
-  }, [lastFipAddress]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [currentAddress]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  console.log({ fipData, voteEndTime });
+  function loadAddress() {
+    console.log({ fipData });
+    publicClient
+      .readContract({
+        abi: voteFactoryConfig.abi,
+        address: voteFactoryConfig.address,
+        functionName: 'FIPnumToAddress',
+        args: [
+          parseInt(fipData?.fip?.replace(/"/g, '').replace(/^0+/, '') || ''),
+        ],
+      })
+      .then((addr) => {
+        setCurrentAddress(addr);
+      });
+  }
 
   const renderDiscussionLinks = (links: string | undefined) => {
     if (links) {
@@ -139,18 +150,26 @@ function VoteData() {
     }
   };
 
-  if (loadingFipData)
-    return (
-      <LoaderContainer>
-        <ClipLoader color='var(--primary)' />
-      </LoaderContainer>
-    );
-
   return (
     <div>
       <div>
-        <Title>{fipData?.title}</Title>{' '}
-        <VoteStatus status={fipData?.status || 'unknown'} />
+        <TitleWithIcons>
+          <TitleContainer>
+            <Title>{fipData?.title}</Title>{' '}
+            <VoteStatus status={fipData?.status || 'unknown'} />
+          </TitleContainer>
+          {showExpandButton &&
+            (showDetails ? (
+              <ArrowDropDownIcon
+                onClick={() => {
+                  setShowDetails(true);
+                  loadAddress();
+                }}
+              />
+            ) : (
+              <ArrowDropUpIcon onClick={() => setShowDetails(false)} />
+            ))}
+        </TitleWithIcons>
         {voteEndTime && voteEndTime > Date.now() && (
           <span>
             Time left: <Countdown date={voteEndTime} />
@@ -161,8 +180,10 @@ function VoteData() {
             <QuestionText>{questionText}</QuestionText>
             <Content>
               <VoteResults
-                lastFipAddress={lastFipAddress}
-                lastFipNum={lastFipNum}
+                lastFipAddress={address}
+                lastFipNum={parseInt(
+                  fipData.fip?.replace(/"/g, '').replace(/^0+/, '') || '',
+                )}
                 loading={voteEndTime === undefined}
                 yesOptions={yesOptions}
               />
