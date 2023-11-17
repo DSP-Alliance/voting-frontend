@@ -8,6 +8,7 @@ import type { Address } from 'components/Home';
 import Loading from 'common/Loading';
 import VoteStatus from 'components/VoteStatus';
 import VoteResults from 'components/VoteResults';
+import VoteActionsModal from 'components/VoteActionsModal';
 import { voteTrackerConfig } from 'constants/voteTrackerConfig';
 import { voteFactoryConfig } from 'constants/voteFactoryConfig';
 import { publicClient } from 'services/clients';
@@ -81,6 +82,7 @@ function VoteData({
   const [questionText, setQuestionText] = useState('');
   const [loadingVoteInfo, setLoadingVoteInfo] = useState(false);
   const [loadingAddress, setLoadingAddress] = useState(false);
+  const [showVoteModal, setShowVoteModal] = useState(false);
   const [voteEndTime, setVoteEndTime] = useState<number | undefined>(undefined);
   const [currentAddress, setCurrentAddress] = useState<Address | undefined>(
     address,
@@ -198,55 +200,62 @@ function VoteData({
 
   return (
     <div>
-      <div>
-        <TitleWithActions>
-          <TitleContainer>
-            <Title>{fipData?.title}</Title>{' '}
-            <VoteStatus status={fipData?.status || 'unknown'} />
-          </TitleContainer>
-          <TitleContainer>
-            <button>Vote</button>
-            {showExpandButton &&
-              (showDetails ? (
-                <ArrowDropUpIcon onClick={() => setShowDetails(false)} />
-              ) : (
-                <ArrowDropDownIcon
-                  onClick={() => {
-                    setShowDetails(true);
-                    if (!currentAddress) loadAddress();
-                  }}
-                />
-              ))}
-          </TitleContainer>
-        </TitleWithActions>
-        {renderEndTime()}
-        {(loadingVoteInfo || loadingAddress) && <Loading />}
-        {showDetails && questionText && (
-          <div>
-            <QuestionText>{questionText}</QuestionText>
-            <Content>
-              <VoteResults
-                lastFipAddress={currentAddress}
-                lastFipNum={parseInt(
-                  fipData.fip?.replace(/"/g, '').replace(/^0+/, '') || '',
-                )}
-                yesOptions={yesOptions}
+      <TitleWithActions>
+        <TitleContainer>
+          <Title>{fipData?.title}</Title>{' '}
+          <VoteStatus status={fipData?.status || 'unknown'} />
+        </TitleContainer>
+        <TitleContainer>
+          {currentAddress && (
+            <button onClick={() => setShowVoteModal(true)}>Vote</button>
+          )}
+          {showExpandButton &&
+            (showDetails ? (
+              <ArrowDropUpIcon onClick={() => setShowDetails(false)} />
+            ) : (
+              <ArrowDropDownIcon
+                onClick={() => {
+                  setShowDetails(true);
+                  if (!currentAddress) loadAddress();
+                }}
               />
+            ))}
+        </TitleContainer>
+      </TitleWithActions>
+      {renderEndTime()}
+      {(loadingVoteInfo || loadingAddress) && <Loading />}
+      {showDetails && questionText && (
+        <div>
+          <QuestionText>{questionText}</QuestionText>
+          <Content>
+            <VoteResults
+              lastFipAddress={currentAddress}
+              lastFipNum={parseInt(
+                fipData.fip?.replace(/"/g, '').replace(/^0+/, '') || '',
+              )}
+              yesOptions={yesOptions}
+            />
+            <div>
+              <Subheader>Authors</Subheader>
+              <AuthorsContent>
+                {fipData?.author?.replace(/\"/g, '')}
+              </AuthorsContent>
+              <Subheader>Discussions</Subheader>
               <div>
-                <Subheader>Authors</Subheader>
-                <AuthorsContent>
-                  {fipData?.author?.replace(/\"/g, '')}
-                </AuthorsContent>
-                <Subheader>Discussions</Subheader>
-                <div>
-                  {fipData && renderDiscussionLinks(fipData['discussions-to'])}
-                </div>
-                {extendedDetails && extendedDetails()}
+                {fipData && renderDiscussionLinks(fipData['discussions-to'])}
               </div>
-            </Content>
-          </div>
-        )}
-      </div>
+              {extendedDetails && extendedDetails()}
+            </div>
+          </Content>
+        </div>
+      )}
+      {currentAddress && (
+        <VoteActionsModal
+          open={showVoteModal}
+          onClose={() => setShowVoteModal(false)}
+          address={currentAddress}
+        />
+      )}
     </div>
   );
 }

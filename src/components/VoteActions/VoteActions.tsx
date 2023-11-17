@@ -8,6 +8,7 @@ import VoteResults from 'components/VoteResults';
 import { getWinningText } from 'utilities/helpers';
 import { useVoteEndContext } from 'common/VoteEndContext';
 import { useFipDataContext } from 'common/FipDataContext';
+import Loading from 'common/Loading';
 import VotePicker from './VotePicker';
 
 interface VoteActionsProps {
@@ -35,6 +36,7 @@ function VoteActions({
   hasVoted,
   setHasVoted,
 }: VoteActionsProps) {
+  const [loading, setLoading] = useState(false);
   const [questionText, setQuestionText] = useState('');
   const [winningVoteText, setWinningVoteText] = useState('');
   const [yesOptions, setYesOptions] = useState<string[]>([]);
@@ -46,6 +48,7 @@ function VoteActions({
   useEffect(() => {
     async function getVoteInfo() {
       if (lastFipAddress) {
+        setLoading(true);
         try {
           const question = await publicClient.readContract({
             address: lastFipAddress,
@@ -79,6 +82,7 @@ function VoteActions({
           setWinningVoteText(getWinningText(winningVote, newYesOptions));
 
           setYesOptions(newYesOptions);
+          setLoading(false);
         } catch (err) {
           console.error(err);
           setYesOptions([]);
@@ -91,11 +95,7 @@ function VoteActions({
 
   return (
     <>
-      {loadingFipData && (
-        <LoaderContainer>
-          <ClipLoader color='var(--primary)' />
-        </LoaderContainer>
-      )}
+      {(loadingFipData || loading) && <Loading />}
       {(!voteEndTime || voteEndTime <= Date.now() || hasVoted) &&
         yesOptions.length > 0 && (
           <>
