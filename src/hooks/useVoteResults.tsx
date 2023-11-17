@@ -62,7 +62,6 @@ function useVoteResults({
         }),
       ])
         .then(([rbpVotes, minerTokenVotes, tokenVotes]) => {
-          console.log({ rbpVotes });
           setTotalRbp(rbpVotes.reduce((a, b) => a + Number(b), 0));
           setTotalTokens(tokenVotes.reduce((a, b) => a + b, BigInt(0)));
           setTotalMinerTokens(

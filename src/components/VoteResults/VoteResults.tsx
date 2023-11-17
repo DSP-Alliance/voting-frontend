@@ -35,8 +35,6 @@ function VoteResults({
   if (!Boolean(totalRbp) && !Boolean(totalTokens) && !Boolean(totalMinerTokens))
     return <InfoText>No vote data</InfoText>;
 
-  console.log({ totalRbp, rbpData, winningRbp });
-
   return (
     <ChartContainer>
       {Boolean(totalRbp) && (
