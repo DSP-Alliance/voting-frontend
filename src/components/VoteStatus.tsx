@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import type { VoteResultsData } from 'hooks/useVoteResults';
 
 const StatusContainer = styled.span`
   border-radius: 4px;
@@ -21,11 +22,42 @@ const FailStatusContainer = styled(StatusContainer)`
   color: var(--fail-color);
 `;
 
-function VoteStatus({ status }: { status: string }) {
-  if (status === 'Final' || status === 'Active' || status === 'Passed')
-    return <SuccessStatusContainer>{status}</SuccessStatusContainer>;
+const votingGroups = [
+  'winningMinerTokens',
+  'winningRbp',
+  'winningTokens',
+] as const;
 
-  return <FailStatusContainer>{status}</FailStatusContainer>;
+function VoteStatus({
+  voteResultsData,
+  active,
+}: {
+  voteResultsData: VoteResultsData;
+  active: boolean;
+}) {
+  if (active) return <SuccessStatusContainer>Activate</SuccessStatusContainer>;
+  if (voteResultsData.loading) return null;
+
+  let allAgreed = true;
+  let winningQuestion = '';
+
+  for (const group of votingGroups) {
+    if (!voteResultsData[group]) continue;
+    if (!winningQuestion) {
+      winningQuestion = voteResultsData[group];
+      continue;
+    }
+    if (winningQuestion !== voteResultsData[group]) {
+      allAgreed = false;
+      break;
+    }
+  }
+
+  if (!winningQuestion) return null;
+
+  if (allAgreed) return <SuccessStatusContainer>Passed</SuccessStatusContainer>;
+
+  return <FailStatusContainer>Abstain</FailStatusContainer>;
 }
 
 export default VoteStatus;

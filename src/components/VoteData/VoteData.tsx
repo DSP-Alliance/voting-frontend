@@ -96,6 +96,25 @@ function VoteData({
   });
 
   useEffect(() => {
+    if (!currentAddress) {
+      setLoadingAddress(true);
+      publicClient
+        .readContract({
+          abi: voteFactoryConfig.abi,
+          address: voteFactoryConfig.address,
+          functionName: 'FIPnumToAddress',
+          args: [
+            parseInt(fipData?.fip?.replace(/"/g, '').replace(/^0+/, '') || '0'),
+          ],
+        })
+        .then((addr) => {
+          setCurrentAddress(addr);
+          setLoadingAddress(false);
+        });
+    }
+  }, []);
+
+  useEffect(() => {
     async function getVoteInfo() {
       if (currentAddress) {
         setLoadingVoteInfo(true);
@@ -208,7 +227,10 @@ function VoteData({
       <TitleWithActions>
         <TitleContainer>
           <Title>{fipData?.title}</Title>{' '}
-          <VoteStatus status={fipData?.status || 'unknown'} />
+          <VoteStatus
+            active={voteEndTime ? voteEndTime > Date.now() : false}
+            voteResultsData={voteResultsData}
+          />
         </TitleContainer>
         <TitleContainer>
           {currentAddress && voteEndTime && voteEndTime > Date.now() && (
@@ -218,12 +240,7 @@ function VoteData({
             (showDetails ? (
               <ArrowDropUpIcon onClick={() => setShowDetails(false)} />
             ) : (
-              <ArrowDropDownIcon
-                onClick={() => {
-                  setShowDetails(true);
-                  if (!currentAddress) loadAddress();
-                }}
-              />
+              <ArrowDropDownIcon onClick={() => setShowDetails(true)} />
             ))}
         </TitleContainer>
       </TitleWithActions>
