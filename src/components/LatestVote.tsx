@@ -241,7 +241,26 @@ function LatestVote({ address }: { address: Address | undefined }) {
       <VoteSection>
         <Header>Latest Vote</Header>
         {loadingFipData && <Loading />}
-        {fipData && <VoteData fipData={fipData} address={lastFipAddress} />}
+        {fipData && (
+          <VoteData
+            fipData={fipData}
+            address={lastFipAddress}
+            extendedDetails={() => (
+              <VotingPower
+                addVotingPower={addVotingPower}
+                errorMessage={errorMessage || error?.message}
+                hasRegistered={hasRegistered}
+                loading={loading}
+                minerIds={minerIds}
+                rawBytePower={rawBytePower}
+                registering={isLoadingWrite || isLoadingWait}
+                setHasVoted={setHasVoted}
+                tokenPower={tokenPower}
+                write={write}
+              />
+            )}
+          />
+        )}
       </VoteSection>
       {/* <VoteSection>
           <VoteActions
@@ -250,20 +269,6 @@ function LatestVote({ address }: { address: Address | undefined }) {
             setHasVoted={setHasVoted}
           />
         </VoteSection> */}
-      {/* <VotingPowerSection>
-          <VotingPower
-            addVotingPower={addVotingPower}
-            errorMessage={errorMessage || error?.message}
-            hasRegistered={hasRegistered}
-            loading={loading}
-            minerIds={minerIds}
-            rawBytePower={rawBytePower}
-            registering={isLoadingWrite || isLoadingWait}
-            setHasVoted={setHasVoted}
-            tokenPower={tokenPower}
-            write={write}
-          />
-        </VotingPowerSection> */}
     </VoteDataContainer>
   );
 }

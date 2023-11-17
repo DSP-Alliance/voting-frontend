@@ -5,7 +5,6 @@ import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import Countdown from 'react-countdown';
 import type { Address } from 'components/Home';
-import { useVoteEndContext } from 'common/VoteEndContext';
 import Loading from 'common/Loading';
 import VoteStatus from 'components/VoteStatus';
 import VoteResults from 'components/VoteResults';
@@ -14,7 +13,7 @@ import { voteFactoryConfig } from 'constants/voteFactoryConfig';
 import { publicClient } from 'services/clients';
 import type { FipData } from 'services/fipService';
 
-const TitleWithIcons = styled.div`
+const TitleWithActions = styled.div`
   display: flex;
   align-items: center;
   gap: 10px;
@@ -72,10 +71,12 @@ function VoteData({
   address,
   fipData,
   showExpandButton = false,
+  extendedDetails = null,
 }: {
   address: Address | undefined;
   fipData: FipData;
   showExpandButton?: boolean;
+  extendedDetails?: null | (() => JSX.Element);
 }) {
   const [questionText, setQuestionText] = useState('');
   const [loadingVoteInfo, setLoadingVoteInfo] = useState(false);
@@ -198,23 +199,26 @@ function VoteData({
   return (
     <div>
       <div>
-        <TitleWithIcons>
+        <TitleWithActions>
           <TitleContainer>
             <Title>{fipData?.title}</Title>{' '}
             <VoteStatus status={fipData?.status || 'unknown'} />
           </TitleContainer>
-          {showExpandButton &&
-            (showDetails ? (
-              <ArrowDropUpIcon onClick={() => setShowDetails(false)} />
-            ) : (
-              <ArrowDropDownIcon
-                onClick={() => {
-                  setShowDetails(true);
-                  if (!currentAddress) loadAddress();
-                }}
-              />
-            ))}
-        </TitleWithIcons>
+          <TitleContainer>
+            <button>Vote</button>
+            {showExpandButton &&
+              (showDetails ? (
+                <ArrowDropUpIcon onClick={() => setShowDetails(false)} />
+              ) : (
+                <ArrowDropDownIcon
+                  onClick={() => {
+                    setShowDetails(true);
+                    if (!currentAddress) loadAddress();
+                  }}
+                />
+              ))}
+          </TitleContainer>
+        </TitleWithActions>
         {renderEndTime()}
         {(loadingVoteInfo || loadingAddress) && <Loading />}
         {showDetails && questionText && (
@@ -237,6 +241,7 @@ function VoteData({
                 <div>
                   {fipData && renderDiscussionLinks(fipData['discussions-to'])}
                 </div>
+                {extendedDetails && extendedDetails()}
               </div>
             </Content>
           </div>
