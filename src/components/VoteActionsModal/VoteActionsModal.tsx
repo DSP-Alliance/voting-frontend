@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent } from '@mui/material';
-import { styled } from '@mui/material/styles';
 import { useAccount } from 'wagmi';
 import { publicClient } from 'services/clients';
 import type { Address } from 'components/Home';
@@ -8,10 +7,6 @@ import VoteActions from 'components/VoteActions';
 import { useFipDataContext } from 'common/FipDataContext';
 import { voteTrackerConfig } from 'constants/voteTrackerConfig';
 import { voteFactoryConfig } from 'constants/voteFactoryConfig';
-
-const StyledDialog = styled(Dialog)`
-  color: var(--font-color);
-`;
 
 function VoteActionsModal({
   open,
@@ -77,7 +72,7 @@ function VoteActionsModal({
   }, [lastFipAddress, address, isConnected]);
 
   return (
-    <StyledDialog
+    <Dialog
       open={open}
       onClose={onClose}
       PaperProps={{
@@ -93,7 +88,7 @@ function VoteActionsModal({
           setHasVoted={setHasVoted}
         />
       </DialogContent>
-    </StyledDialog>
+    </Dialog>
   );
 }
 

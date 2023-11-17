@@ -206,7 +206,7 @@ function VoteData({
           <VoteStatus status={fipData?.status || 'unknown'} />
         </TitleContainer>
         <TitleContainer>
-          {currentAddress && (
+          {currentAddress && voteEndTime && voteEndTime > Date.now() && (
             <button onClick={() => setShowVoteModal(true)}>Vote</button>
           )}
           {showExpandButton &&
