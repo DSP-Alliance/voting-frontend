@@ -10,18 +10,13 @@ import { useVoteEndContext } from 'common/VoteEndContext';
 import { useFipDataContext } from 'common/FipDataContext';
 import Loading from 'common/Loading';
 import VotePicker from './VotePicker';
+import useVoteResults from '../../hooks/useVoteResults';
 
 interface VoteActionsProps {
   hasRegistered: boolean;
   hasVoted: boolean;
   setHasVoted: React.Dispatch<React.SetStateAction<boolean>>;
 }
-
-const LoaderContainer = styled.div`
-  margin-top: 60px;
-  display: flex;
-  justify-content: center;
-`;
 
 const Header = styled.h3`
   font-family: var(--titlefont);
@@ -41,7 +36,11 @@ function VoteActions({
   const [winningVoteText, setWinningVoteText] = useState('');
   const [yesOptions, setYesOptions] = useState<string[]>([]);
 
-  const { loadingFipData, lastFipNum, lastFipAddress } = useFipDataContext();
+  const { loadingFipData, lastFipAddress } = useFipDataContext();
+  const voteResultsData = useVoteResults({
+    fipAddress: lastFipAddress,
+    yesOptions,
+  });
 
   const { voteEndTime } = useVoteEndContext();
 
@@ -102,11 +101,7 @@ function VoteActions({
             <Header>Latest Vote Results</Header>
             <QuestionText>{questionText}</QuestionText>
             <QuestionText>Winning vote: {winningVoteText}</QuestionText>
-            <VoteResults
-              lastFipAddress={lastFipAddress}
-              lastFipNum={lastFipNum}
-              yesOptions={yesOptions}
-            />
+            <VoteResults voteResultsData={voteResultsData} />
           </>
         )}
       {voteEndTime && voteEndTime > Date.now() && !hasVoted && (

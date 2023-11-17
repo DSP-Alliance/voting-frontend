@@ -11,6 +11,7 @@ import VoteResults from 'components/VoteResults';
 import VoteActionsModal from 'components/VoteActionsModal';
 import { voteTrackerConfig } from 'constants/voteTrackerConfig';
 import { voteFactoryConfig } from 'constants/voteFactoryConfig';
+import useVoteResults from '../../hooks/useVoteResults';
 import { publicClient } from 'services/clients';
 import type { FipData } from 'services/fipService';
 
@@ -89,6 +90,10 @@ function VoteData({
   );
   const [yesOptions, setYesOptions] = useState<string[]>([]);
   const [showDetails, setShowDetails] = useState(address !== undefined);
+  const voteResultsData = useVoteResults({
+    fipAddress: currentAddress,
+    yesOptions,
+  });
 
   useEffect(() => {
     async function getVoteInfo() {
@@ -228,13 +233,7 @@ function VoteData({
         <div>
           <QuestionText>{questionText}</QuestionText>
           <Content>
-            <VoteResults
-              lastFipAddress={currentAddress}
-              lastFipNum={parseInt(
-                fipData.fip?.replace(/"/g, '').replace(/^0+/, '') || '',
-              )}
-              yesOptions={yesOptions}
-            />
+            <VoteResults voteResultsData={voteResultsData} />
             <div>
               <Subheader>Authors</Subheader>
               <AuthorsContent>

@@ -4,10 +4,7 @@
     "jsx": "react",
     "module": "esnext",
     "moduleResolution": "node",
-    "lib": [
-      "dom",
-      "esnext"
-    ],
+    "lib": ["dom", "esnext"],
     "strict": true,
     "sourceMap": true,
     "target": "esnext",
@@ -16,11 +13,10 @@
       "common/*": ["src/components/common/*"],
       "components/*": ["src/components/*"],
       "constants/*": ["src/constants/*"],
+      "hooks/*": ["src/hooks/*"],
       "services/*": ["src/services/*"],
-      "utilities/*": ["src/utilities/*"],
+      "utilities/*": ["src/utilities/*"]
     }
   },
-  "exclude": [
-    "node_modules"
-  ]
+  "exclude": ["node_modules"]
 }
