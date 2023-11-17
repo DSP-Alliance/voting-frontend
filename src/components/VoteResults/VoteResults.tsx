@@ -20,14 +20,13 @@ const ChartContainer = styled.div`
 function VoteResults({
   lastFipNum,
   lastFipAddress,
-  loading,
   yesOptions,
 }: {
   lastFipNum: number | undefined;
   lastFipAddress: Address | undefined;
-  loading: boolean;
   yesOptions: string[];
 }) {
+  const [loading, setLoading] = useState(false);
   const [rbpData, setRbpData] = useState<{ [key: string]: string | number }[]>(
     [],
   );
@@ -46,6 +45,7 @@ function VoteResults({
 
   useEffect(() => {
     if (lastFipAddress) {
+      setLoading(true);
       Promise.all([
         publicClient.readContract({
           abi: voteTrackerConfig.abi,
@@ -62,94 +62,98 @@ function VoteResults({
           address: lastFipAddress,
           functionName: 'getVoteResultsToken',
         }),
-      ]).then(([rbpVotes, minerTokenVotes, tokenVotes]) => {
-        setTotalRbp(rbpVotes.reduce((a, b) => a + Number(b), 0));
-        setTotalTokens(tokenVotes.reduce((a, b) => a + b, BigInt(0)));
-        setTotalMinerTokens(minerTokenVotes.reduce((a, b) => a + b, BigInt(0)));
+      ])
+        .then(([rbpVotes, minerTokenVotes, tokenVotes]) => {
+          setTotalRbp(rbpVotes.reduce((a, b) => a + Number(b), 0));
+          setTotalTokens(tokenVotes.reduce((a, b) => a + b, BigInt(0)));
+          setTotalMinerTokens(
+            minerTokenVotes.reduce((a, b) => a + b, BigInt(0)),
+          );
 
-        const yesOption1 = yesOptions[0];
-        const yesOption2 = yesOptions[1];
+          const yesOption1 = yesOptions[0];
+          const yesOption2 = yesOptions[1];
 
-        const VOTES = [
-          yesOption1 && yesOption1.length > 0 ? yesOption1 : 'Yes',
-          yesOption2 && yesOption2.length > 0 ? yesOption2 : 'Yes 2',
-          'No',
-          'Abstain',
-        ];
+          const VOTES = [
+            yesOption1 && yesOption1.length > 0 ? yesOption1 : 'Yes',
+            yesOption2 && yesOption2.length > 0 ? yesOption2 : 'Yes 2',
+            'No',
+            'Abstain',
+          ];
 
-        setWinningRbp(VOTES[indexOfMax([...rbpVotes])]);
-        setWinningTokens(VOTES[indexOfMax([...tokenVotes])]);
-        setWinningMinerTokens(VOTES[indexOfMax([...minerTokenVotes])]);
+          setWinningRbp(VOTES[indexOfMax([...rbpVotes])]);
+          setWinningTokens(VOTES[indexOfMax([...tokenVotes])]);
+          setWinningMinerTokens(VOTES[indexOfMax([...minerTokenVotes])]);
 
-        setRbpData([
-          {
-            name: yesOption1,
-            RBP: Number(rbpVotes[0]),
-          },
-          ...(yesOption2
-            ? [
-                {
-                  name: yesOption2,
-                  RBP: Number(rbpVotes[1]),
-                },
-              ]
-            : []),
-          {
-            name: 'No',
-            RBP: Number(rbpVotes[2]),
-          },
-          {
-            name: 'Abstain',
-            RBP: Number(rbpVotes[3]),
-          },
-        ]);
+          setRbpData([
+            {
+              name: yesOption1,
+              RBP: Number(rbpVotes[0]),
+            },
+            ...(yesOption2
+              ? [
+                  {
+                    name: yesOption2,
+                    RBP: Number(rbpVotes[1]),
+                  },
+                ]
+              : []),
+            {
+              name: 'No',
+              RBP: Number(rbpVotes[2]),
+            },
+            {
+              name: 'Abstain',
+              RBP: Number(rbpVotes[3]),
+            },
+          ]);
 
-        setTokenData([
-          {
-            name: yesOption1,
-            Tokens: Number(tokenVotes[0]),
-          },
-          ...(yesOption2
-            ? [
-                {
-                  name: yesOption2,
-                  Tokens: Number(tokenVotes[1]),
-                },
-              ]
-            : []),
-          {
-            name: 'No',
-            Tokens: Number(tokenVotes[2]),
-          },
-          {
-            name: 'Abstain',
-            Tokens: Number(tokenVotes[3]),
-          },
-        ]);
+          setTokenData([
+            {
+              name: yesOption1,
+              Tokens: Number(tokenVotes[0]),
+            },
+            ...(yesOption2
+              ? [
+                  {
+                    name: yesOption2,
+                    Tokens: Number(tokenVotes[1]),
+                  },
+                ]
+              : []),
+            {
+              name: 'No',
+              Tokens: Number(tokenVotes[2]),
+            },
+            {
+              name: 'Abstain',
+              Tokens: Number(tokenVotes[3]),
+            },
+          ]);
 
-        setMinerTokenData([
-          {
-            name: yesOption1,
-            'Miner Tokens': Number(minerTokenVotes[0]),
-          },
-          ...(yesOption2
-            ? [
-                {
-                  name: yesOption2,
-                  'Miner Tokens': Number(minerTokenVotes[1]),
-                },
-              ]
-            : []),
-          {
-            name: 'No',
-            'Miner Tokens': Number(minerTokenVotes[2]),
-          },
-          {
-            name: 'Abstain',
-            'Miner Tokens': Number(minerTokenVotes[3]),
-          },
-        ]);
-      });
+          setMinerTokenData([
+            {
+              name: yesOption1,
+              'Miner Tokens': Number(minerTokenVotes[0]),
+            },
+            ...(yesOption2
+              ? [
+                  {
+                    name: yesOption2,
+                    'Miner Tokens': Number(minerTokenVotes[1]),
+                  },
+                ]
+              : []),
+            {
+              name: 'No',
+              'Miner Tokens': Number(minerTokenVotes[2]),
+            },
+            {
+              name: 'Abstain',
+              'Miner Tokens': Number(minerTokenVotes[3]),
+            },
+          ]);
+        })
+        .finally(() => setLoading(false));
     }
   }, [lastFipAddress]); // eslint-disable-line react-hooks/exhaustive-deps
 

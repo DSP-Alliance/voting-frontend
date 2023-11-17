@@ -105,7 +105,6 @@ function VoteActions({
             <VoteResults
               lastFipAddress={lastFipAddress}
               lastFipNum={lastFipNum}
-              loading={voteEndTime === undefined}
               yesOptions={yesOptions}
             />
           </>

@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
+import dayjs from 'dayjs';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import Countdown from 'react-countdown';
 import type { Address } from 'components/Home';
 import { useVoteEndContext } from 'common/VoteEndContext';
+import Loading from 'common/Loading';
 import VoteStatus from 'components/VoteStatus';
 import VoteResults from 'components/VoteResults';
 import { voteTrackerConfig } from 'constants/voteTrackerConfig';
@@ -59,6 +61,13 @@ const Link = styled.a`
   word-break: break-all;
 `;
 
+const VoteEndedLabel = styled.div`
+  color: var(--caption);
+  font-size: 16px;
+  font-weight: 600;
+  text-transform: uppercase;
+`;
+
 function VoteData({
   address,
   fipData,
@@ -69,16 +78,19 @@ function VoteData({
   showExpandButton?: boolean;
 }) {
   const [questionText, setQuestionText] = useState('');
+  const [loadingVoteInfo, setLoadingVoteInfo] = useState(false);
+  const [loadingAddress, setLoadingAddress] = useState(false);
+  const [voteEndTime, setVoteEndTime] = useState<number | undefined>(undefined);
   const [currentAddress, setCurrentAddress] = useState<Address | undefined>(
     address,
   );
   const [yesOptions, setYesOptions] = useState<string[]>([]);
-  const [showDetails, setShowDetails] = useState(address === undefined);
-  const { voteEndTime } = useVoteEndContext();
+  const [showDetails, setShowDetails] = useState(address !== undefined);
 
   useEffect(() => {
     async function getVoteInfo() {
       if (currentAddress) {
+        setLoadingVoteInfo(true);
         try {
           const question = await publicClient.readContract({
             address: currentAddress,
@@ -97,6 +109,20 @@ function VoteData({
             functionName: 'yesOptions',
             args: [BigInt(1)],
           });
+          const voteStartTime = await publicClient.readContract({
+            abi: voteTrackerConfig.abi,
+            address: currentAddress,
+            functionName: 'voteStart',
+          });
+
+          const voteLength = await publicClient.readContract({
+            abi: voteTrackerConfig.abi,
+            address: currentAddress,
+            functionName: 'voteLength',
+          });
+
+          const endTime = (voteStartTime + voteLength) * 1000;
+          setVoteEndTime(endTime);
 
           const newYesOptions = [
             yesOption1,
@@ -110,6 +136,7 @@ function VoteData({
           console.error(err);
           setYesOptions([]);
         }
+        setLoadingVoteInfo(false);
       }
     }
 
@@ -117,17 +144,19 @@ function VoteData({
   }, [currentAddress]); // eslint-disable-line react-hooks/exhaustive-deps
 
   function loadAddress() {
+    setLoadingAddress(true);
     publicClient
       .readContract({
         abi: voteFactoryConfig.abi,
         address: voteFactoryConfig.address,
         functionName: 'FIPnumToAddress',
         args: [
-          parseInt(fipData?.fip?.replace(/"/g, '').replace(/^0+/, '') || ''),
+          parseInt(fipData?.fip?.replace(/"/g, '').replace(/^0+/, '') || '0'),
         ],
       })
       .then((addr) => {
         setCurrentAddress(addr);
+        setLoadingAddress(false);
       });
   }
 
@@ -149,6 +178,23 @@ function VoteData({
     }
   };
 
+  function renderEndTime() {
+    if (!voteEndTime) return null;
+
+    if (voteEndTime > Date.now())
+      return (
+        <span>
+          Time left: <Countdown date={voteEndTime} />
+        </span>
+      );
+
+    return (
+      <VoteEndedLabel>
+        Ended {dayjs(voteEndTime).format('DD MMM YYYY')}
+      </VoteEndedLabel>
+    );
+  }
+
   return (
     <div>
       <div>
@@ -159,31 +205,27 @@ function VoteData({
           </TitleContainer>
           {showExpandButton &&
             (showDetails ? (
+              <ArrowDropUpIcon onClick={() => setShowDetails(false)} />
+            ) : (
               <ArrowDropDownIcon
                 onClick={() => {
                   setShowDetails(true);
-                  loadAddress();
+                  if (!currentAddress) loadAddress();
                 }}
               />
-            ) : (
-              <ArrowDropUpIcon onClick={() => setShowDetails(false)} />
             ))}
         </TitleWithIcons>
-        {voteEndTime && voteEndTime > Date.now() && (
-          <span>
-            Time left: <Countdown date={voteEndTime} />
-          </span>
-        )}
+        {renderEndTime()}
+        {(loadingVoteInfo || loadingAddress) && <Loading />}
         {showDetails && questionText && (
           <div>
             <QuestionText>{questionText}</QuestionText>
             <Content>
               <VoteResults
-                lastFipAddress={address}
+                lastFipAddress={currentAddress}
                 lastFipNum={parseInt(
                   fipData.fip?.replace(/"/g, '').replace(/^0+/, '') || '',
                 )}
-                loading={voteEndTime === undefined}
                 yesOptions={yesOptions}
               />
               <div>

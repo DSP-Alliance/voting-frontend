@@ -3,7 +3,6 @@ import styled from 'styled-components';
 import { useAccount, useContractWrite, useWaitForTransaction } from 'wagmi';
 import { getAddress } from 'viem';
 import axios from 'axios';
-import ClipLoader from 'react-spinners/ClipLoader';
 
 import { voteTrackerConfig } from 'constants/voteTrackerConfig';
 import { ownableConfig } from 'constants/ownableConfig';
@@ -13,14 +12,10 @@ import type { FipData } from 'services/fipService';
 import { formatBytesWithLabel, ZERO_ADDRESS } from 'utilities/helpers';
 import VotingPower from 'components/VotingPower';
 import type { Address } from 'components/Home';
+import Loading from 'common/Loading';
 import { voteFactoryConfig } from 'constants/voteFactoryConfig';
 import { useFipDataContext } from 'common/FipDataContext';
 import VoteData from 'components/VoteData';
-
-const LoaderContainer = styled.div`
-  display: flex;
-  justify-content: center;
-`;
 
 const VoteDataContainer = styled.div`
   display: flex;
@@ -245,11 +240,7 @@ function LatestVote({ address }: { address: Address | undefined }) {
     <VoteDataContainer>
       <VoteSection>
         <Header>Latest Vote</Header>
-        {loadingFipData && (
-          <LoaderContainer>
-            <ClipLoader color='var(--primary)' />
-          </LoaderContainer>
-        )}
+        {loadingFipData && <Loading />}
         {fipData && <VoteData fipData={fipData} address={lastFipAddress} />}
       </VoteSection>
       {/* <VoteSection>
