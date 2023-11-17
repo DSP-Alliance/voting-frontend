@@ -23,16 +23,6 @@ const VoteDataContainer = styled.div`
   margin: 24px;
 `;
 
-const VoteSection = styled.div``;
-
-const VotingPowerSection = styled(VoteSection)`
-  grid-column-start: span 2;
-
-  @media (max-width: 920px) {
-    grid-column-start: span 1;
-  }
-`;
-
 const Header = styled.h3`
   font-family: var(--font-color);
   font-size: 40px;
@@ -45,7 +35,6 @@ function LatestVote({ address }: { address: Address | undefined }) {
   const [agentAddress, setAgentAddress] = useState<Address>(ZERO_ADDRESS);
   const [errorMessage, setErrorMessage] = useState('');
   const [hasRegistered, setHasRegistered] = useState(false);
-  const [hasVoted, setHasVoted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [minerIds, setMinerIds] = useState<string[]>([]);
   const [rawBytePower, setRawBytePower] = useState('');
@@ -86,35 +75,9 @@ function LatestVote({ address }: { address: Address | undefined }) {
     }
   }
 
-  async function getHasVoted() {
-    if (
-      lastFipAddress &&
-      lastFipAddress !== localStorage.getItem('lastFipVoted')
-    ) {
-      try {
-        const userHasVoted = await publicClient.readContract({
-          address: lastFipAddress,
-          abi: voteTrackerConfig.abi,
-          functionName: 'hasVoted',
-          args: [address || `0x`],
-        });
-
-        setHasVoted(userHasVoted);
-      } catch {
-        setHasVoted(false);
-      }
-    } else if (
-      lastFipAddress &&
-      lastFipAddress === localStorage.getItem('lastFipVoted')
-    ) {
-      setHasVoted(true);
-    }
-  }
-
   useEffect(() => {
     if (isConnected) {
       getHasRegistered();
-      getHasVoted();
     }
   }, [lastFipAddress, address, isConnected]);
 
@@ -212,13 +175,12 @@ function LatestVote({ address }: { address: Address | undefined }) {
         }
       }
 
-      const [tokenPower, bytePower, minerTokenPower] =
-        await publicClient.readContract({
-          address: lastFipAddress || ZERO_ADDRESS,
-          abi: voteTrackerConfig.abi,
-          functionName: 'getVotingPower',
-          args: [address || ZERO_ADDRESS],
-        });
+      const [tokenPower] = await publicClient.readContract({
+        address: lastFipAddress || ZERO_ADDRESS,
+        abi: voteTrackerConfig.abi,
+        functionName: 'getVotingPower',
+        args: [address || ZERO_ADDRESS],
+      });
 
       setRawBytePower(formatBytesWithLabel(rawBytes));
       setTokenPower(tokenPower);
@@ -238,37 +200,27 @@ function LatestVote({ address }: { address: Address | undefined }) {
 
   return (
     <VoteDataContainer>
-      <VoteSection>
-        <Header>Latest Vote</Header>
-        {loadingFipData && <Loading />}
-        {fipData && (
-          <VoteData
-            fipData={fipData}
-            address={lastFipAddress}
-            extendedDetails={() => (
-              <VotingPower
-                addVotingPower={addVotingPower}
-                errorMessage={errorMessage || error?.message}
-                hasRegistered={hasRegistered}
-                loading={loading}
-                minerIds={minerIds}
-                rawBytePower={rawBytePower}
-                registering={isLoadingWrite || isLoadingWait}
-                setHasVoted={setHasVoted}
-                tokenPower={tokenPower}
-                write={write}
-              />
-            )}
-          />
-        )}
-      </VoteSection>
-      {/* <VoteSection>
-          <VoteActions
-            hasRegistered={hasRegistered}
-            hasVoted={hasVoted}
-            setHasVoted={setHasVoted}
-          />
-        </VoteSection> */}
+      <Header>Latest Vote</Header>
+      {loadingFipData && <Loading />}
+      {fipData && (
+        <VoteData
+          fipData={fipData}
+          address={lastFipAddress}
+          extendedDetails={() => (
+            <VotingPower
+              addVotingPower={addVotingPower}
+              errorMessage={errorMessage || error?.message}
+              hasRegistered={hasRegistered}
+              loading={loading}
+              minerIds={minerIds}
+              rawBytePower={rawBytePower}
+              registering={isLoadingWrite || isLoadingWait}
+              tokenPower={tokenPower}
+              write={write}
+            />
+          )}
+        />
+      )}
     </VoteDataContainer>
   );
 }

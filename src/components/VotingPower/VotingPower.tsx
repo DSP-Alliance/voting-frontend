@@ -13,7 +13,6 @@ interface VotingPowerProps {
   minerIds: string[];
   rawBytePower: string;
   registering: boolean;
-  setHasVoted: React.Dispatch<React.SetStateAction<boolean>>;
   tokenPower: bigint | null;
   write: () => void;
 }
