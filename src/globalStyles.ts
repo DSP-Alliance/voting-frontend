@@ -48,6 +48,14 @@ const GlobalStyle = createGlobalStyle`
       background-color: var(--darkprimary);
     }
   }
+
+  .MuiOutlinedInput-notchedOutline {
+    border-color: var(--font-color) !important;
+  }
+
+  .MuiFormLabel-root {
+    color: var(--dark-primary) !important;
+  }
 `;
 
 export default GlobalStyle;
