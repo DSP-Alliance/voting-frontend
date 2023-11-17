@@ -136,8 +136,8 @@ function LatestVote({ address }: { address: Address | undefined }) {
         const request = await axios.get(
           `https://filfox.info/api/v1/address/${address}`,
         );
-        const ownedMiners = request.data.ownedMiners;
-        setMinerIds((prev) => [...prev, ...request.data.ownedMiners]);
+        const ownedMiners = request.data?.ownedMiners || [];
+        setMinerIds((prev) => [...prev, ...ownedMiners]);
 
         const promises: Promise<any>[] = [];
 

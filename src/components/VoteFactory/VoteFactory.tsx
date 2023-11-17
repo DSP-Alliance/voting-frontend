@@ -11,7 +11,17 @@ function VoteFactory({
   closeModal: () => void;
 }) {
   return (
-    <Dialog open={open} onClose={closeModal} fullWidth maxWidth='sm'>
+    <Dialog
+      open={open}
+      onClose={closeModal}
+      fullWidth
+      maxWidth='sm'
+      PaperProps={{
+        style: {
+          color: 'var(--font-color)',
+        },
+      }}
+    >
       <DialogTitle>Create Vote</DialogTitle>
       <DialogContent dividers>
         <VoteFactoryForm closeModal={closeModal} />

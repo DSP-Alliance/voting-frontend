@@ -10,7 +10,17 @@ function MultisigRegisterModal({
   closeModal: () => void;
 }) {
   return (
-    <Dialog open={open} onClose={closeModal} fullWidth maxWidth='sm'>
+    <Dialog
+      open={open}
+      onClose={closeModal}
+      fullWidth
+      maxWidth='sm'
+      PaperProps={{
+        style: {
+          color: 'var(--font-color)',
+        },
+      }}
+    >
       <DialogTitle>Register Multisig</DialogTitle>
       <DialogContent dividers>
         <MultisigRegisterForm closeModal={closeModal} />
