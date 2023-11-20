@@ -53,6 +53,10 @@ const GlobalStyle = createGlobalStyle`
     border-color: var(--font-color) !important;
   }
 
+  .MuiInputBase-input {
+    color: var(--font-color) !important;
+  }
+
   .MuiFormLabel-root {
     color: var(--dark-primary) !important;
   }
