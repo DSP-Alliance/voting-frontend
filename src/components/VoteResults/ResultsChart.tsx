@@ -22,16 +22,19 @@ const Legend = styled.div`
 `;
 
 const Label = styled.div`
-  color: var(--primary);
+  color: var(--font-color);
+  font-weight: 600;
 `;
 
 const DataText = styled.div`
-  margin-top: 4px;
   color: var(--caption);
+  font-weight: 600;
 `;
 
 const InfoText = styled.span`
-  color: var(--white);
+  margin-top: 4px;
+  color: var(--caption);
+  font-weight: 600;
 `;
 
 function formatValue(
@@ -86,14 +89,14 @@ function ResultsChart({
       <Legend>
         <div>
           <span>
-            <Label>{type + ':'}</Label>
+            <Label>{type}</Label>
+            <InfoText>WINNING: {winning || '-'}</InfoText>
+            <br />
             <DataText>
-              Total:{' '}
+              TOTAL:{' '}
               <InfoText>
                 {formatValue(totalCount, { dataKey: type }) || '-'}
               </InfoText>
-              <br />
-              Winning: <InfoText>{winning || '-'}</InfoText>
             </DataText>
           </span>
         </div>

@@ -8,19 +8,15 @@ import VoteResults from 'components/VoteResults';
 import { getWinningText } from 'utilities/helpers';
 import { useVoteEndContext } from 'common/VoteEndContext';
 import { useFipDataContext } from 'common/FipDataContext';
+import Loading from 'common/Loading';
 import VotePicker from './VotePicker';
+import useVoteResults from '../../hooks/useVoteResults';
 
 interface VoteActionsProps {
   hasRegistered: boolean;
   hasVoted: boolean;
   setHasVoted: React.Dispatch<React.SetStateAction<boolean>>;
 }
-
-const LoaderContainer = styled.div`
-  margin-top: 60px;
-  display: flex;
-  justify-content: center;
-`;
 
 const Header = styled.h3`
   font-family: var(--titlefont);
@@ -35,17 +31,23 @@ function VoteActions({
   hasVoted,
   setHasVoted,
 }: VoteActionsProps) {
+  const [loading, setLoading] = useState(false);
   const [questionText, setQuestionText] = useState('');
   const [winningVoteText, setWinningVoteText] = useState('');
   const [yesOptions, setYesOptions] = useState<string[]>([]);
 
-  const { loadingFipData, lastFipNum, lastFipAddress } = useFipDataContext();
+  const { loadingFipData, lastFipAddress } = useFipDataContext();
+  const voteResultsData = useVoteResults({
+    fipAddress: lastFipAddress,
+    yesOptions,
+  });
 
   const { voteEndTime } = useVoteEndContext();
 
   useEffect(() => {
     async function getVoteInfo() {
       if (lastFipAddress) {
+        setLoading(true);
         try {
           const question = await publicClient.readContract({
             address: lastFipAddress,
@@ -79,6 +81,7 @@ function VoteActions({
           setWinningVoteText(getWinningText(winningVote, newYesOptions));
 
           setYesOptions(newYesOptions);
+          setLoading(false);
         } catch (err) {
           console.error(err);
           setYesOptions([]);
@@ -91,23 +94,14 @@ function VoteActions({
 
   return (
     <>
-      {loadingFipData && (
-        <LoaderContainer>
-          <ClipLoader color='var(--primary)' />
-        </LoaderContainer>
-      )}
+      {(loadingFipData || loading) && <Loading />}
       {(!voteEndTime || voteEndTime <= Date.now() || hasVoted) &&
         yesOptions.length > 0 && (
           <>
             <Header>Latest Vote Results</Header>
             <QuestionText>{questionText}</QuestionText>
             <QuestionText>Winning vote: {winningVoteText}</QuestionText>
-            <VoteResults
-              lastFipAddress={lastFipAddress}
-              lastFipNum={lastFipNum}
-              loading={voteEndTime === undefined}
-              yesOptions={yesOptions}
-            />
+            <VoteResults voteResultsData={voteResultsData} />
           </>
         )}
       {voteEndTime && voteEndTime > Date.now() && !hasVoted && (

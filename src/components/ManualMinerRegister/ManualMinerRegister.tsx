@@ -10,7 +10,17 @@ function ManualMinerRegisterModal({
   closeModal: () => void;
 }) {
   return (
-    <Dialog open={open} onClose={closeModal} fullWidth maxWidth='sm'>
+    <Dialog
+      open={open}
+      onClose={closeModal}
+      fullWidth
+      maxWidth='sm'
+      PaperProps={{
+        style: {
+          color: 'var(--font-color)',
+        },
+      }}
+    >
       <DialogTitle>Manual Miner Registration</DialogTitle>
       <DialogContent dividers>
         <ManualMinerRegisterForm closeModal={closeModal} />

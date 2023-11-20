@@ -1,22 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import Countdown from 'react-countdown';
 import { useAccount, useContractWrite, useWaitForTransaction } from 'wagmi';
 import { getAddress } from 'viem';
 import axios from 'axios';
-import ClipLoader from 'react-spinners/ClipLoader';
 
 import { voteTrackerConfig } from 'constants/voteTrackerConfig';
 import { ownableConfig } from 'constants/ownableConfig';
 import { RPC_URL, publicClient } from 'services/clients';
+import { getFip } from 'services/fipService';
+import type { FipData } from 'services/fipService';
 import { formatBytesWithLabel, ZERO_ADDRESS } from 'utilities/helpers';
-import FIPInfo from 'components/FIPInfo';
-import VoteActions from 'components/VoteActions';
 import VotingPower from 'components/VotingPower';
 import type { Address } from 'components/Home';
+import Loading from 'common/Loading';
 import { voteFactoryConfig } from 'constants/voteFactoryConfig';
-import { useVoteEndContext } from 'common/VoteEndContext';
 import { useFipDataContext } from 'common/FipDataContext';
+import VoteData from 'components/VoteData';
 
 const VoteDataContainer = styled.div`
   display: flex;
@@ -24,62 +23,40 @@ const VoteDataContainer = styled.div`
   margin: 24px;
 `;
 
-const DataSections = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 24px;
-
-  @media (max-width: 920px) {
-    grid-template-columns: 1fr;
-  }
-`;
-
-const CountdownContainer = styled.div`
-  height: 20px;
-`;
-
-const VoteSection = styled.div`
-  display: block;
-  border: 1px solid var(--blueshadow);
-  padding: 24px;
-  border-radius: 8px;
-  box-shadow: 0 3px 3px 0 var(--blueshadow);
-`;
-
-const VotingPowerSection = styled(VoteSection)`
-  grid-column-start: span 2;
-
-  @media (max-width: 920px) {
-    grid-column-start: span 1;
-  }
-`;
-
 const Header = styled.h3`
-  font-family: var(--titlefont);
+  font-family: var(--font-color);
+  font-size: 40px;
+  font-weight: 600;
+  margin: 0;
 `;
 
-const LoaderContainer = styled.div`
-  display: flex;
-  justify-content: center;
-`;
-
-const InfoText = styled.span`
-  font-style: italic;
-`;
-
-function VoteData({ address }: { address: Address | undefined }) {
+function LatestVote({ address }: { address: Address | undefined }) {
   const { isConnected } = useAccount();
   const [agentAddress, setAgentAddress] = useState<Address>(ZERO_ADDRESS);
   const [errorMessage, setErrorMessage] = useState('');
   const [hasRegistered, setHasRegistered] = useState(false);
-  const [hasVoted, setHasVoted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [minerIds, setMinerIds] = useState<string[]>([]);
   const [rawBytePower, setRawBytePower] = useState('');
   const [tokenPower, setTokenPower] = useState<bigint>(BigInt(0));
+  const [fipData, setFipData] = useState<FipData>();
 
-  const { lastFipAddress, lastFipNum, loadingFipData } = useFipDataContext();
-  const { voteEndTime } = useVoteEndContext();
+  const { loadingFipData, lastFipAddress, lastFipNum } = useFipDataContext();
+
+  useEffect(() => {
+    async function getFIPInfo() {
+      if (lastFipNum) {
+        try {
+          const response = await getFip(lastFipNum);
+          setFipData(response);
+        } catch (error: any) {
+          setErrorMessage(JSON.stringify(error));
+        }
+      }
+    }
+
+    getFIPInfo();
+  }, [lastFipNum]); // eslint-disable-line react-hooks/exhaustive-deps
 
   async function getHasRegistered() {
     if (lastFipAddress) {
@@ -98,35 +75,9 @@ function VoteData({ address }: { address: Address | undefined }) {
     }
   }
 
-  async function getHasVoted() {
-    if (
-      lastFipAddress &&
-      lastFipAddress !== localStorage.getItem('lastFipVoted')
-    ) {
-      try {
-        const userHasVoted = await publicClient.readContract({
-          address: lastFipAddress,
-          abi: voteTrackerConfig.abi,
-          functionName: 'hasVoted',
-          args: [address || `0x`],
-        });
-
-        setHasVoted(userHasVoted);
-      } catch {
-        setHasVoted(false);
-      }
-    } else if (
-      lastFipAddress &&
-      lastFipAddress === localStorage.getItem('lastFipVoted')
-    ) {
-      setHasVoted(true);
-    }
-  }
-
   useEffect(() => {
     if (isConnected) {
       getHasRegistered();
-      getHasVoted();
     }
   }, [lastFipAddress, address, isConnected]);
 
@@ -185,8 +136,8 @@ function VoteData({ address }: { address: Address | undefined }) {
         const request = await axios.get(
           `https://filfox.info/api/v1/address/${address}`,
         );
-        const ownedMiners = request.data.ownedMiners;
-        setMinerIds((prev) => [...prev, ...request.data.ownedMiners]);
+        const ownedMiners = request.data?.ownedMiners || [];
+        setMinerIds((prev) => [...prev, ...ownedMiners]);
 
         const promises: Promise<any>[] = [];
 
@@ -224,13 +175,12 @@ function VoteData({ address }: { address: Address | undefined }) {
         }
       }
 
-      const [tokenPower, bytePower, minerTokenPower] =
-        await publicClient.readContract({
-          address: lastFipAddress || ZERO_ADDRESS,
-          abi: voteTrackerConfig.abi,
-          functionName: 'getVotingPower',
-          args: [address || ZERO_ADDRESS],
-        });
+      const [tokenPower] = await publicClient.readContract({
+        address: lastFipAddress || ZERO_ADDRESS,
+        abi: voteTrackerConfig.abi,
+        functionName: 'getVotingPower',
+        args: [address || ZERO_ADDRESS],
+      });
 
       setRawBytePower(formatBytesWithLabel(rawBytes));
       setTokenPower(tokenPower);
@@ -248,55 +198,31 @@ function VoteData({ address }: { address: Address | undefined }) {
     }
   }, [isSuccess]);
 
-  function renderLatestVote() {
-    if (lastFipNum) return <FIPInfo />;
-    return <InfoText>Last vote data does not exist</InfoText>;
-  }
-
   return (
     <VoteDataContainer>
-      <CountdownContainer>
-        {voteEndTime && voteEndTime > Date.now() && (
-          <span>
-            Time left: <Countdown date={voteEndTime} />
-          </span>
-        )}
-      </CountdownContainer>
-      <DataSections>
-        <VoteSection>
-          <Header>Latest Vote FIP</Header>
-          {loadingFipData ? (
-            <LoaderContainer>
-              <ClipLoader color='var(--primary)' />
-            </LoaderContainer>
-          ) : (
-            renderLatestVote()
+      <Header>Latest Vote</Header>
+      {loadingFipData && <Loading />}
+      {fipData && (
+        <VoteData
+          fipData={fipData}
+          address={lastFipAddress}
+          extendedDetails={() => (
+            <VotingPower
+              addVotingPower={addVotingPower}
+              errorMessage={errorMessage || error?.message}
+              hasRegistered={hasRegistered}
+              loading={loading}
+              minerIds={minerIds}
+              rawBytePower={rawBytePower}
+              registering={isLoadingWrite || isLoadingWait}
+              tokenPower={tokenPower}
+              write={write}
+            />
           )}
-        </VoteSection>
-        <VoteSection>
-          <VoteActions
-            hasRegistered={hasRegistered}
-            hasVoted={hasVoted}
-            setHasVoted={setHasVoted}
-          />
-        </VoteSection>
-        <VotingPowerSection>
-          <VotingPower
-            addVotingPower={addVotingPower}
-            errorMessage={errorMessage || error?.message}
-            hasRegistered={hasRegistered}
-            loading={loading}
-            minerIds={minerIds}
-            rawBytePower={rawBytePower}
-            registering={isLoadingWrite || isLoadingWait}
-            setHasVoted={setHasVoted}
-            tokenPower={tokenPower}
-            write={write}
-          />
-        </VotingPowerSection>
-      </DataSections>
+        />
+      )}
     </VoteDataContainer>
   );
 }
 
-export default VoteData;
+export default LatestVote;

@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import { voteFactoryConfig } from 'constants/voteFactoryConfig';
 import { publicClient } from 'services/clients';
 import Connectors from 'components/Connectors';
-import VoteData from 'components/VoteData';
+import LatestVote from 'components/LatestVote';
 import VoteHistory from 'components/VoteHistory';
 import VoteFactoryModal from 'components/VoteFactory';
 import MultisigRegisterModal from 'components/MultisigRegister';
@@ -21,22 +21,23 @@ const HomeContainer = styled.div`
 `;
 
 const Header = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  justify-content: end;
+  display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: 100px;
-  height: 150px;
-  margin-bottom: 24px;
+  gap: 10px;
+  border-bottom: 1px solid var(--divider);
+  margin-bottom: 8px;
+  padding: 24px;
   background-color: var(--bg-color);
-  color: var(--white);
+  color: var(--primary);
 `;
 
 const HeaderText = styled.div`
-  grid-column-start: 2;
   justify-self: center;
   font-family: var(--titlefontlight);
-  font-size: 32px;
+  font-size: 24px;
+  font-weight: 600;
+  text-transform: uppercase;
 `;
 
 const ButtonContainer = styled.div`
@@ -59,7 +60,7 @@ const MultisigRegisterButton = styled.button`
 `;
 
 const VoteContent = styled.div`
-  margin: 24px;
+  margin: 8px 24px;
   display: flex;
   flex-direction: column;
 `;
@@ -97,21 +98,24 @@ function Home() {
       <HomeContainer>
         <Header>
           <HeaderText>FIP Voting Dashboard</HeaderText>
-          <Connectors />
+          <ButtonContainer>
+            {isOwner && (voteEndTime ? voteEndTime <= Date.now() : true) && (
+              <StartVoteButton onClick={() => setShowVoteFactory(true)}>
+                Start Vote
+              </StartVoteButton>
+            )}
+            <MultisigRegisterButton
+              onClick={() => setShowMultisigRegister(true)}
+            >
+              Register Multisig
+            </MultisigRegisterButton>
+            <MultisigRegisterButton onClick={() => setShowMinerRegister(true)}>
+              Register Miner
+            </MultisigRegisterButton>
+            <Connectors />
+          </ButtonContainer>
         </Header>
-        <ButtonContainer>
-          {isOwner && (voteEndTime ? voteEndTime <= Date.now() : true) && (
-            <StartVoteButton onClick={() => setShowVoteFactory(true)}>
-              Start Vote
-            </StartVoteButton>
-          )}
-          <MultisigRegisterButton onClick={() => setShowMultisigRegister(true)}>
-            Register Multisig
-          </MultisigRegisterButton>
-          <MultisigRegisterButton onClick={() => setShowMinerRegister(true)}>
-            Register Miner
-          </MultisigRegisterButton>
-        </ButtonContainer>
+
         {showVoteFactory && (
           <VoteFactoryModal
             open={showVoteFactory}
@@ -131,7 +135,7 @@ function Home() {
           />
         )}
         <VoteContent>
-          <VoteData address={address} />
+          <LatestVote address={address} />
           <VoteHistory />
         </VoteContent>
       </HomeContainer>
