@@ -26,12 +26,17 @@ module.exports = {
       },
       {
         test: /\.(woff|woff2|eot|ttf|otf)$/i,
+        type: 'asset/inline',
+      },
+      {
+        test: /\.(?:ico|gif|png|jpg|jpeg)$/i,
         type: 'asset/resource',
       },
     ],
   },
   resolve: {
     alias: {
+      assets: path.resolve(__dirname, 'src/assets/'),
       common: path.resolve(__dirname, 'src/components/common/'),
       components: path.resolve(__dirname, 'src/components/'),
       constants: path.resolve(__dirname, 'src/constants/'),

@@ -8,7 +8,7 @@ import ConnectorsModal from 'components/Wallet/ConnectorsModal';
 import LatestVote from 'components/LatestVote';
 import VoteHistory from 'components/VoteHistory';
 import VoteFactoryModal from 'components/VoteFactory';
-import RegisterModal from 'components/Wallet/RegisterModal';
+// import RegisterModal from 'components/Wallet/RegisterModal';
 import WalletMenu from 'components/Wallet/WalletMenu';
 import { useVoteEndContext } from 'common/VoteEndContext';
 
@@ -105,12 +105,12 @@ function Home() {
             {isConnected && <WalletMenu />}
           </ButtonContainer>
         </Header>
-        {showRegister && (
+        {/* {showRegister && (
           <RegisterModal
             open={showRegister}
             closeModal={() => setShowRegister(false)}
           />
-        )}
+        )} */}
         {showConnectors && (
           <ConnectorsModal
             open={showConnectors}
@@ -124,7 +124,7 @@ function Home() {
           />
         )}
         <VoteContent>
-          <LatestVote address={address} />
+          <LatestVote />
           <VoteHistory />
         </VoteContent>
       </HomeContainer>
