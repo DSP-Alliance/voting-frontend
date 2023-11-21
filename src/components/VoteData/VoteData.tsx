@@ -74,11 +74,13 @@ function VoteData({
   fipData,
   showExpandButton = false,
   extendedDetails = null,
+  hasRegistered = false,
 }: {
   address: Address | undefined;
   fipData: FipData;
   showExpandButton?: boolean;
   extendedDetails?: null | (() => JSX.Element);
+  hasRegistered?: boolean;
 }) {
   const [questionText, setQuestionText] = useState('');
   const [loadingVoteInfo, setLoadingVoteInfo] = useState(false);
@@ -270,6 +272,7 @@ function VoteData({
           open={showVoteModal}
           onClose={() => setShowVoteModal(false)}
           address={currentAddress}
+          hasRegistered={hasRegistered}
         />
       )}
     </div>

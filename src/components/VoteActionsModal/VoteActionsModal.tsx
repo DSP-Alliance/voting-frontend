@@ -6,38 +6,21 @@ import type { Address } from 'components/Home';
 import VoteActions from 'components/VoteActions';
 import { useFipDataContext } from 'common/FipDataContext';
 import { voteTrackerConfig } from 'constants/voteTrackerConfig';
-import { voteFactoryConfig } from 'constants/voteFactoryConfig';
 
 function VoteActionsModal({
   open,
   onClose,
   address,
+  hasRegistered,
 }: {
   open: boolean;
   onClose: () => void;
   address: Address;
+  hasRegistered: boolean;
 }) {
-  const [hasRegistered, setHasRegistered] = useState(false);
   const [hasVoted, setHasVoted] = useState(false);
   const { lastFipAddress } = useFipDataContext();
   const { isConnected } = useAccount();
-
-  async function getHasRegistered() {
-    if (lastFipAddress) {
-      try {
-        const userHasRegistered = await publicClient.readContract({
-          address: voteFactoryConfig.address,
-          abi: voteFactoryConfig.abi,
-          functionName: 'registered',
-          args: [address || `0x`],
-        });
-
-        setHasRegistered(userHasRegistered);
-      } catch {
-        setHasRegistered(false);
-      }
-    }
-  }
 
   async function getHasVoted() {
     if (
@@ -66,7 +49,6 @@ function VoteActionsModal({
 
   useEffect(() => {
     if (isConnected) {
-      getHasRegistered();
       getHasVoted();
     }
   }, [lastFipAddress, address, isConnected]);

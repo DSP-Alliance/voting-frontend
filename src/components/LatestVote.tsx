@@ -206,6 +206,7 @@ function LatestVote({ address }: { address: Address | undefined }) {
         <VoteData
           fipData={fipData}
           address={lastFipAddress}
+          hasRegistered={hasRegistered}
           extendedDetails={() => (
             <VotingPower
               addVotingPower={addVotingPower}

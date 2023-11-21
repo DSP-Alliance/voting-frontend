@@ -60,6 +60,10 @@ const GlobalStyle = createGlobalStyle`
   .MuiFormLabel-root {
     color: var(--dark-primary) !important;
   }
+
+  .MuiMenuItem-root {
+    color: var(--font-color) !important;
+  }
 `;
 
 export default GlobalStyle;
