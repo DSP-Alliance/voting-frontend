@@ -1,6 +1,21 @@
 import * as React from 'react';
-import { Button, Menu, MenuItem } from '@mui/material';
+import { Menu, MenuItem } from '@mui/material';
 import { useDisconnect } from 'wagmi';
+import styled from 'styled-components';
+
+import KebabMenuIcon from 'assets/kebab-menu.svg';
+
+const WalletButton = styled.button`
+  color: var(--white);
+  background-color: var(--primary);
+  border-radius: 24px;
+`;
+
+const Image = styled.img`
+  color: var(--white);
+  height: 10px;
+  width: 10px;
+`;
 
 function WalletMenu() {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -12,7 +27,11 @@ function WalletMenu() {
     setAnchorEl(event.currentTarget);
   };
 
-  const handleClose = (e: React.MouseEvent) => {
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleDisconnect = (e: React.MouseEvent) => {
     e.preventDefault();
     disconnect();
     setAnchorEl(null);
@@ -32,7 +51,7 @@ function WalletMenu() {
 
   return (
     <div>
-      <Button
+      <WalletButton
         id='wallet-button'
         aria-controls={open ? 'wallet-menu' : undefined}
         aria-haspopup='true'
@@ -40,7 +59,8 @@ function WalletMenu() {
         onClick={handleClick}
       >
         Wallet
-      </Button>
+        <Image src={KebabMenuIcon} />
+      </WalletButton>
       <Menu
         id='wallet-menu'
         anchorEl={anchorEl}
@@ -51,7 +71,7 @@ function WalletMenu() {
         }}
       >
         {renderVotingPower()}
-        <MenuItem onClick={handleClose}>Disconnect</MenuItem>
+        <MenuItem onClick={handleDisconnect}>Disconnect</MenuItem>
       </Menu>
     </div>
   );

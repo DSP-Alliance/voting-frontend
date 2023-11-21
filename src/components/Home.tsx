@@ -47,6 +47,25 @@ const ButtonContainer = styled.div`
   height: 34px;
 `;
 
+const RegisterButton = styled.button`
+  color: var(--primary);
+  background-color: var(--white);
+  border: 1px solid var(--primary);
+  border-radius: 24px;
+  padding: 0 12px;
+
+  &:hover {
+    color: var(--white);
+  }
+`;
+
+const ConnectButton = styled.button`
+  color: var(--white);
+  background-color: var(--primary);
+  border-radius: 24px;
+  padding: 0 12px;
+`;
+
 const StartVoteButton = styled.button`
   grid-column-start: 2;
   width: 100px;
@@ -98,9 +117,13 @@ function Home() {
                 Start Vote
               </StartVoteButton>
             )}
-            <button onClick={() => setShowRegister(true)}>Register</button>
+            <RegisterButton onClick={() => setShowRegister(true)}>
+              Register
+            </RegisterButton>
             {!isConnected && (
-              <button onClick={() => setShowConnectors(true)}>Connect</button>
+              <ConnectButton onClick={() => setShowConnectors(true)}>
+                Connect
+              </ConnectButton>
             )}
             {isConnected && <WalletMenu />}
           </ButtonContainer>

@@ -7,20 +7,25 @@
 
 // import { voteTrackerConfig } from 'constants/voteTrackerConfig';
 // import { ownableConfig } from 'constants/ownableConfig';
+// import { voteFactoryConfig } from 'constants/voteFactoryConfig';
 // import { RPC_URL, publicClient } from 'services/clients';
 // import { formatBytesWithLabel, ZERO_ADDRESS } from 'utilities/helpers';
-// import type { Address } from 'components/Home';
 // import Loading from 'common/Loading';
-// import { voteFactoryConfig } from 'constants/voteFactoryConfig';
-
+// import type { Address } from 'components/Home';
 // import MultisigRegisterModal from 'components/MultisigRegister';
 // import ManualMinerRegisterModal from 'components/ManualMinerRegister';
+// import Register from './Register';
 
 // const MultisigRegisterButton = styled.button`
 //   grid-column-start: 2;
 //   width: 120px;
 //   justify-self: center;
 // `;
+
+// /** Rewrite this flow to check if user is connected; if not
+//  * take them to connection view when they want to register with wallet
+//  * otherwise register them when they click register with wallet
+//  */
 
 // function RegisterModal({
 //   open,
@@ -87,29 +92,25 @@
 
 //   useEffect(() => {
 //     async function getByteAndTokenPower() {
-//       if (lastFipAddress) {
-//         try {
-//           const [tokenPower, bytePower, minerTokenPower] =
-//             await publicClient.readContract({
-//               address: lastFipAddress || ZERO_ADDRESS,
-//               abi: voteTrackerConfig.abi,
-//               functionName: 'getVotingPower',
-//               args: [address || ZERO_ADDRESS],
-//             });
+//       try {
+//         const [tokenPower, bytePower, minerTokenPower] =
+//           await publicClient.readContract({
+//             address: lastFipAddress || ZERO_ADDRESS,
+//             abi: voteTrackerConfig.abi,
+//             functionName: 'getVotingPower',
+//             args: [address || ZERO_ADDRESS],
+//           });
 
-//           setRawBytePower(formatBytesWithLabel(parseInt(bytePower.toString())));
-//           setTokenPower(bytePower > 0 ? minerTokenPower : tokenPower);
-//         } catch {
-//           setTokenPower(BigInt(0));
-//           setRawBytePower('');
-//         }
+//         setRawBytePower(formatBytesWithLabel(parseInt(bytePower.toString())));
+//         setTokenPower(bytePower > 0 ? minerTokenPower : tokenPower);
+//       } catch {
+//         setTokenPower(BigInt(0));
+//         setRawBytePower('');
 //       }
 //     }
 
-//     if (hasRegistered) {
-//       getByteAndTokenPower();
-//     }
-//   }, [hasRegistered, address, lastFipAddress]);
+//     getByteAndTokenPower();
+//   }, [address]);
 
 //   async function addVotingPower(agentAddress: string) {
 //     setLoading(true);
@@ -186,7 +187,7 @@
 //         <DialogTitle>Register</DialogTitle>
 //         <DialogContent dividers>
 //           Please choose how you want to register
-//           {/* <Register
+//           <Register
 //             addVotingPower={addVotingPower}
 //             error={errorMessage}
 //             loading={loading}
@@ -195,7 +196,7 @@
 //             registering={registering}
 //             tokenPower={tokenPower}
 //             write={write}
-//           /> */}
+//           />
 //           <MultisigRegisterButton onClick={() => setShowMultisigRegister(true)}>
 //             Register Multisig
 //           </MultisigRegisterButton>
