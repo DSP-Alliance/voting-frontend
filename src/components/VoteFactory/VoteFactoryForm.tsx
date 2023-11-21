@@ -69,7 +69,8 @@ function VoteFactoryForm({ closeModal }: { closeModal: () => void }) {
   });
 
   function getVoteLength() {
-    return today.diff(endDate, 'seconds');
+    if (!endDate) return 0;
+    return endDate.diff(today, 'seconds');
   }
 
   const {
