@@ -10,7 +10,6 @@ import { RPC_URL, publicClient } from 'services/clients';
 import { getFip } from 'services/fipService';
 import type { FipData } from 'services/fipService';
 import { formatBytesWithLabel, ZERO_ADDRESS } from 'utilities/helpers';
-import VotingPower from 'components/VotingPower';
 import type { Address } from 'components/Home';
 import Loading from 'common/Loading';
 import { voteFactoryConfig } from 'constants/voteFactoryConfig';
@@ -202,25 +201,7 @@ function LatestVote({ address }: { address: Address | undefined }) {
     <VoteDataContainer>
       <Header>Latest Vote</Header>
       {loadingFipData && <Loading />}
-      {fipData && (
-        <VoteData
-          fipData={fipData}
-          address={lastFipAddress}
-          extendedDetails={() => (
-            <VotingPower
-              addVotingPower={addVotingPower}
-              errorMessage={errorMessage || error?.message}
-              hasRegistered={hasRegistered}
-              loading={loading}
-              minerIds={minerIds}
-              rawBytePower={rawBytePower}
-              registering={isLoadingWrite || isLoadingWait}
-              tokenPower={tokenPower}
-              write={write}
-            />
-          )}
-        />
-      )}
+      {fipData && <VoteData fipData={fipData} address={lastFipAddress} />}
     </VoteDataContainer>
   );
 }

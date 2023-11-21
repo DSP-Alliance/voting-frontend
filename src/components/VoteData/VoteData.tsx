@@ -73,12 +73,10 @@ function VoteData({
   address,
   fipData,
   showExpandButton = false,
-  extendedDetails = null,
 }: {
   address: Address | undefined;
   fipData: FipData;
   showExpandButton?: boolean;
-  extendedDetails?: null | (() => JSX.Element);
 }) {
   const [questionText, setQuestionText] = useState('');
   const [loadingVoteInfo, setLoadingVoteInfo] = useState(false);
@@ -170,23 +168,6 @@ function VoteData({
     getVoteInfo();
   }, [currentAddress]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  function loadAddress() {
-    setLoadingAddress(true);
-    publicClient
-      .readContract({
-        abi: voteFactoryConfig.abi,
-        address: voteFactoryConfig.address,
-        functionName: 'FIPnumToAddress',
-        args: [
-          parseInt(fipData?.fip?.replace(/"/g, '').replace(/^0+/, '') || '0'),
-        ],
-      })
-      .then((addr) => {
-        setCurrentAddress(addr);
-        setLoadingAddress(false);
-      });
-  }
-
   const renderDiscussionLinks = (links: string | undefined) => {
     if (links) {
       const linksArray = links.split(', ').map((link) => {
@@ -260,7 +241,6 @@ function VoteData({
               <div>
                 {fipData && renderDiscussionLinks(fipData['discussions-to'])}
               </div>
-              {extendedDetails && extendedDetails()}
             </div>
           </Content>
         </div>

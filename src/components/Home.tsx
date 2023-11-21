@@ -4,12 +4,12 @@ import styled from 'styled-components';
 
 import { voteFactoryConfig } from 'constants/voteFactoryConfig';
 import { publicClient } from 'services/clients';
-import Connectors from 'components/Connectors';
+import ConnectorsModal from 'components/Wallet/ConnectorsModal';
 import LatestVote from 'components/LatestVote';
 import VoteHistory from 'components/VoteHistory';
 import VoteFactoryModal from 'components/VoteFactory';
-import MultisigRegisterModal from 'components/MultisigRegister';
-import ManualMinerRegisterModal from 'components/ManualMinerRegister';
+import RegisterModal from 'components/Wallet/RegisterModal';
+import WalletMenu from 'components/Wallet/WalletMenu';
 import { useVoteEndContext } from 'common/VoteEndContext';
 
 export type Address = `0x${string}`;
@@ -53,12 +53,6 @@ const StartVoteButton = styled.button`
   justify-self: center;
 `;
 
-const MultisigRegisterButton = styled.button`
-  grid-column-start: 2;
-  width: 120px;
-  justify-self: center;
-`;
-
 const VoteContent = styled.div`
   margin: 8px 24px;
   display: flex;
@@ -67,10 +61,10 @@ const VoteContent = styled.div`
 
 function Home() {
   const { address, isConnected } = useAccount();
+  const [showConnectors, setShowConnectors] = useState(false);
   const [isOwner, setIsOwner] = useState(false);
+  const [showRegister, setShowRegister] = useState(false);
   const [showVoteFactory, setShowVoteFactory] = useState(false);
-  const [showMultisigRegister, setShowMultisigRegister] = useState(false);
-  const [showMinerRegister, setShowMinerRegister] = useState(false);
 
   const { voteEndTime } = useVoteEndContext();
 
@@ -104,34 +98,29 @@ function Home() {
                 Start Vote
               </StartVoteButton>
             )}
-            <MultisigRegisterButton
-              onClick={() => setShowMultisigRegister(true)}
-            >
-              Register Multisig
-            </MultisigRegisterButton>
-            <MultisigRegisterButton onClick={() => setShowMinerRegister(true)}>
-              Register Miner
-            </MultisigRegisterButton>
-            <Connectors />
+            <button onClick={() => setShowRegister(true)}>Register</button>
+            {!isConnected && (
+              <button onClick={() => setShowConnectors(true)}>Connect</button>
+            )}
+            {isConnected && <WalletMenu />}
           </ButtonContainer>
         </Header>
-
+        {showRegister && (
+          <RegisterModal
+            open={showRegister}
+            closeModal={() => setShowRegister(false)}
+          />
+        )}
+        {showConnectors && (
+          <ConnectorsModal
+            open={showConnectors}
+            closeModal={() => setShowConnectors(false)}
+          />
+        )}
         {showVoteFactory && (
           <VoteFactoryModal
             open={showVoteFactory}
             closeModal={() => setShowVoteFactory(false)}
-          />
-        )}
-        {showMultisigRegister && (
-          <MultisigRegisterModal
-            open={showMultisigRegister}
-            closeModal={() => setShowMultisigRegister(false)}
-          />
-        )}
-        {showMinerRegister && (
-          <ManualMinerRegisterModal
-            open={showMinerRegister}
-            closeModal={() => setShowMinerRegister(false)}
           />
         )}
         <VoteContent>
