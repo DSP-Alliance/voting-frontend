@@ -61,8 +61,26 @@ const GlobalStyle = createGlobalStyle`
     color: var(--dark-primary) !important;
   }
 
+  .MuiSvgIcon-root {
+    fill: var(--primary) !important;
+    &:hover {
+      fill: var(--white) !important;
+    }
+  }
+
   .MuiMenuItem-root {
     color: var(--font-color) !important;
+  }
+
+  .MuiPickersLayout-root {
+    color: var(--font-color) !important;
+  }
+
+  .MuiPickersDay-root {
+    color: var(--font-color) !important;
+    &:hover {
+      color: var(--white) !important;
+    }
   }
 `;
 

@@ -117,20 +117,17 @@ function Home() {
         </Header>
 
         {showVoteFactory && (
-          <VoteFactoryModal
-            open={showVoteFactory}
-            closeModal={() => setShowVoteFactory(false)}
-          />
+          <VoteFactoryModal open closeModal={() => setShowVoteFactory(false)} />
         )}
         {showMultisigRegister && (
           <MultisigRegisterModal
-            open={showMultisigRegister}
+            open
             closeModal={() => setShowMultisigRegister(false)}
           />
         )}
         {showMinerRegister && (
           <ManualMinerRegisterModal
-            open={showMinerRegister}
+            open
             closeModal={() => setShowMinerRegister(false)}
           />
         )}

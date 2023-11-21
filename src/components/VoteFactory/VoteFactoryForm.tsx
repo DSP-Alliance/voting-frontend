@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import styled from 'styled-components';
+import dayjs, { Dayjs } from 'dayjs';
 import { DialogActions, TextField } from '@mui/material';
+import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { useContractWrite, useWaitForTransaction } from 'wagmi';
 import ClipLoader from 'react-spinners/ClipLoader';
 
@@ -41,10 +45,13 @@ const LoaderWithMargin = styled(ClipLoader)`
   margin-left: 12px;
 `;
 
+const today = dayjs();
+
 function VoteFactoryForm({ closeModal }: { closeModal: () => void }) {
   const [allLsdTokens, setAllLsdTokens] = useState<Address[]>([]);
   const [errorMessage, setErrorMessage] = useState('');
   const [isCheckingForDeployed, setIsCheckingForDeployed] = useState(false);
+  const [endDate, setEndDate] = React.useState<Dayjs | null>(null);
 
   const { getFipData, initialVotesLength } = useFipDataContext();
 
@@ -61,6 +68,10 @@ function VoteFactoryForm({ closeModal }: { closeModal: () => void }) {
     },
   });
 
+  function getVoteLength() {
+    return today.diff(endDate, 'seconds');
+  }
+
   const {
     data,
     error,
@@ -71,7 +82,7 @@ function VoteFactoryForm({ closeModal }: { closeModal: () => void }) {
     abi: voteFactoryConfig.abi,
     functionName: 'startVote',
     args: [
-      parseInt(watch('length')) * 60,
+      getVoteLength(),
       parseInt(watch('fipNum')),
       [watch('yesOptionOne'), watch('yesOptionTwo')],
       watch(`lsdToken${allLsdTokens.length + 1}`)
@@ -167,7 +178,7 @@ function VoteFactoryForm({ closeModal }: { closeModal: () => void }) {
   }
 
   return (
-    <>
+    <LocalizationProvider dateAdapter={AdapterDayjs}>
       <Form>
         <Controller
           name='fipNum'
@@ -178,7 +189,6 @@ function VoteFactoryForm({ closeModal }: { closeModal: () => void }) {
               required
               type='number'
               helperText={error ? 'Enter the FIP number' : null}
-              size='small'
               error={!!error}
               onChange={onChange}
               onBlur={() => trigger('fipNum')}
@@ -189,25 +199,11 @@ function VoteFactoryForm({ closeModal }: { closeModal: () => void }) {
             />
           )}
         />
-        <Controller
-          name='length'
-          control={control}
-          rules={{ required: 'Required' }}
-          render={({ field: { onChange, value }, fieldState: { error } }) => (
-            <TextField
-              required
-              type='number'
-              helperText={error ? 'Enter an amount' : null}
-              size='small'
-              error={!!error}
-              onChange={onChange}
-              value={value || ''}
-              onBlur={() => trigger('length')}
-              fullWidth
-              label='Length of vote time (in minutes)'
-              variant='outlined'
-            />
-          )}
+        <DateTimePicker
+          label='End Date for the vote'
+          value={endDate}
+          onChange={(newValue) => setEndDate(newValue)}
+          minDateTime={today}
         />
         <Controller
           name='question'
@@ -238,7 +234,6 @@ function VoteFactoryForm({ closeModal }: { closeModal: () => void }) {
               required
               type='text'
               helperText={error ? 'Enter the text for the yes option' : null}
-              size='small'
               error={!!error}
               onChange={onChange}
               onBlur={() => trigger('yesOptionOne')}
@@ -255,7 +250,6 @@ function VoteFactoryForm({ closeModal }: { closeModal: () => void }) {
           render={({ field: { onChange, value } }) => (
             <TextField
               type='text'
-              size='small'
               onChange={onChange}
               onBlur={() => trigger('yesOptionTwo')}
               value={value || ''}
@@ -275,7 +269,6 @@ function VoteFactoryForm({ closeModal }: { closeModal: () => void }) {
                 required
                 placeholder='0x0000...0000'
                 helperText={error ? 'Enter a token value' : null}
-                size='small'
                 error={!!error}
                 value={value || ''}
                 onChange={onChange}
@@ -311,7 +304,7 @@ function VoteFactoryForm({ closeModal }: { closeModal: () => void }) {
       </Form>
       {error && <ErrorMessage message={error.message} />}
       {errorMessage && <ErrorMessage message={errorMessage} />}
-    </>
+    </LocalizationProvider>
   );
 }
 
