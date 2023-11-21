@@ -57,6 +57,7 @@ function VoteActionsModal({
     <Dialog
       open={open}
       onClose={onClose}
+      maxWidth='lg'
       PaperProps={{
         style: {
           color: 'var(--font-color)',

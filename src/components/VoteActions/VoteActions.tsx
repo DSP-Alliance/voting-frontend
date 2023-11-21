@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import ClipLoader from 'react-spinners/ClipLoader';
 
 import { publicClient } from 'services/clients';
 import { voteTrackerConfig } from 'constants/voteTrackerConfig';
@@ -20,10 +19,19 @@ interface VoteActionsProps {
 
 const Header = styled.h3`
   font-family: var(--titlefont);
+  margin: 0;
+`;
+
+const LatestVoteContent = styled.div`
+  min-width: 500px;
+`;
+
+const Content = styled.div`
+  min-width: 350px;
 `;
 
 const QuestionText = styled.div`
-  margin-bottom: 12px;
+  margin: 12px 0;
 `;
 
 function VoteActions({
@@ -92,38 +100,44 @@ function VoteActions({
     getVoteInfo();
   }, [lastFipAddress]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  return (
-    <>
-      {(loadingFipData || loading) && <Loading />}
-      {(!voteEndTime || voteEndTime <= Date.now() || hasVoted) &&
-        yesOptions.length > 0 && (
-          <>
-            <Header>Latest Vote Results</Header>
-            <QuestionText>{questionText}</QuestionText>
-            <QuestionText>Winning vote: {winningVoteText}</QuestionText>
-            <VoteResults voteResultsData={voteResultsData} />
-          </>
+  if (loadingFipData || loading) return <Loading />;
+
+  if (
+    (!voteEndTime || voteEndTime <= Date.now() || hasVoted) &&
+    yesOptions.length > 0
+  ) {
+    return (
+      <LatestVoteContent>
+        <Header>Latest Vote Results</Header>
+        <QuestionText>{questionText}</QuestionText>
+        <QuestionText>Winning vote: {winningVoteText}</QuestionText>
+        <VoteResults voteResultsData={voteResultsData} />
+      </LatestVoteContent>
+    );
+  }
+
+  if (voteEndTime && voteEndTime > Date.now() && !hasVoted) {
+    return (
+      <Content>
+        <Header>Choose Vote</Header>
+        <QuestionText>{questionText}</QuestionText>
+        {hasRegistered && (
+          <VotePicker
+            setHasVoted={setHasVoted}
+            yesOption1={yesOptions[0]}
+            yesOption2={yesOptions[1]}
+          />
         )}
-      {voteEndTime && voteEndTime > Date.now() && !hasVoted && (
-        <>
-          <Header>Choose Vote</Header>
-          <QuestionText>{questionText}</QuestionText>
-          {hasRegistered && (
-            <VotePicker
-              setHasVoted={setHasVoted}
-              yesOption1={yesOptions[0]}
-              yesOption2={yesOptions[1]}
-            />
-          )}
-          {!hasRegistered && (
-            <p>
-              <i>Register in order to vote</i>
-            </p>
-          )}
-        </>
-      )}
-    </>
-  );
+        {!hasRegistered && (
+          <p>
+            <i>Register in order to vote</i>
+          </p>
+        )}
+      </Content>
+    );
+  }
+
+  return null;
 }
 
 export default VoteActions;

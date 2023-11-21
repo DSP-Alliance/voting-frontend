@@ -11,10 +11,11 @@ const VotePickerContainer = styled.div`
   flex-direction: column;
   gap: 12px;
   align-items: center;
+  margin: auto;
 `;
 
 const VoteButton = styled.button`
-  min-width: 80px;
+  min-width: 150px;
 `;
 
 function VotePicker({
