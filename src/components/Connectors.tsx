@@ -2,7 +2,7 @@ import React from 'react';
 import { useAccount, useConnect, useDisconnect } from 'wagmi';
 import styled from 'styled-components';
 
-import ErrorMessage from 'components/common/ErrorMessage';
+import ErrorMessage from 'common/ErrorMessage';
 
 const Container = styled.div`
   grid-column-start: 3;

@@ -11,7 +11,7 @@ import VoteResults from 'components/VoteResults';
 import VoteActionsModal from 'components/VoteActionsModal';
 import { voteTrackerConfig } from 'constants/voteTrackerConfig';
 import { voteFactoryConfig } from 'constants/voteFactoryConfig';
-import useVoteResults from '../../hooks/useVoteResults';
+import useVoteResults from 'hooks/useVoteResults';
 import { publicClient } from 'services/clients';
 import type { FipData } from 'services/fipService';
 

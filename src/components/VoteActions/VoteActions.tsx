@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import ClipLoader from 'react-spinners/ClipLoader';
 
 import { publicClient } from 'services/clients';
 import { voteTrackerConfig } from 'constants/voteTrackerConfig';
@@ -9,8 +8,8 @@ import { getWinningText } from 'utilities/helpers';
 import { useVoteEndContext } from 'common/VoteEndContext';
 import { useFipDataContext } from 'common/FipDataContext';
 import Loading from 'common/Loading';
+import useVoteResults from 'hooks/useVoteResults';
 import VotePicker from './VotePicker';
-import useVoteResults from '../../hooks/useVoteResults';
 
 interface VoteActionsProps {
   hasRegistered: boolean;
