@@ -7,10 +7,10 @@ const LoaderContainer = styled.div`
   justify-content: center;
 `;
 
-function Loading() {
+function Loading({ size }: { size?: number }) {
   return (
     <LoaderContainer>
-      <ClipLoader color='var(--primary)' />
+      <ClipLoader color='var(--primary)' size={size} />
     </LoaderContainer>
   );
 }

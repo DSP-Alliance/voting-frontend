@@ -4,8 +4,8 @@ import { DialogActions, FormControl, TextField } from '@mui/material';
 import { encodeFunctionData, Address, getAddress } from 'viem';
 import axios from 'axios';
 
-import CodeSnippet from 'components/common/CodeSnippet';
-import ErrorMessage from 'components/common/ErrorMessage';
+import CodeSnippet from 'common/CodeSnippet';
+import ErrorMessage from 'common/ErrorMessage';
 import { voteFactoryConfig } from 'constants/voteFactoryConfig';
 import { ZERO_ADDRESS } from 'utilities/helpers';
 

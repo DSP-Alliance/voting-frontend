@@ -14,8 +14,8 @@ import axios from 'axios';
 import { voteTrackerConfig } from 'constants/voteTrackerConfig';
 import { voteFactoryConfig } from 'constants/voteFactoryConfig';
 import { ZERO_ADDRESS, cbor_encode } from 'utilities/helpers';
-import CodeSnippet from 'components/common/CodeSnippet';
-import ErrorMessage from 'components/common/ErrorMessage';
+import CodeSnippet from 'common/CodeSnippet';
+import ErrorMessage from 'common/ErrorMessage';
 import { useFipDataContext } from 'common/FipDataContext';
 
 const Form = styled.form`

@@ -12,7 +12,7 @@ import ClipLoader from 'react-spinners/ClipLoader';
 import { publicClient } from 'services/clients';
 import { voteFactoryConfig } from 'constants/voteFactoryConfig';
 import { useFipDataContext } from 'common/FipDataContext';
-import ErrorMessage from 'components/common/ErrorMessage';
+import ErrorMessage from 'common/ErrorMessage';
 import type { Address } from 'components/Home';
 
 const Form = styled.form`

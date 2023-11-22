@@ -4,13 +4,16 @@ import styled from 'styled-components';
 
 import { voteFactoryConfig } from 'constants/voteFactoryConfig';
 import { publicClient } from 'services/clients';
-import Connectors from 'components/Connectors';
+import ConnectorsModal from 'components/Toolbar/Wallet/ConnectorsModal';
 import LatestVote from 'components/LatestVote';
 import VoteHistory from 'components/VoteHistory';
 import VoteFactoryModal from 'components/VoteFactory';
-import MultisigRegisterModal from 'components/MultisigRegister';
-import ManualMinerRegisterModal from 'components/ManualMinerRegister';
+import RegisterModal from 'components/Toolbar/Register/RegisterModal';
+import WalletMenu from 'components/Toolbar/Wallet/WalletMenu';
 import { useVoteEndContext } from 'common/VoteEndContext';
+import { ZERO_ADDRESS, formatBytesWithLabel } from 'utilities/helpers';
+import { useFipDataContext } from 'common/FipDataContext';
+import { voteTrackerConfig } from 'constants/voteTrackerConfig';
 
 export type Address = `0x${string}`;
 
@@ -47,15 +50,28 @@ const ButtonContainer = styled.div`
   height: 34px;
 `;
 
+const RegisterButton = styled.button`
+  color: var(--primary);
+  background-color: var(--white);
+  border: 1px solid var(--primary);
+  border-radius: 24px;
+  padding: 0 12px;
+
+  &:hover {
+    color: var(--white);
+  }
+`;
+
+const ConnectButton = styled.button`
+  color: var(--white);
+  background-color: var(--primary);
+  border-radius: 24px;
+  padding: 0 12px;
+`;
+
 const StartVoteButton = styled.button`
   grid-column-start: 2;
   width: 100px;
-  justify-self: center;
-`;
-
-const MultisigRegisterButton = styled.button`
-  grid-column-start: 2;
-  width: 120px;
   justify-self: center;
 `;
 
@@ -68,11 +84,15 @@ const VoteContent = styled.div`
 function Home() {
   const { address, isConnected } = useAccount();
   const [isOwner, setIsOwner] = useState(false);
+  const [hasRegistered, setHasRegistered] = useState(false);
+  const [showRegister, setShowRegister] = useState(false);
+  const [showConnectors, setShowConnectors] = useState(false);
   const [showVoteFactory, setShowVoteFactory] = useState(false);
-  const [showMultisigRegister, setShowMultisigRegister] = useState(false);
-  const [showMinerRegister, setShowMinerRegister] = useState(false);
+  const [rawBytePower, setRawBytePower] = useState<bigint>(BigInt(0));
+  const [tokenPower, setTokenPower] = useState<bigint>(BigInt(0));
 
   const { voteEndTime } = useVoteEndContext();
+  const { lastFipAddress } = useFipDataContext();
 
   useEffect(() => {
     async function getOwner() {
@@ -93,6 +113,47 @@ function Home() {
     if (isConnected) getOwner();
   }, [isConnected]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  useEffect(() => {
+    async function getHasRegistered() {
+      try {
+        const userHasRegistered = await publicClient.readContract({
+          address: voteFactoryConfig.address,
+          abi: voteFactoryConfig.abi,
+          functionName: 'registered',
+          args: [address || `0x`],
+        });
+
+        setHasRegistered(userHasRegistered);
+      } catch {
+        setHasRegistered(false);
+      }
+    }
+
+    getHasRegistered();
+  }, [address]);
+
+  useEffect(() => {
+    async function getByteAndTokenPower() {
+      try {
+        const [tokenPower, bytePower, minerTokenPower] =
+          await publicClient.readContract({
+            address: lastFipAddress || ZERO_ADDRESS,
+            abi: voteTrackerConfig.abi,
+            functionName: 'getVotingPower',
+            args: [address || ZERO_ADDRESS],
+          });
+
+        setRawBytePower(bytePower);
+        setTokenPower(bytePower > 0 ? minerTokenPower : tokenPower);
+      } catch {
+        setTokenPower(BigInt(0));
+        setRawBytePower(BigInt(0));
+      }
+    }
+
+    getByteAndTokenPower();
+  }, [address, lastFipAddress]);
+
   return (
     <>
       <HomeContainer>
@@ -104,35 +165,42 @@ function Home() {
                 Start Vote
               </StartVoteButton>
             )}
-            <MultisigRegisterButton
-              onClick={() => setShowMultisigRegister(true)}
-            >
-              Register Multisig
-            </MultisigRegisterButton>
-            <MultisigRegisterButton onClick={() => setShowMinerRegister(true)}>
-              Register Miner
-            </MultisigRegisterButton>
-            <Connectors />
+            <RegisterButton onClick={() => setShowRegister(true)}>
+              Register
+            </RegisterButton>
+            {!isConnected && (
+              <ConnectButton onClick={() => setShowConnectors(true)}>
+                Connect
+              </ConnectButton>
+            )}
+            {isConnected && (
+              <WalletMenu rawBytePower={rawBytePower} tokenPower={tokenPower} />
+            )}
           </ButtonContainer>
         </Header>
-
+        {showRegister && (
+          <RegisterModal
+            open={showRegister}
+            closeModal={() => setShowRegister(false)}
+            hasRegistered={hasRegistered}
+            setHasRegistered={setHasRegistered}
+            rawBytePower={rawBytePower}
+            setRawBytePower={setRawBytePower}
+            tokenPower={tokenPower}
+            setTokenPower={setTokenPower}
+          />
+        )}
+        {showConnectors && (
+          <ConnectorsModal
+            open={showConnectors}
+            closeModal={() => setShowConnectors(false)}
+          />
+        )}
         {showVoteFactory && (
           <VoteFactoryModal open closeModal={() => setShowVoteFactory(false)} />
         )}
-        {showMultisigRegister && (
-          <MultisigRegisterModal
-            open
-            closeModal={() => setShowMultisigRegister(false)}
-          />
-        )}
-        {showMinerRegister && (
-          <ManualMinerRegisterModal
-            open
-            closeModal={() => setShowMinerRegister(false)}
-          />
-        )}
         <VoteContent>
-          <LatestVote address={address} />
+          <LatestVote hasRegistered={hasRegistered} />
           <VoteHistory />
         </VoteContent>
       </HomeContainer>

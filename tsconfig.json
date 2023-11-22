@@ -10,6 +10,7 @@
     "target": "esnext",
     "baseUrl": "./",
     "paths": {
+      "assets/*": ["src/assets/*"],
       "common/*": ["src/components/common/*"],
       "components/*": ["src/components/*"],
       "constants/*": ["src/constants/*"],

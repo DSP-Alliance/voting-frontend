@@ -11,7 +11,7 @@ import VoteResults from 'components/VoteResults';
 import VoteActionsModal from 'components/VoteActionsModal';
 import { voteTrackerConfig } from 'constants/voteTrackerConfig';
 import { voteFactoryConfig } from 'constants/voteFactoryConfig';
-import useVoteResults from '../../hooks/useVoteResults';
+import useVoteResults from 'hooks/useVoteResults';
 import { publicClient } from 'services/clients';
 import type { FipData } from 'services/fipService';
 
@@ -73,13 +73,11 @@ function VoteData({
   address,
   fipData,
   showExpandButton = false,
-  extendedDetails = null,
   hasRegistered = false,
 }: {
   address: Address | undefined;
   fipData: FipData;
   showExpandButton?: boolean;
-  extendedDetails?: null | (() => JSX.Element);
   hasRegistered?: boolean;
 }) {
   const [questionText, setQuestionText] = useState('');
@@ -172,23 +170,6 @@ function VoteData({
     getVoteInfo();
   }, [currentAddress]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  function loadAddress() {
-    setLoadingAddress(true);
-    publicClient
-      .readContract({
-        abi: voteFactoryConfig.abi,
-        address: voteFactoryConfig.address,
-        functionName: 'FIPnumToAddress',
-        args: [
-          parseInt(fipData?.fip?.replace(/"/g, '').replace(/^0+/, '') || '0'),
-        ],
-      })
-      .then((addr) => {
-        setCurrentAddress(addr);
-        setLoadingAddress(false);
-      });
-  }
-
   const renderDiscussionLinks = (links: string | undefined) => {
     if (links) {
       const linksArray = links.split(', ').map((link) => {
@@ -262,7 +243,6 @@ function VoteData({
               <div>
                 {fipData && renderDiscussionLinks(fipData['discussions-to'])}
               </div>
-              {extendedDetails && extendedDetails()}
             </div>
           </Content>
         </div>
