@@ -1,63 +1,55 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
-import { useAccount, useContractWrite, useWaitForTransaction } from 'wagmi';
-import { TextField } from '@mui/material';
+import { useContractWrite, useWaitForTransaction } from 'wagmi';
 import { formatEther } from 'viem';
 import ClipLoader from 'react-spinners/ClipLoader';
 
-import { voteTrackerConfig } from 'constants/voteTrackerConfig';
-import { ownableConfig } from 'constants/ownableConfig';
 import { voteFactoryConfig } from 'constants/voteFactoryConfig';
-import { RPC_URL, publicClient } from 'services/clients';
-import { formatBytesWithLabel, ZERO_ADDRESS } from 'utilities/helpers';
-import Loading from 'common/Loading';
+import { ZERO_ADDRESS, formatBytesWithLabel } from 'utilities/helpers';
+import ErrorMessage from 'common/ErrorMessage';
 import type { Address } from 'components/Home';
 
 const BackButton = styled.button`
   background-color: var(--white);
   color: var(--primary);
   border: 1px solid var(--primary);
+  border-radius: 24px;
 
   &:hover:enabled {
     background-color: #e1e3e1;
   }
 `;
 
+const ConfirmButton = styled.button`
+  color: var(--white);
+  background-color: var(--primary);
+  border-radius: 24px;
+`;
+
 const ButtonContainer = styled.div`
   display: flex;
   flex-direction: row;
-  gap: 12px;
   align-items: center;
+  gap: 12px;
 `;
 
 function RegisterConfirmation({
+  closeModal,
   minerIds,
   rawBytePower,
   tokenPower,
-  showConfirmation,
+  agentAddress,
   setShowConfirmation,
-  showAddressField,
-  setShowAddressField,
   setHasRegistered,
-  addVotingPower,
 }: {
+  closeModal: () => void;
   minerIds: string[];
-  rawBytePower: string;
-  tokenPower: bigint | null;
-  showConfirmation: boolean;
+  rawBytePower: bigint;
+  tokenPower: bigint;
+  agentAddress: string;
   setShowConfirmation: React.Dispatch<React.SetStateAction<boolean>>;
-  showAddressField: boolean;
-  setShowAddressField: React.Dispatch<
-    React.SetStateAction<boolean | undefined>
-  >;
   setHasRegistered: React.Dispatch<React.SetStateAction<boolean>>;
-  addVotingPower: (address?: string | undefined) => void;
 }) {
-  const { address } = useAccount();
-  const [agentAddress, setAgentAddress] = useState('');
-  const [loading, setLoading] = useState(false);
-
-  // THIS IS THE REGISTER FUNCTION
   const {
     data,
     error,
@@ -68,7 +60,7 @@ function RegisterConfirmation({
     address: voteFactoryConfig.address,
     functionName: 'register',
     args: [
-      agentAddress as Address,
+      (agentAddress as Address) || ZERO_ADDRESS,
       minerIds.map((id) => BigInt(id.replace('f0', ''))),
     ],
   });
@@ -82,70 +74,41 @@ function RegisterConfirmation({
   useEffect(() => {
     if (isSuccess) {
       setHasRegistered(true);
+      closeModal();
     }
   }, [isSuccess]);
 
   return (
     <>
-      {showAddressField && (
-        <>
-          <TextField
-            disabled={loading}
-            size='small'
-            margin='normal'
-            label='Agent Address'
-            fullWidth
-            value={agentAddress}
-            onChange={(e) => setAgentAddress(e.target.value)}
-          />
-          <ButtonContainer>
-            <BackButton onClick={() => setShowAddressField(undefined)}>
-              Go back
-            </BackButton>
-            <button onClick={() => addVotingPower(agentAddress)}>
-              Register
-            </button>
-            {/* {!registering && (
-              <button disabled={registering} onClick={() => write?.()}>
-                Confirm registration
-              </button>
-            )} */}
-            {/* {registering && <ClipLoader color='var(--primary)' size='20px' />} */}
-          </ButtonContainer>
-        </>
-      )}
-      {showConfirmation && (
-        <>
-          {minerIds && (
-            <div>
-              Miner IDs:
-              {minerIds.length
-                ? minerIds.map((id, index) => (
-                    <li key={index}>{id.toString()}</li>
-                  ))
-                : ' -'}
-            </div>
-          )}
-          <div>{rawBytePower && <p>RBP: {rawBytePower}</p>}</div>
+      <>
+        {minerIds && (
           <div>
-            {tokenPower !== null ? <p>{formatEther(tokenPower)} $FIL</p> : null}
+            Miner IDs:
+            {minerIds.length
+              ? minerIds.map((id, index) => (
+                  <li key={index}>{id.toString()}</li>
+                ))
+              : ' -'}
           </div>
-          <ButtonContainer>
-            <BackButton
-              disabled={registering}
-              onClick={() => setShowConfirmation(false)}
-            >
-              Go back
-            </BackButton>
-            {!registering && (
-              <button disabled={registering} onClick={() => write?.()}>
-                Confirm registration
-              </button>
-            )}
-            {registering && <ClipLoader color='var(--primary)' size='20px' />}
-          </ButtonContainer>
-        </>
-      )}
+        )}
+        <p>RBP: {formatBytesWithLabel(parseInt(rawBytePower.toString()))}</p>
+        <p>{formatEther(tokenPower)} $FIL</p>
+        <ButtonContainer>
+          <BackButton
+            disabled={registering}
+            onClick={() => setShowConfirmation(false)}
+          >
+            Go back
+          </BackButton>
+          {!registering && (
+            <ConfirmButton disabled={registering} onClick={() => write?.()}>
+              Confirm registration
+            </ConfirmButton>
+          )}
+          {registering && <ClipLoader color='var(--primary)' size='20px' />}
+        </ButtonContainer>
+      </>
+      {error && <ErrorMessage message={error.message} />}
     </>
   );
 }

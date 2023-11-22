@@ -1,24 +1,22 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { TextField } from '@mui/material';
-import ClipLoader from 'react-spinners/ClipLoader';
-import { useAccount, useContractWrite, useWaitForTransaction } from 'wagmi';
-import { formatEther, getAddress } from 'viem';
+import { useAccount } from 'wagmi';
+import { getAddress } from 'viem';
 import axios from 'axios';
 
 import { voteTrackerConfig } from 'constants/voteTrackerConfig';
 import { ownableConfig } from 'constants/ownableConfig';
-import { voteFactoryConfig } from 'constants/voteFactoryConfig';
 import { RPC_URL, publicClient } from 'services/clients';
-import { formatBytesWithLabel, ZERO_ADDRESS } from 'utilities/helpers';
-import Loading from 'common/Loading';
-import type { Address } from 'components/Home';
+import { ZERO_ADDRESS } from 'utilities/helpers';
 import RegisterConfirmation from './RegisterConfirmation';
 import { useFipDataContext } from 'common/FipDataContext';
+import Loading from 'common/Loading';
+import RegisterAgent from './RegisterAgent';
 
 const ActionArea = styled.div`
   display: flex;
   flex-direction: column;
+  margin-top: 12px;
 `;
 
 const ErrorMessage = styled.div`
@@ -35,52 +33,57 @@ const ErrorMessage = styled.div`
 const RegisterButtonContainer = styled.div`
   display: flex;
   flex-direction: column;
-  max-width: 200px;
+  align-items: center;
+  gap: 8px;
 `;
 
-// addVotingPower,
-// error,
-// loading,
-// registering,
-// write,
-// rawBytePower,
-// tokenPower,
-// minerIds,
+const ModalButton = styled.button`
+  color: var(--primary);
+  background-color: var(--white);
+  border: 1px solid var(--primary);
+  border-radius: 24px;
+  padding: 8 24px;
+  width: 300px;
+
+  &:hover {
+    color: var(--white);
+  }
+`;
+
 function Register({
   setShowMultisigRegister,
   setHasRegistered,
+  rawBytePower,
+  setRawBytePower,
+  tokenPower,
+  setTokenPower,
+  closeModal,
 }: {
   setShowMultisigRegister: React.Dispatch<React.SetStateAction<boolean>>;
   setHasRegistered: React.Dispatch<React.SetStateAction<boolean>>;
-  // addVotingPower: (address: string) => void;
-  // error: string | undefined;
-  // loading: boolean;
-  // registering: boolean;
-  // write: () => void;
-  // rawBytePower: string;
-  // tokenPower: bigint | null;
-  // minerIds: string[];
+  rawBytePower: bigint;
+  setRawBytePower: React.Dispatch<React.SetStateAction<bigint>>;
+  tokenPower: bigint;
+  setTokenPower: React.Dispatch<React.SetStateAction<bigint>>;
+  closeModal: () => void;
 }) {
   const { address } = useAccount();
+  const [agentAddress, setAgentAddress] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [loading, setLoading] = useState(false);
-  const [showAddressField, setShowAddressField] = useState<boolean>();
+  const [showAddressField, setShowAddressField] = useState<boolean>(false);
   const [minerIds, setMinerIds] = useState<string[]>([]);
-  const [rawBytePower, setRawBytePower] = useState('');
-  const [tokenPower, setTokenPower] = useState<bigint>(BigInt(0));
   const [showConfirmation, setShowConfirmation] = useState(false);
 
   const { lastFipAddress } = useFipDataContext();
 
-  async function addVotingPower(agentAddress: string | undefined) {
+  async function addVotingPower(agent: string | undefined) {
     setLoading(true);
 
-    const agentAddressToAdd = agentAddress
-      ? getAddress(agentAddress)
-      : ZERO_ADDRESS;
+    const agentAddressToAdd = agent ? getAddress(agent) : ZERO_ADDRESS;
 
     try {
-      let rawBytes = 0;
+      let rawBytes = rawBytePower;
 
       async function getMiners(address: string) {
         const request = await axios.get(
@@ -107,13 +110,13 @@ function Register({
         rawBytes = promiseArray.reduce(
           (acc, result) =>
             acc + parseInt(result.data.result.MinerPower.RawBytePower),
-          rawBytes, // TODO Lisa check if this should be RawBytePower (to acc) or 0 (because it overrides)
+          rawBytes,
         );
       }
 
       await getMiners(address as string);
 
-      if (agentAddress) {
+      if (agent) {
         const glifOwner = await publicClient.readContract({
           address: agentAddressToAdd,
           abi: ownableConfig.abi,
@@ -121,7 +124,7 @@ function Register({
         });
 
         if (glifOwner === address) {
-          await getMiners(agentAddress);
+          await getMiners(agent);
         }
       }
 
@@ -132,7 +135,7 @@ function Register({
         args: [address || ZERO_ADDRESS],
       });
 
-      setRawBytePower(formatBytesWithLabel(rawBytes));
+      setRawBytePower(rawBytes);
       setTokenPower(tokenPower);
     } catch (error) {
       console.error(error);
@@ -145,45 +148,52 @@ function Register({
   return (
     <div>
       <ActionArea>
-        {!showAddressField && (
+        {!showAddressField && !showConfirmation && (
           <RegisterButtonContainer>
-            <button
+            <ModalButton
               disabled={loading}
               onClick={() => {
                 addVotingPower('');
                 setShowConfirmation(true);
               }}
             >
-              Register Wallet
-            </button>
-            <button
+              {loading ? <Loading size={20} /> : 'Register Wallet'}
+            </ModalButton>
+            <ModalButton
               disabled={loading}
               onClick={() => {
                 setShowAddressField(true);
               }}
             >
               Register Wallet With Agent
-            </button>
-            <button
+            </ModalButton>
+            <ModalButton
               onClick={() => {
                 setShowMultisigRegister(true);
               }}
             >
               Register Multisig
-            </button>
+            </ModalButton>
           </RegisterButtonContainer>
         )}
-        {loading && <ClipLoader color='var(--primary)' />}
         {showAddressField && (
-          <RegisterConfirmation
+          <RegisterAgent
+            loading={loading}
+            agentAddress={agentAddress}
+            setAgentAddress={setAgentAddress}
             addVotingPower={addVotingPower}
-            showAddressField={showAddressField}
             setShowAddressField={setShowAddressField}
-            setHasRegistered={setHasRegistered}
+            setShowConfirmation={setShowConfirmation}
+          />
+        )}
+        {showConfirmation && (
+          <RegisterConfirmation
+            closeModal={closeModal}
+            agentAddress={agentAddress}
             minerIds={minerIds}
             rawBytePower={rawBytePower}
             tokenPower={tokenPower}
-            showConfirmation={showConfirmation}
+            setHasRegistered={setHasRegistered}
             setShowConfirmation={setShowConfirmation}
           />
         )}

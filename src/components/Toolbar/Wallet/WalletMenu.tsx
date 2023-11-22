@@ -5,6 +5,7 @@ import styled from 'styled-components';
 import { formatEther } from 'viem';
 
 import KebabMenuIcon from 'assets/kebab-menu.svg';
+import { formatBytesWithLabel } from 'utilities/helpers';
 
 const WalletButton = styled.button`
   color: var(--white);
@@ -22,12 +23,24 @@ const Image = styled.img`
   width: 10px;
 `;
 
+const WalletPower = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  gap: 12px;
+  padding: 12px;
+`;
+
+const DisconnectText = styled.p`
+  color: var(--red);
+`;
+
 function WalletMenu({
   rawBytePower,
   tokenPower,
 }: {
-  rawBytePower: string;
-  tokenPower: bigint | null;
+  rawBytePower: bigint;
+  tokenPower: bigint;
 }) {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
@@ -47,17 +60,6 @@ function WalletMenu({
     disconnect();
     setAnchorEl(null);
   };
-
-  function renderVotingPower() {
-    return (
-      <>
-        <div>{rawBytePower && <p>RBP: {rawBytePower}</p>}</div>
-        <div>
-          {tokenPower !== null ? <p>{formatEther(tokenPower)} $FIL</p> : null}
-        </div>
-      </>
-    );
-  }
 
   return (
     <>
@@ -80,8 +82,15 @@ function WalletMenu({
           'aria-labelledby': 'wallet-button',
         }}
       >
-        {renderVotingPower()}
-        <MenuItem onClick={handleDisconnect}>Disconnect</MenuItem>
+        <WalletPower>
+          <span>
+            RBP: {formatBytesWithLabel(parseInt(rawBytePower.toString()))}
+          </span>
+          <span>{(+formatEther(tokenPower)).toFixed(4)} $FIL</span>
+        </WalletPower>
+        <MenuItem onClick={handleDisconnect}>
+          <DisconnectText>Disconnect</DisconnectText>
+        </MenuItem>
       </Menu>
     </>
   );

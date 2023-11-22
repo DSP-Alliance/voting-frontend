@@ -2,16 +2,13 @@ import { createGlobalStyle } from 'styled-components';
 
 const GlobalStyle = createGlobalStyle`
   body {
-    @font-face {
-      font-family: 'Roboto';
-    }
-
     --bg-color: #FFFFFF;
     --primary: #0F828A;
     --darkprimary: #0d47a1;
     --disabled: #d9d9d9;
     --white: #fcfdff;
     --black: #121212;
+    --red: #E30202;
     --blueshadow: #2c3b737b;
     --caption: #595959;
     --divider: #BDBDBD;
@@ -24,12 +21,10 @@ const GlobalStyle = createGlobalStyle`
     --votecount1: #3f51b5;
     --votecount2: #f44336;
     --votecount3: #d1c4e9;
-    --titlefont: 'Roboto';
-    --titlefontlight: 'Roboto';
     color: #212121 !important;
     margin: 0;
     padding: 0;
-    font-family: Roboto, Helvetica, Sans-Serif;
+    font-family: 'Roboto', Helvetica, Sans-Serif;
   }
   
   button {

@@ -8,10 +8,25 @@ import ManualMinerRegisterModal from 'components/ManualMinerRegister';
 import Register from './Register';
 import ConnectorsModal from '../Wallet/ConnectorsModal';
 
-const MultisigRegisterButton = styled.button`
-  grid-column-start: 2;
-  width: 120px;
-  justify-self: center;
+const ButtonContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 12px;
+  gap: 8px;
+`;
+
+const ModalButton = styled.button`
+  color: var(--primary);
+  background-color: var(--white);
+  border: 1px solid var(--primary);
+  border-radius: 24px;
+  padding: 8 24px;
+  width: 300px;
+
+  &:hover {
+    color: var(--white);
+  }
 `;
 
 function RegisterModal({
@@ -19,11 +34,19 @@ function RegisterModal({
   closeModal,
   hasRegistered,
   setHasRegistered,
+  rawBytePower,
+  setRawBytePower,
+  tokenPower,
+  setTokenPower,
 }: {
   open: boolean;
   closeModal: () => void;
   hasRegistered: boolean;
   setHasRegistered: React.Dispatch<React.SetStateAction<boolean>>;
+  rawBytePower: bigint;
+  setRawBytePower: React.Dispatch<React.SetStateAction<bigint>>;
+  tokenPower: bigint;
+  setTokenPower: React.Dispatch<React.SetStateAction<bigint>>;
 }) {
   const [showConnectorsModal, setShowConnectorsModal] = useState(false);
   const [showMultisigRegister, setShowMultisigRegister] = useState(false);
@@ -37,6 +60,11 @@ function RegisterModal({
           <Register
             setShowMultisigRegister={setShowMultisigRegister}
             setHasRegistered={setHasRegistered}
+            rawBytePower={rawBytePower}
+            setRawBytePower={setRawBytePower}
+            tokenPower={tokenPower}
+            setTokenPower={setTokenPower}
+            closeModal={closeModal}
           />
           {showConnectorsModal && (
             <ConnectorsModal
@@ -54,12 +82,14 @@ function RegisterModal({
       <>
         <DialogContent dividers>
           Your wallet is registered. Choose an option below.
-          <MultisigRegisterButton onClick={() => setShowMultisigRegister(true)}>
-            Register Multisig
-          </MultisigRegisterButton>
-          <MultisigRegisterButton onClick={() => setShowMinerRegister(true)}>
-            Register Miner
-          </MultisigRegisterButton>
+          <ButtonContainer>
+            <ModalButton onClick={() => setShowMultisigRegister(true)}>
+              Register Multisig
+            </ModalButton>
+            <ModalButton onClick={() => setShowMinerRegister(true)}>
+              Register Miner
+            </ModalButton>
+          </ButtonContainer>
         </DialogContent>
       </>
     );
@@ -70,6 +100,7 @@ function RegisterModal({
       <Dialog
         open={open}
         onClose={closeModal}
+        fullWidth
         PaperProps={{
           style: {
             color: 'var(--font-color)',

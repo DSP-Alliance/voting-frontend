@@ -88,7 +88,7 @@ function Home() {
   const [showRegister, setShowRegister] = useState(false);
   const [showConnectors, setShowConnectors] = useState(false);
   const [showVoteFactory, setShowVoteFactory] = useState(false);
-  const [rawBytePower, setRawBytePower] = useState('');
+  const [rawBytePower, setRawBytePower] = useState<bigint>(BigInt(0));
   const [tokenPower, setTokenPower] = useState<bigint>(BigInt(0));
 
   const { voteEndTime } = useVoteEndContext();
@@ -143,16 +143,16 @@ function Home() {
             args: [address || ZERO_ADDRESS],
           });
 
-        setRawBytePower(formatBytesWithLabel(parseInt(bytePower.toString())));
+        setRawBytePower(bytePower);
         setTokenPower(bytePower > 0 ? minerTokenPower : tokenPower);
       } catch {
         setTokenPower(BigInt(0));
-        setRawBytePower('');
+        setRawBytePower(BigInt(0));
       }
     }
 
     getByteAndTokenPower();
-  }, [address]);
+  }, [address, lastFipAddress]);
 
   return (
     <>
@@ -184,6 +184,10 @@ function Home() {
             closeModal={() => setShowRegister(false)}
             hasRegistered={hasRegistered}
             setHasRegistered={setHasRegistered}
+            rawBytePower={rawBytePower}
+            setRawBytePower={setRawBytePower}
+            tokenPower={tokenPower}
+            setTokenPower={setTokenPower}
           />
         )}
         {showConnectors && (
