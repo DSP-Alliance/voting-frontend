@@ -23,12 +23,14 @@ const OptionsContainer = styled.div`
 const ConnectorsContainer = styled.div`
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-items: center;
+  align-items: center;
 `;
 
-// const ConnectButton = styled.button`
-//   margin-right: 12px;
-// `;
+const ConnectButton = styled(Button)`
+  width: 300px;
+  gap: 12px;
+`;
 
 function ConnectorsModal({
   open,
@@ -65,7 +67,7 @@ function ConnectorsModal({
             {error && <ErrorMessage message={error.message} />}
             <ConnectorsContainer>
               {connectors.map((connector) => (
-                <Button
+                <ConnectButton
                   disabled={!connector.ready}
                   key={connector.id}
                   onClick={() => {
@@ -83,7 +85,7 @@ function ConnectorsModal({
                   {isLoading &&
                     connector.id === pendingConnector?.id &&
                     ' (connecting)'}
-                </Button>
+                </ConnectButton>
               ))}
             </ConnectorsContainer>
           </OptionsContainer>

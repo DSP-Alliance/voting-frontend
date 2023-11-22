@@ -35,7 +35,7 @@ function VoteStatus({
   voteResultsData: VoteResultsData;
   active: boolean;
 }) {
-  if (active) return <SuccessStatusContainer>Activate</SuccessStatusContainer>;
+  if (active) return <SuccessStatusContainer>Active</SuccessStatusContainer>;
   if (voteResultsData.loading) return null;
 
   let allAgreed = true;
