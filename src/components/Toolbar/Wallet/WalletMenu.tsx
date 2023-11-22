@@ -5,17 +5,8 @@ import styled from 'styled-components';
 import { formatEther } from 'viem';
 
 import KebabMenuIcon from 'assets/kebab-menu.svg';
+import RoundedButton from 'common/RoundedButton';
 import { formatBytesWithLabel } from 'utilities/helpers';
-
-const WalletButton = styled.button`
-  color: var(--white);
-  background-color: var(--primary);
-  border-radius: 24px;
-  padding: 0 12px;
-  display: flex;
-  gap: 4px;
-  align-items: center;
-`;
 
 const Image = styled.img`
   color: var(--white);
@@ -63,7 +54,7 @@ function WalletMenu({
 
   return (
     <>
-      <WalletButton
+      <RoundedButton
         id='wallet-button'
         aria-controls={open ? 'wallet-menu' : undefined}
         aria-haspopup='true'
@@ -72,7 +63,7 @@ function WalletMenu({
       >
         Wallet
         <Image src={KebabMenuIcon} />
-      </WalletButton>
+      </RoundedButton>
       <Menu
         id='wallet-menu'
         anchorEl={anchorEl}

@@ -8,6 +8,7 @@ import type { Address } from 'components/Home';
 import Loading from 'common/Loading';
 import VoteStatus from 'components/VoteStatus';
 import VoteResults from 'components/VoteResults';
+import RoundedButton from 'common/RoundedButton';
 import { voteTrackerConfig } from 'constants/voteTrackerConfig';
 import { voteFactoryConfig } from 'constants/voteFactoryConfig';
 import useVoteResults from 'hooks/useVoteResults';
@@ -215,7 +216,9 @@ function VoteData({
         </TitleContainer>
         <TitleContainer>
           {setShowVoteModal && voteEndTime && voteEndTime > Date.now() && (
-            <button onClick={() => setShowVoteModal(true)}>Vote</button>
+            <RoundedButton onClick={() => setShowVoteModal(true)}>
+              Vote
+            </RoundedButton>
           )}
           {showExpandButton &&
             (showDetails ? (
