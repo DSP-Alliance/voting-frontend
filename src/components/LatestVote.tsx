@@ -6,6 +6,7 @@ import type { FipData } from 'services/fipService';
 import Loading from 'common/Loading';
 import { useFipDataContext } from 'common/FipDataContext';
 import ErrorMessage from 'common/ErrorMessage';
+import VoteActionsModal from 'components/VoteActionsModal';
 import VoteData from 'components/VoteData';
 
 const VoteDataContainer = styled.div`
@@ -21,7 +22,15 @@ const Header = styled.h3`
   margin: 0;
 `;
 
-function LatestVote({ hasRegistered }: { hasRegistered: boolean }) {
+function LatestVote({
+  hasRegistered,
+  showVoteModal,
+  setShowVoteModal,
+}: {
+  hasRegistered: boolean;
+  showVoteModal: boolean;
+  setShowVoteModal: React.Dispatch<React.SetStateAction<boolean>>;
+}) {
   const [fipData, setFipData] = useState<FipData>();
   const [errorMessage, setErrorMessage] = useState('');
 
@@ -44,12 +53,20 @@ function LatestVote({ hasRegistered }: { hasRegistered: boolean }) {
 
   return (
     <VoteDataContainer>
-      <Header>Latest Vote</Header>
+      <Header>Current Vote</Header>
       {loadingFipData && <Loading />}
       {errorMessage && <ErrorMessage message={errorMessage} />}
       {fipData && (
         <VoteData
           fipData={fipData}
+          address={lastFipAddress}
+          setShowVoteModal={setShowVoteModal}
+        />
+      )}
+      {lastFipAddress && (
+        <VoteActionsModal
+          open={showVoteModal}
+          onClose={() => setShowVoteModal(false)}
           address={lastFipAddress}
           hasRegistered={hasRegistered}
         />

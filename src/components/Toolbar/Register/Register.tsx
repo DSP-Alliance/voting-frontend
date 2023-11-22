@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import styled from 'styled-components';
 import { useAccount } from 'wagmi';
 import { getAddress } from 'viem';
@@ -66,12 +66,13 @@ function Register({
   setRawBytePower: React.Dispatch<React.SetStateAction<bigint>>;
   tokenPower: bigint;
   setTokenPower: React.Dispatch<React.SetStateAction<bigint>>;
-  closeModal: () => void;
+  closeModal: ({ openVoteModal }: { openVoteModal: boolean }) => void;
 }) {
   const { address, isConnected } = useAccount();
   const [agentAddress, setAgentAddress] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [loading, setLoading] = useState(false);
+  const openVoteModalRef = useRef<boolean>(false);
   const [minerIds, setMinerIds] = useState<string[]>([]);
   const [showConnectorsModal, setShowConnectorsModal] = useState(false);
   const [showAddressField, setShowAddressField] = useState<boolean>(false);
@@ -169,7 +170,10 @@ function Register({
       {showConnectorsModal && (
         <ConnectorsModal
           open={true}
-          closeModal={() => setShowConnectorsModal(false)}
+          closeModal={({ openVoteModal }) => {
+            openVoteModalRef.current = openVoteModal;
+            setShowConnectorsModal(false);
+          }}
         />
       )}
       <ActionArea>
@@ -201,7 +205,9 @@ function Register({
         )}
         {showConfirmation && (
           <RegisterConfirmation
-            closeModal={closeModal}
+            closeModal={() => {
+              closeModal({ openVoteModal: openVoteModalRef.current });
+            }}
             agentAddress={agentAddress}
             minerIds={minerIds}
             rawBytePower={rawBytePower}

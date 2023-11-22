@@ -39,7 +39,7 @@ function RegisterModal({
   setTokenPower,
 }: {
   open: boolean;
-  closeModal: () => void;
+  closeModal: ({ openVoteModal }: { openVoteModal: boolean }) => void;
   hasRegistered: boolean;
   setHasRegistered: React.Dispatch<React.SetStateAction<boolean>>;
   rawBytePower: bigint;
@@ -102,7 +102,7 @@ function RegisterModal({
         <DialogTitle>Register</DialogTitle>
         <IconButton
           aria-label='close'
-          onClick={closeModal}
+          onClick={() => closeModal({ openVoteModal: false })}
           sx={{
             position: 'absolute',
             right: 8,
