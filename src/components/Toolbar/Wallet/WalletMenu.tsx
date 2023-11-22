@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Menu, MenuItem } from '@mui/material';
 import { useDisconnect } from 'wagmi';
 import styled from 'styled-components';
+import { formatEther } from 'viem';
 
 import KebabMenuIcon from 'assets/kebab-menu.svg';
 
@@ -9,6 +10,10 @@ const WalletButton = styled.button`
   color: var(--white);
   background-color: var(--primary);
   border-radius: 24px;
+  padding: 0 12px;
+  display: flex;
+  gap: 4px;
+  align-items: center;
 `;
 
 const Image = styled.img`
@@ -17,7 +22,13 @@ const Image = styled.img`
   width: 10px;
 `;
 
-function WalletMenu() {
+function WalletMenu({
+  rawBytePower,
+  tokenPower,
+}: {
+  rawBytePower: string;
+  tokenPower: bigint | null;
+}) {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
 
@@ -40,17 +51,16 @@ function WalletMenu() {
   function renderVotingPower() {
     return (
       <>
-        <span>RBP: hello</span>
-        {/* <div>{rawBytePower && <p>RBP: {rawBytePower}</p>}</div>
+        <div>{rawBytePower && <p>RBP: {rawBytePower}</p>}</div>
         <div>
           {tokenPower !== null ? <p>{formatEther(tokenPower)} $FIL</p> : null}
-        </div> */}
+        </div>
       </>
     );
   }
 
   return (
-    <div>
+    <>
       <WalletButton
         id='wallet-button'
         aria-controls={open ? 'wallet-menu' : undefined}
@@ -73,7 +83,7 @@ function WalletMenu() {
         {renderVotingPower()}
         <MenuItem onClick={handleDisconnect}>Disconnect</MenuItem>
       </Menu>
-    </div>
+    </>
   );
 }
 

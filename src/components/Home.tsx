@@ -4,13 +4,16 @@ import styled from 'styled-components';
 
 import { voteFactoryConfig } from 'constants/voteFactoryConfig';
 import { publicClient } from 'services/clients';
-import ConnectorsModal from 'components/Wallet/ConnectorsModal';
+import ConnectorsModal from 'components/Toolbar/Wallet/ConnectorsModal';
 import LatestVote from 'components/LatestVote';
 import VoteHistory from 'components/VoteHistory';
 import VoteFactoryModal from 'components/VoteFactory';
-// import RegisterModal from 'components/Wallet/RegisterModal';
-import WalletMenu from 'components/Wallet/WalletMenu';
+import RegisterModal from 'components/Toolbar/Register/RegisterModal';
+import WalletMenu from 'components/Toolbar/Wallet/WalletMenu';
 import { useVoteEndContext } from 'common/VoteEndContext';
+import { ZERO_ADDRESS, formatBytesWithLabel } from 'utilities/helpers';
+import { useFipDataContext } from 'common/FipDataContext';
+import { voteTrackerConfig } from 'constants/voteTrackerConfig';
 
 export type Address = `0x${string}`;
 
@@ -80,12 +83,16 @@ const VoteContent = styled.div`
 
 function Home() {
   const { address, isConnected } = useAccount();
-  const [showConnectors, setShowConnectors] = useState(false);
   const [isOwner, setIsOwner] = useState(false);
+  const [hasRegistered, setHasRegistered] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
+  const [showConnectors, setShowConnectors] = useState(false);
   const [showVoteFactory, setShowVoteFactory] = useState(false);
+  const [rawBytePower, setRawBytePower] = useState('');
+  const [tokenPower, setTokenPower] = useState<bigint>(BigInt(0));
 
   const { voteEndTime } = useVoteEndContext();
+  const { lastFipAddress } = useFipDataContext();
 
   useEffect(() => {
     async function getOwner() {
@@ -106,6 +113,47 @@ function Home() {
     if (isConnected) getOwner();
   }, [isConnected]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  useEffect(() => {
+    async function getHasRegistered() {
+      try {
+        const userHasRegistered = await publicClient.readContract({
+          address: voteFactoryConfig.address,
+          abi: voteFactoryConfig.abi,
+          functionName: 'registered',
+          args: [address || `0x`],
+        });
+
+        setHasRegistered(userHasRegistered);
+      } catch {
+        setHasRegistered(false);
+      }
+    }
+
+    getHasRegistered();
+  }, [address]);
+
+  useEffect(() => {
+    async function getByteAndTokenPower() {
+      try {
+        const [tokenPower, bytePower, minerTokenPower] =
+          await publicClient.readContract({
+            address: lastFipAddress || ZERO_ADDRESS,
+            abi: voteTrackerConfig.abi,
+            functionName: 'getVotingPower',
+            args: [address || ZERO_ADDRESS],
+          });
+
+        setRawBytePower(formatBytesWithLabel(parseInt(bytePower.toString())));
+        setTokenPower(bytePower > 0 ? minerTokenPower : tokenPower);
+      } catch {
+        setTokenPower(BigInt(0));
+        setRawBytePower('');
+      }
+    }
+
+    getByteAndTokenPower();
+  }, [address]);
+
   return (
     <>
       <HomeContainer>
@@ -125,15 +173,19 @@ function Home() {
                 Connect
               </ConnectButton>
             )}
-            {isConnected && <WalletMenu />}
+            {isConnected && (
+              <WalletMenu rawBytePower={rawBytePower} tokenPower={tokenPower} />
+            )}
           </ButtonContainer>
         </Header>
-        {/* {showRegister && (
+        {showRegister && (
           <RegisterModal
             open={showRegister}
             closeModal={() => setShowRegister(false)}
+            hasRegistered={hasRegistered}
+            setHasRegistered={setHasRegistered}
           />
-        )} */}
+        )}
         {showConnectors && (
           <ConnectorsModal
             open={showConnectors}
@@ -144,7 +196,7 @@ function Home() {
           <VoteFactoryModal open closeModal={() => setShowVoteFactory(false)} />
         )}
         <VoteContent>
-          <LatestVote />
+          <LatestVote hasRegistered={hasRegistered} />
           <VoteHistory />
         </VoteContent>
       </HomeContainer>

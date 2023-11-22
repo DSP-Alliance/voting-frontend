@@ -1,5 +1,5 @@
-import React from 'react';
-import { useConnect } from 'wagmi';
+import React, { useEffect } from 'react';
+import { useConnect, useAccount } from 'wagmi';
 import styled from 'styled-components';
 import { Button, Dialog, DialogTitle, DialogContent } from '@mui/material';
 
@@ -30,7 +30,7 @@ const ConnectorsContainer = styled.div`
 //   margin-right: 12px;
 // `;
 
-export function Connectors({
+function ConnectorsModal({
   open,
   closeModal,
 }: {
@@ -39,8 +39,11 @@ export function Connectors({
 }) {
   const { connect, connectors, error, isLoading, pendingConnector } =
     useConnect();
+  const { isConnected } = useAccount();
 
-  console.log(connectors);
+  useEffect(() => {
+    if (isConnected) closeModal();
+  }, [isConnected]);
 
   function renderContent() {
     return (
@@ -92,4 +95,4 @@ export function Connectors({
   return <Container>{renderContent()}</Container>;
 }
 
-export default Connectors;
+export default ConnectorsModal;
