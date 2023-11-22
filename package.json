@@ -64,6 +64,7 @@
     "@ipld/dag-cbor": "^9.0.6",
     "@mui/icons-material": "^5.14.18",
     "@mui/material": "^5.14.9",
+    "@mui/x-date-pickers": "^6.18.1",
     "axios": "^1.5.0",
     "buffer": "^6.0.3",
     "cbor-web": "^9.0.1",

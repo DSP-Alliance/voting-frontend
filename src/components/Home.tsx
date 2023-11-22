@@ -141,10 +141,7 @@ function Home() {
           />
         )}
         {showVoteFactory && (
-          <VoteFactoryModal
-            open={showVoteFactory}
-            closeModal={() => setShowVoteFactory(false)}
-          />
+          <VoteFactoryModal open closeModal={() => setShowVoteFactory(false)} />
         )}
         <VoteContent>
           <LatestVote />

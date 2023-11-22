@@ -48,6 +48,26 @@ function LatestVote() {
       {loadingFipData && <Loading />}
       {errorMessage && <ErrorMessage message={errorMessage} />}
       {fipData && <VoteData fipData={fipData} address={lastFipAddress} />}
+      {/* {fipData && (
+        <VoteData
+          fipData={fipData}
+          address={lastFipAddress}
+          hasRegistered={hasRegistered}
+          extendedDetails={() => (
+            <VotingPower
+              addVotingPower={addVotingPower}
+              errorMessage={errorMessage || error?.message}
+              hasRegistered={hasRegistered}
+              loading={loading}
+              minerIds={minerIds}
+              rawBytePower={rawBytePower}
+              registering={isLoadingWrite || isLoadingWait}
+              tokenPower={tokenPower}
+              write={write}
+            />
+          )}
+        />
+      )} */}
     </VoteDataContainer>
   );
 }
