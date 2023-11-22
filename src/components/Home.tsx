@@ -11,7 +11,7 @@ import VoteFactoryModal from 'components/VoteFactory';
 import RegisterModal from 'components/Toolbar/Register/RegisterModal';
 import WalletMenu from 'components/Toolbar/Wallet/WalletMenu';
 import { useVoteEndContext } from 'common/VoteEndContext';
-import { ZERO_ADDRESS, formatBytesWithLabel } from 'utilities/helpers';
+import { ZERO_ADDRESS } from 'utilities/helpers';
 import { useFipDataContext } from 'common/FipDataContext';
 import { voteTrackerConfig } from 'constants/voteTrackerConfig';
 
@@ -88,6 +88,7 @@ function Home() {
   const [showRegister, setShowRegister] = useState(false);
   const [showConnectors, setShowConnectors] = useState(false);
   const [showVoteFactory, setShowVoteFactory] = useState(false);
+  const [showVoteModal, setShowVoteModal] = useState(false);
   const [rawBytePower, setRawBytePower] = useState<bigint>(BigInt(0));
   const [tokenPower, setTokenPower] = useState<bigint>(BigInt(0));
 
@@ -193,14 +194,21 @@ function Home() {
         {showConnectors && (
           <ConnectorsModal
             open={showConnectors}
-            closeModal={() => setShowConnectors(false)}
+            closeModal={({ openVoteModal }) => {
+              if (openVoteModal) setShowVoteModal(true);
+              setShowConnectors(false);
+            }}
           />
         )}
         {showVoteFactory && (
           <VoteFactoryModal open closeModal={() => setShowVoteFactory(false)} />
         )}
         <VoteContent>
-          <LatestVote hasRegistered={hasRegistered} />
+          <LatestVote
+            hasRegistered={hasRegistered}
+            showVoteModal={showVoteModal}
+            setShowVoteModal={setShowVoteModal}
+          />
           <VoteHistory />
         </VoteContent>
       </HomeContainer>

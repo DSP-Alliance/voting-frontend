@@ -12,6 +12,7 @@ type ContextType = {
   initialVotesLength: number;
   lastFipAddress: Address | undefined;
   lastFipNum: number | undefined;
+  lastFipVoteEnd: number | null;
   loadingFipData: boolean;
 };
 
@@ -22,6 +23,7 @@ const FipDataContext = React.createContext<ContextType>({
   initialVotesLength: 0,
   lastFipAddress: undefined,
   lastFipNum: undefined,
+  lastFipVoteEnd: null,
   loadingFipData: true,
 });
 
@@ -30,6 +32,7 @@ function FipDataContextProvider({ children }: { children: React.ReactNode }) {
   const [fipList, setFipList] = useState<number[]>([]);
   const [initialVotesLength, setInitialVotesLength] = useState<number>(0);
   const [lastFipNum, setLastFipNum] = useState<number>();
+  const [lastFipVoteEnd, setLastFipVoteEnd] = useState<number | null>(null);
   const [loadingFipData, setLoadingFipData] = useState(true);
   const lastFipAddress = fipAddresses[fipAddresses.length - 1];
 
@@ -65,7 +68,36 @@ function FipDataContextProvider({ children }: { children: React.ReactNode }) {
             functionName: 'FIP',
           });
         }),
-      );
+      )
+        .then(async (fips) => {
+          if (fips.length === 0) return [];
+          const lastVoteAddress = voteAddresses[voteAddresses.length - 1];
+
+          try {
+            const voteStartTime = await publicClient.readContract({
+              abi: voteTrackerConfig.abi,
+              address: lastVoteAddress,
+              functionName: 'voteStart',
+            });
+
+            const voteLength = await publicClient.readContract({
+              abi: voteTrackerConfig.abi,
+              address: lastVoteAddress,
+              functionName: 'voteLength',
+            });
+
+            const endTime = (voteStartTime + voteLength) * 1000;
+            setLastFipVoteEnd(endTime);
+          } catch (error) {
+            console.error(error);
+          }
+
+          return fips;
+        })
+        .catch((e) => {
+          console.error(e);
+          return [];
+        });
 
       setFipList(fips);
       setLastFipNum(fips[fips.length - 1]);
@@ -90,6 +122,7 @@ function FipDataContextProvider({ children }: { children: React.ReactNode }) {
         initialVotesLength,
         lastFipAddress,
         lastFipNum,
+        lastFipVoteEnd,
         loadingFipData,
       }}
     >

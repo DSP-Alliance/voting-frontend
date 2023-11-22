@@ -8,7 +8,6 @@ import type { Address } from 'components/Home';
 import Loading from 'common/Loading';
 import VoteStatus from 'components/VoteStatus';
 import VoteResults from 'components/VoteResults';
-import VoteActionsModal from 'components/VoteActionsModal';
 import { voteTrackerConfig } from 'constants/voteTrackerConfig';
 import { voteFactoryConfig } from 'constants/voteFactoryConfig';
 import useVoteResults from 'hooks/useVoteResults';
@@ -73,17 +72,16 @@ function VoteData({
   address,
   fipData,
   showExpandButton = false,
-  hasRegistered = false,
+  setShowVoteModal,
 }: {
   address: Address | undefined;
   fipData: FipData;
   showExpandButton?: boolean;
-  hasRegistered?: boolean;
+  setShowVoteModal?: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   const [questionText, setQuestionText] = useState('');
   const [loadingVoteInfo, setLoadingVoteInfo] = useState(false);
   const [loadingAddress, setLoadingAddress] = useState(false);
-  const [showVoteModal, setShowVoteModal] = useState(false);
   const [voteEndTime, setVoteEndTime] = useState<number | undefined>(undefined);
   const [currentAddress, setCurrentAddress] = useState<Address | undefined>(
     address,
@@ -216,7 +214,7 @@ function VoteData({
           />
         </TitleContainer>
         <TitleContainer>
-          {currentAddress && voteEndTime && voteEndTime > Date.now() && (
+          {setShowVoteModal && voteEndTime && voteEndTime > Date.now() && (
             <button onClick={() => setShowVoteModal(true)}>Vote</button>
           )}
           {showExpandButton &&
@@ -246,14 +244,6 @@ function VoteData({
             </div>
           </Content>
         </div>
-      )}
-      {currentAddress && (
-        <VoteActionsModal
-          open={showVoteModal}
-          onClose={() => setShowVoteModal(false)}
-          address={currentAddress}
-          hasRegistered={hasRegistered}
-        />
       )}
     </div>
   );

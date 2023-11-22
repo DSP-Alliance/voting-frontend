@@ -1,8 +1,15 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useConnect, useAccount } from 'wagmi';
 import styled from 'styled-components';
-import { Button, Dialog, DialogTitle, DialogContent } from '@mui/material';
+import {
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+} from '@mui/material';
 
+import { useFipDataContext } from 'common/FipDataContext';
 import ErrorMessage from 'common/ErrorMessage';
 import CoinbaseLogo from 'assets/Logo_Coinbase.png';
 import MetaMaskLogo from 'assets/Logo_MetaMask.png';
@@ -37,17 +44,57 @@ function ConnectorsModal({
   closeModal,
 }: {
   open: boolean;
-  closeModal: () => void;
+  closeModal: ({ openVoteModal }: { openVoteModal: boolean }) => void;
 }) {
   const { connect, connectors, error, isLoading, pendingConnector } =
     useConnect();
+  const [showAskToVoteModal, setShowAskToVoteModal] = useState(false);
   const { isConnected } = useAccount();
+  const { lastFipVoteEnd } = useFipDataContext();
 
   useEffect(() => {
-    if (isConnected) closeModal();
+    if (isConnected) {
+      if (lastFipVoteEnd && lastFipVoteEnd > Date.now()) {
+        setShowAskToVoteModal(true);
+      } else {
+        closeModal({ openVoteModal: false });
+      }
+    }
   }, [isConnected]);
 
   function renderContent() {
+    if (showAskToVoteModal) {
+      return (
+        <Dialog
+          open
+          fullWidth
+          maxWidth='sm'
+          PaperProps={{
+            style: {
+              color: 'var(--font-color)',
+            },
+          }}
+        >
+          <DialogContent>
+            Would you like to cast a vote on the current FIP?
+          </DialogContent>
+          <DialogActions>
+            <Button
+              onClick={() => closeModal({ openVoteModal: true })}
+              variant='contained'
+            >
+              Yes
+            </Button>
+            <Button
+              onClick={() => closeModal({ openVoteModal: false })}
+              variant='outlined'
+            >
+              No
+            </Button>
+          </DialogActions>
+        </Dialog>
+      );
+    }
     return (
       <Dialog
         open={open}
