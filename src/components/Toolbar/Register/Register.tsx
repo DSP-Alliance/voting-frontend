@@ -11,6 +11,7 @@ import { ZERO_ADDRESS } from 'utilities/helpers';
 import RegisterConfirmation from './RegisterConfirmation';
 import { useFipDataContext } from 'common/FipDataContext';
 import Loading from 'common/Loading';
+import ConnectorsModal from '../Wallet/ConnectorsModal';
 import RegisterAgent from './RegisterAgent';
 
 const ActionArea = styled.div`
@@ -67,12 +68,13 @@ function Register({
   setTokenPower: React.Dispatch<React.SetStateAction<bigint>>;
   closeModal: () => void;
 }) {
-  const { address } = useAccount();
+  const { address, isConnected } = useAccount();
   const [agentAddress, setAgentAddress] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [loading, setLoading] = useState(false);
-  const [showAddressField, setShowAddressField] = useState<boolean>(false);
   const [minerIds, setMinerIds] = useState<string[]>([]);
+  const [showConnectorsModal, setShowConnectorsModal] = useState(false);
+  const [showAddressField, setShowAddressField] = useState<boolean>(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
 
   const { lastFipAddress } = useFipDataContext();
@@ -145,33 +147,44 @@ function Register({
     }
   }
 
+  function handleWalletConnect() {
+    if (!isConnected) {
+      setShowConnectorsModal(true);
+    } else {
+      addVotingPower('');
+      setShowConfirmation(true);
+    }
+  }
+
+  function handleWalletWithAgentClick() {
+    if (!isConnected) {
+      setShowConnectorsModal(true);
+    } else {
+      setShowAddressField(true);
+    }
+  }
+
   return (
     <div>
+      {showConnectorsModal && (
+        <ConnectorsModal
+          open={true}
+          closeModal={() => setShowConnectorsModal(false)}
+        />
+      )}
       <ActionArea>
         {!showAddressField && !showConfirmation && (
           <RegisterButtonContainer>
-            <ModalButton
-              disabled={loading}
-              onClick={() => {
-                addVotingPower('');
-                setShowConfirmation(true);
-              }}
-            >
+            <ModalButton disabled={loading} onClick={handleWalletConnect}>
               {loading ? <Loading size={20} /> : 'Register Wallet'}
             </ModalButton>
             <ModalButton
               disabled={loading}
-              onClick={() => {
-                setShowAddressField(true);
-              }}
+              onClick={handleWalletWithAgentClick}
             >
               Register Wallet With Agent
             </ModalButton>
-            <ModalButton
-              onClick={() => {
-                setShowMultisigRegister(true);
-              }}
-            >
+            <ModalButton onClick={() => setShowMultisigRegister(true)}>
               Register Multisig
             </ModalButton>
           </RegisterButtonContainer>

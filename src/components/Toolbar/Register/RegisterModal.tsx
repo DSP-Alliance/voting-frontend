@@ -6,7 +6,6 @@ import styled from 'styled-components';
 import MultisigRegisterModal from 'components/MultisigRegister';
 import ManualMinerRegisterModal from 'components/ManualMinerRegister';
 import Register from './Register';
-import ConnectorsModal from '../Wallet/ConnectorsModal';
 
 const ButtonContainer = styled.div`
   display: flex;
@@ -48,7 +47,6 @@ function RegisterModal({
   tokenPower: bigint;
   setTokenPower: React.Dispatch<React.SetStateAction<bigint>>;
 }) {
-  const [showConnectorsModal, setShowConnectorsModal] = useState(false);
   const [showMultisigRegister, setShowMultisigRegister] = useState(false);
   const [showMinerRegister, setShowMinerRegister] = useState(false);
 
@@ -66,12 +64,6 @@ function RegisterModal({
             setTokenPower={setTokenPower}
             closeModal={closeModal}
           />
-          {showConnectorsModal && (
-            <ConnectorsModal
-              open={true}
-              closeModal={() => setShowConnectorsModal(false)}
-            />
-          )}
         </DialogContent>
       </>
     );
