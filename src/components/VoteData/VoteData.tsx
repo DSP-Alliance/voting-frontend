@@ -1,19 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import dayjs from 'dayjs';
+import { Dialog, DialogTitle, DialogContent, IconButton } from '@mui/material';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
+import CloseIcon from '@mui/icons-material/Close';
 import Countdown from 'react-countdown';
 import type { Address } from 'components/Home';
 import Loading from 'common/Loading';
 import VoteStatus from 'components/VoteStatus';
 import VoteResults from 'components/VoteResults';
 import RoundedButton from 'common/RoundedButton';
+import RoundedOutlineButton from 'common/RoundedOutlineButton';
 import { voteTrackerConfig } from 'constants/voteTrackerConfig';
 import { voteFactoryConfig } from 'constants/voteFactoryConfig';
 import useVoteResults from 'hooks/useVoteResults';
 import { publicClient } from 'services/clients';
 import type { FipData } from 'services/fipService';
+import MultisigVoteForm from './MultisigVoteForm';
 
 const TitleWithActions = styled.div`
   display: flex;
@@ -69,6 +73,11 @@ const VoteEndedLabel = styled.div`
   text-transform: uppercase;
 `;
 
+const VoteContainer = styled.div`
+  display: flex;
+  gap: 16px;
+`;
+
 function VoteData({
   address,
   fipData,
@@ -93,6 +102,8 @@ function VoteData({
     fipAddress: currentAddress,
     yesOptions,
   });
+  const [showVoteWithMultisignModal, setShowVoteWithMultisignModal] =
+    useState(false);
 
   useEffect(() => {
     if (!currentAddress) {
@@ -215,10 +226,19 @@ function VoteData({
           />
         </TitleContainer>
         <TitleContainer>
-          {setShowVoteModal && voteEndTime && voteEndTime > Date.now() && (
-            <RoundedButton onClick={() => setShowVoteModal(true)}>
-              Vote
-            </RoundedButton>
+          {voteEndTime && voteEndTime > Date.now() && (
+            <VoteContainer>
+              {setShowVoteModal && (
+                <RoundedButton onClick={() => setShowVoteModal(true)}>
+                  Vote
+                </RoundedButton>
+              )}
+              <RoundedOutlineButton
+                onClick={() => setShowVoteWithMultisignModal(true)}
+              >
+                Vote With Multisign
+              </RoundedOutlineButton>
+            </VoteContainer>
           )}
           {showExpandButton &&
             (showDetails ? (
@@ -248,6 +268,35 @@ function VoteData({
           </Content>
         </div>
       )}
+      <Dialog
+        open={showVoteWithMultisignModal}
+        onClose={() => setShowVoteWithMultisignModal(false)}
+        fullWidth
+        maxWidth='sm'
+        PaperProps={{
+          style: {
+            color: 'var(--font-color)',
+          },
+        }}
+      >
+        <DialogTitle>Vote with Multisig</DialogTitle>
+        <IconButton
+          aria-label='close'
+          onClick={() => setShowVoteWithMultisignModal(false)}
+          sx={{
+            position: 'absolute',
+            right: 8,
+            top: 8,
+          }}
+        >
+          <CloseIcon />
+        </IconButton>
+        <DialogContent dividers>
+          <MultisigVoteForm
+            closeModal={() => setShowVoteWithMultisignModal(false)}
+          />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

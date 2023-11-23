@@ -1,22 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import {
-  DialogActions,
-  Select,
-  InputLabel,
-  FormControl,
-  MenuItem,
-  TextField,
-} from '@mui/material';
+import { DialogActions, FormControl, TextField } from '@mui/material';
 import { encodeFunctionData } from 'viem';
 import axios from 'axios';
 
-import { voteTrackerConfig } from 'constants/voteTrackerConfig';
 import { voteFactoryConfig } from 'constants/voteFactoryConfig';
 import { ZERO_ADDRESS, cbor_encode } from 'utilities/helpers';
 import CodeSnippet from 'common/CodeSnippet';
 import ErrorMessage from 'common/ErrorMessage';
-import { useFipDataContext } from 'common/FipDataContext';
 
 const Form = styled.form`
   display: flex;
@@ -30,14 +21,10 @@ const FormWithSpace = styled(FormControl)`
 
 function MultisigRegisterForm({ closeModal }: { closeModal: () => void }) {
   const [errorMessage, setErrorMessage] = useState<string>('');
-  const [vote, setVote] = useState<number | string>(0);
   const [factoryFilAddress, setFactoryFilAddress] = useState<string>('');
-  const [voteFilAddress, setVoteFilAddress] = useState<string>('');
   const [msigAddress, setMsigAddress] = useState<string>('');
   const [txId, setTxId] = useState<string>('');
   const [proposerAddress, setProposerAddress] = useState<string>('');
-
-  const { lastFipAddress: currentVoteAddress } = useFipDataContext();
 
   useEffect(() => {
     async function getAddresses() {
@@ -46,11 +33,6 @@ function MultisigRegisterForm({ closeModal }: { closeModal: () => void }) {
           `https://filfox.info/api/v1/address/${voteFactoryConfig.address}`,
         );
         setFactoryFilAddress(addressResponse.data.address);
-
-        const voteAddress = await axios.get(
-          `https://filfox.info/api/v1/address/${currentVoteAddress}`,
-        );
-        setVoteFilAddress(voteAddress.data.address);
       } catch (error: any) {
         setErrorMessage(error.message);
       }
@@ -120,76 +102,6 @@ function MultisigRegisterForm({ closeModal }: { closeModal: () => void }) {
                 abi: voteFactoryConfig.abi,
                 functionName: 'register',
                 args: [ZERO_ADDRESS, []],
-              }),
-            )
-          }
-        />
-        <p>
-          After proposing and approving the registration transaction, propose
-          and approve another transaction. Use this form to generate the call
-          data to include in your proposal.
-        </p>
-        <p>3) Create the vote proposal</p>
-        <FormControl fullWidth>
-          <InputLabel id='demo-simple-select-label'>Vote</InputLabel>
-          <Select
-            labelId='demo-simple-select-label'
-            id='demo-simple-select'
-            value={vote}
-            label='Vote'
-            onChange={(e) => {
-              setVote(e.target.value);
-            }}
-          >
-            <MenuItem value={0}>Yes</MenuItem>
-            <MenuItem value={3}>Yes 2</MenuItem>
-            <MenuItem value={1}>No</MenuItem>
-            <MenuItem value={2}>Abstain</MenuItem>
-          </Select>
-        </FormControl>
-        <CodeSnippet
-          code={
-            `lotus msig propose ${msigAddress} ${voteFilAddress} 0 3844450837 ` +
-            cbor_encode(
-              encodeFunctionData({
-                abi: voteTrackerConfig.abi,
-                functionName: 'castVote',
-                args: [BigInt(vote)],
-              }),
-            )
-          }
-        />
-        <p>
-          Once the proposer creates the proposal using the command above, N of M
-          signers must also approve the vote proposal.
-        </p>
-        <p>4) Approve the vote proposal</p>
-        <FormWithSpace fullWidth>
-          <TextField
-            id='outlined-controlled'
-            label='Transaction ID'
-            value={txId}
-            onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-              setTxId(event.target.value);
-            }}
-          />
-          <TextField
-            id='outlined-controlled'
-            label='Proposer Address'
-            value={proposerAddress}
-            onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-              setProposerAddress(event.target.value);
-            }}
-          />
-        </FormWithSpace>
-        <CodeSnippet
-          code={
-            `lotus msig approve ${msigAddress} ${txId} ${proposerAddress} ${voteFilAddress} 0 3844450837 ` +
-            cbor_encode(
-              encodeFunctionData({
-                abi: voteTrackerConfig.abi,
-                functionName: 'castVote',
-                args: [BigInt(vote)],
               }),
             )
           }
