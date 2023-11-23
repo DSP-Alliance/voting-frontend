@@ -169,7 +169,8 @@ function Register({
     <div>
       {showConnectorsModal && (
         <ConnectorsModal
-          open={true}
+          open
+          registering
           closeModal={({ openVoteModal }) => {
             openVoteModalRef.current = openVoteModal;
             setShowConnectorsModal(false);

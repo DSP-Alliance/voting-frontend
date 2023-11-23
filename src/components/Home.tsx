@@ -182,7 +182,10 @@ function Home() {
         {showRegister && (
           <RegisterModal
             open={showRegister}
-            closeModal={() => setShowRegister(false)}
+            closeModal={({ openVoteModal }) => {
+              if (openVoteModal) setShowVoteModal(true);
+              setShowRegister(false);
+            }}
             hasRegistered={hasRegistered}
             setHasRegistered={setHasRegistered}
             rawBytePower={rawBytePower}
@@ -193,6 +196,7 @@ function Home() {
         )}
         {showConnectors && (
           <ConnectorsModal
+            registering={false}
             open={showConnectors}
             closeModal={({ openVoteModal }) => {
               if (openVoteModal) setShowVoteModal(true);

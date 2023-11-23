@@ -3,9 +3,12 @@ import { Dialog, DialogTitle, DialogContent, IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import styled from 'styled-components';
 
+import RoundedButton from 'components/common/RoundedButton';
 import MultisigRegisterModal from 'components/MultisigRegister';
 import ManualMinerRegisterModal from 'components/ManualMinerRegister';
 import Register from './Register';
+
+const actionButtonWidth = '300px';
 
 const ButtonContainer = styled.div`
   display: flex;
@@ -21,7 +24,7 @@ const ModalButton = styled.button`
   border: 1px solid var(--primary);
   border-radius: 24px;
   padding: 8 24px;
-  width: 300px;
+  width: ${actionButtonWidth};
 
   &:hover {
     color: var(--white);
@@ -75,6 +78,12 @@ function RegisterModal({
         <DialogContent dividers>
           Your wallet is registered. Choose an option below.
           <ButtonContainer>
+            <RoundedButton
+              onClick={() => closeModal({ openVoteModal: true })}
+              width={actionButtonWidth}
+            >
+              Vote
+            </RoundedButton>
             <ModalButton onClick={() => setShowMultisigRegister(true)}>
               Register Multisig
             </ModalButton>

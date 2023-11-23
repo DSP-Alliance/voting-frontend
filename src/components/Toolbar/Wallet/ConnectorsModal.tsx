@@ -42,9 +42,11 @@ const ConnectButton = styled(Button)`
 function ConnectorsModal({
   open,
   closeModal,
+  registering,
 }: {
   open: boolean;
   closeModal: ({ openVoteModal }: { openVoteModal: boolean }) => void;
+  registering: boolean;
 }) {
   const { connect, connectors, error, isLoading, pendingConnector } =
     useConnect();
@@ -54,13 +56,13 @@ function ConnectorsModal({
 
   useEffect(() => {
     if (isConnected) {
-      if (lastFipVoteEnd && lastFipVoteEnd > Date.now()) {
+      if (!registering && lastFipVoteEnd && lastFipVoteEnd > Date.now()) {
         setShowAskToVoteModal(true);
       } else {
         closeModal({ openVoteModal: false });
       }
     }
-  }, [isConnected]);
+  }, [isConnected, registering]);
 
   function renderContent() {
     if (showAskToVoteModal) {
