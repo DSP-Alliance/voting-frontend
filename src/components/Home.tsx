@@ -89,6 +89,7 @@ function Home() {
   const [showConnectors, setShowConnectors] = useState(false);
   const [showVoteFactory, setShowVoteFactory] = useState(false);
   const [showVoteModal, setShowVoteModal] = useState(false);
+  const [failedToLoadFIP, setFailedToLoadFIP] = useState(false);
   const [loadingVotingPower, setLoadingVotingPower] = useState(false);
   const [rawBytePower, setRawBytePower] = useState<bigint>(BigInt(0));
   const [tokenPower, setTokenPower] = useState<bigint>(BigInt(0));
@@ -160,13 +161,15 @@ function Home() {
     getByteAndTokenPower();
   }, [address, lastFipAddress]);
 
+  const lastVoteHasFinished = voteEndTime ? voteEndTime <= Date.now() : true;
+
   return (
     <>
       <HomeContainer>
         <Header>
           <HeaderText>FIP Voting Dashboard</HeaderText>
           <ButtonContainer>
-            {isOwner && (voteEndTime ? voteEndTime <= Date.now() : true) && (
+            {isOwner && (failedToLoadFIP || lastVoteHasFinished) && (
               <StartVoteButton onClick={() => setShowVoteFactory(true)}>
                 Start Vote
               </StartVoteButton>
@@ -221,6 +224,7 @@ function Home() {
             hasRegistered={hasRegistered}
             showVoteModal={showVoteModal}
             setShowVoteModal={setShowVoteModal}
+            setFailedToLoadFIP={setFailedToLoadFIP}
           />
           <VoteHistory />
         </VoteContent>

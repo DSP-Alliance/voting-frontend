@@ -26,10 +26,12 @@ function LatestVote({
   hasRegistered,
   showVoteModal,
   setShowVoteModal,
+  setFailedToLoadFIP,
 }: {
   hasRegistered: boolean;
   showVoteModal: boolean;
   setShowVoteModal: React.Dispatch<React.SetStateAction<boolean>>;
+  setFailedToLoadFIP: (value: boolean) => void;
 }) {
   const [fipData, setFipData] = useState<FipData>();
   const [errorMessage, setErrorMessage] = useState('');
@@ -38,6 +40,7 @@ function LatestVote({
 
   useEffect(() => {
     async function getFIPInfo() {
+      setFailedToLoadFIP(false);
       if (lastFipNum) {
         try {
           const response = await getFip(lastFipNum);
@@ -45,6 +48,7 @@ function LatestVote({
         } catch (error: any) {
           console.error(error);
           setErrorMessage(error.message);
+          setFailedToLoadFIP(true);
         }
       }
     }
