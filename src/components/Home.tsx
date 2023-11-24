@@ -89,6 +89,7 @@ function Home() {
   const [showConnectors, setShowConnectors] = useState(false);
   const [showVoteFactory, setShowVoteFactory] = useState(false);
   const [showVoteModal, setShowVoteModal] = useState(false);
+  const [loadingVotingPower, setLoadingVotingPower] = useState(false);
   const [rawBytePower, setRawBytePower] = useState<bigint>(BigInt(0));
   const [tokenPower, setTokenPower] = useState<bigint>(BigInt(0));
 
@@ -135,6 +136,7 @@ function Home() {
 
   useEffect(() => {
     async function getByteAndTokenPower() {
+      setLoadingVotingPower(true);
       try {
         const [tokenPower, bytePower, minerTokenPower] =
           await publicClient.readContract({
@@ -146,10 +148,13 @@ function Home() {
 
         setRawBytePower(bytePower);
         setTokenPower(bytePower > 0 ? minerTokenPower : tokenPower);
-      } catch {
+      } catch (e) {
+        console.error(e);
         setTokenPower(BigInt(0));
         setRawBytePower(BigInt(0));
       }
+
+      setLoadingVotingPower(false);
     }
 
     getByteAndTokenPower();
@@ -175,7 +180,11 @@ function Home() {
               </ConnectButton>
             )}
             {isConnected && (
-              <WalletMenu rawBytePower={rawBytePower} tokenPower={tokenPower} />
+              <WalletMenu
+                loadingVotingPower={loadingVotingPower}
+                rawBytePower={rawBytePower}
+                tokenPower={tokenPower}
+              />
             )}
           </ButtonContainer>
         </Header>

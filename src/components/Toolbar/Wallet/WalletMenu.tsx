@@ -6,6 +6,7 @@ import { formatEther } from 'viem';
 
 import KebabMenuIcon from 'assets/kebab-menu.svg';
 import RoundedButton from 'common/RoundedButton';
+import Loading from 'common/Loading';
 import { formatBytesWithLabel } from 'utilities/helpers';
 
 const Image = styled.img`
@@ -27,9 +28,11 @@ const DisconnectText = styled.p`
 `;
 
 function WalletMenu({
+  loadingVotingPower,
   rawBytePower,
   tokenPower,
 }: {
+  loadingVotingPower: boolean;
   rawBytePower: bigint;
   tokenPower: bigint;
 }) {
@@ -52,6 +55,23 @@ function WalletMenu({
     setAnchorEl(null);
   };
 
+  function renderWallerPower() {
+    if (loadingVotingPower) return <Loading />;
+    if (rawBytePower === 0n && tokenPower === 0n)
+      return 'No FIL or RBP registered to wallet at this time.';
+    return (
+      <>
+        <span>Voting Power registered to Wallet</span>
+        <ul>
+          <li>
+            RBP: {formatBytesWithLabel(parseInt(rawBytePower.toString()))}
+          </li>
+          <li>{(+formatEther(tokenPower)).toFixed(4)} $FIL</li>
+        </ul>
+      </>
+    );
+  }
+
   return (
     <>
       <RoundedButton
@@ -73,12 +93,7 @@ function WalletMenu({
           'aria-labelledby': 'wallet-button',
         }}
       >
-        <WalletPower>
-          <span>
-            RBP: {formatBytesWithLabel(parseInt(rawBytePower.toString()))}
-          </span>
-          <span>{(+formatEther(tokenPower)).toFixed(4)} $FIL</span>
-        </WalletPower>
+        <WalletPower>{renderWallerPower()}</WalletPower>
         <MenuItem onClick={handleDisconnect}>
           <DisconnectText>Disconnect</DisconnectText>
         </MenuItem>
