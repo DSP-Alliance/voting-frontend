@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { DialogActions, FormControl, TextField } from '@mui/material';
+import { DialogActions, FormControl, TextField, Tooltip } from '@mui/material';
 import { encodeFunctionData } from 'viem';
 import axios from 'axios';
 
@@ -50,14 +50,19 @@ function MultisigRegisterForm({ closeModal }: { closeModal: () => void }) {
         </p>
         <p>1) Create the registration proposal</p>
         <FormControl fullWidth>
-          <TextField
-            id='outlined-controlled'
-            label='Multisig Address'
-            value={msigAddress}
-            onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-              setMsigAddress(event.target.value);
-            }}
-          />
+          <Tooltip
+            title='Input the multisig address you wish to register to vote with.'
+            placement='top'
+          >
+            <TextField
+              id='outlined-controlled'
+              label='Multisig Address'
+              value={msigAddress}
+              onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                setMsigAddress(event.target.value);
+              }}
+            />
+          </Tooltip>
         </FormControl>
         <CodeSnippet
           code={
@@ -77,22 +82,32 @@ function MultisigRegisterForm({ closeModal }: { closeModal: () => void }) {
         </p>
         <p>2) Approve the registration proposal with signers</p>
         <FormWithSpace fullWidth>
-          <TextField
-            id='outlined-controlled'
-            label='Transaction ID'
-            value={txId}
-            onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-              setTxId(event.target.value);
-            }}
-          />
-          <TextField
-            id='outlined-controlled'
-            label='Proposer Address'
-            value={proposerAddress}
-            onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-              setProposerAddress(event.target.value);
-            }}
-          />
+          <Tooltip
+            title='This will be displayed in the lotus cli after the proposal command was used and the transaction has completed.'
+            placement='top'
+          >
+            <TextField
+              id='outlined-controlled'
+              label='Transaction ID'
+              value={txId}
+              onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                setTxId(event.target.value);
+              }}
+            />
+          </Tooltip>
+          <Tooltip
+            title='The address that sent the proposal on behalf of the multisig.'
+            placement='top'
+          >
+            <TextField
+              id='outlined-controlled'
+              label='Proposer Address'
+              value={proposerAddress}
+              onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                setProposerAddress(event.target.value);
+              }}
+            />
+          </Tooltip>
         </FormWithSpace>
         <CodeSnippet
           code={

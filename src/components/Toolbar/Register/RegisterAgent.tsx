@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { TextField } from '@mui/material';
+import { TextField, Tooltip } from '@mui/material';
 
 import Loading from 'common/Loading';
 
@@ -28,7 +28,7 @@ const ButtonContainer = styled.div`
   align-items: center;
 `;
 
-function RegisterConfirmation({
+function RegisterAgent({
   loading,
   setShowConfirmation,
   setShowAddressField,
@@ -45,15 +45,27 @@ function RegisterConfirmation({
 }) {
   return (
     <>
-      <TextField
-        disabled={loading}
-        size='small'
-        margin='normal'
-        label='Agent Address'
-        fullWidth
-        value={agentAddress}
-        onChange={(e) => setAgentAddress(e.target.value)}
-      />
+      <Tooltip
+        title={
+          <span>
+            Input the ETH address of your agent. This can be found by looking up
+            your agent address on{' '}
+            <a href='https://filfox.info/'>Filfox - Filecoin explorer</a>, to
+            the right of where it says ‘ETH Address’.
+          </span>
+        }
+        placement='top'
+      >
+        <TextField
+          disabled={loading}
+          size='small'
+          margin='normal'
+          label='Agent Address'
+          fullWidth
+          value={agentAddress}
+          onChange={(e) => setAgentAddress(e.target.value)}
+        />
+      </Tooltip>
       <ButtonContainer>
         <BackButton onClick={() => setShowAddressField(false)}>
           Go back
@@ -75,4 +87,4 @@ function RegisterConfirmation({
   );
 }
 
-export default RegisterConfirmation;
+export default RegisterAgent;

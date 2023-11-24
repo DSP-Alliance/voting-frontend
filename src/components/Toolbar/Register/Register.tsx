@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { useAccount } from 'wagmi';
 import { getAddress } from 'viem';
 import axios from 'axios';
+import { Tooltip } from '@mui/material';
 
 import { voteTrackerConfig } from 'constants/voteTrackerConfig';
 import { ownableConfig } from 'constants/ownableConfig';
@@ -183,12 +184,22 @@ function Register({
             <ModalButton disabled={loading} onClick={handleWalletConnect}>
               {loading ? <Loading size={20} /> : 'Register Wallet'}
             </ModalButton>
-            <ModalButton
-              disabled={loading}
-              onClick={handleWalletWithAgentClick}
+            <Tooltip
+              title={
+                <span>
+                  Select this option if you are staking your miners with{' '}
+                  <a href='https://glif.io'>glif.io</a> and have an agent
+                  address.
+                </span>
+              }
             >
-              Register Wallet With Agent
-            </ModalButton>
+              <ModalButton
+                disabled={loading}
+                onClick={handleWalletWithAgentClick}
+              >
+                Register Wallet With Agent
+              </ModalButton>
+            </Tooltip>
             <ModalButton onClick={() => setShowMultisigRegister(true)}>
               Register Multisig
             </ModalButton>

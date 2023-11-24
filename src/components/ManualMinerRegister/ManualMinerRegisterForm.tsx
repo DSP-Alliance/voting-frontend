@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { DialogActions, FormControl, TextField } from '@mui/material';
+import { DialogActions, FormControl, TextField, Tooltip } from '@mui/material';
 import { encodeFunctionData, Address, getAddress } from 'viem';
 import axios from 'axios';
 
@@ -62,37 +62,47 @@ function ManualMinerRegisterForm({ closeModal }: { closeModal: () => void }) {
           your ETH wallet address into this form.
         </p>
         <FormWithSpace fullWidth>
-          <TextField
-            id='outlined-controlled'
-            label='Voter Address'
-            value={voterInput}
-            onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-              try {
-                setVoterAddress(getAddress(event.target.value));
-                setVoterInput(event.target.value);
-              } catch {
-                setVoterInput(event.target.value);
-              }
-            }}
-          />
-          <TextField
-            id='outlined-controlled'
-            label='Miner ID'
-            value={minerIdInput}
-            error={inputError}
-            helperText={inputError ? 'Invalid Miner ID' : ''}
-            inputProps={{ inputMode: 'text', pattern: '[0-9]*' }}
-            onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-              try {
-                setMinerId(BigInt(event.target.value));
-                setMinerIdInput(event.target.value);
-                setInputError(false);
-              } catch {
-                setMinerIdInput(event.target.value);
-                setInputError(true);
-              }
-            }}
-          />
+          <Tooltip
+            title='Wallet Address you registered to vote with.'
+            placement='top'
+          >
+            <TextField
+              id='outlined-controlled'
+              label='Voter Address'
+              value={voterInput}
+              onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                try {
+                  setVoterAddress(getAddress(event.target.value));
+                  setVoterInput(event.target.value);
+                } catch {
+                  setVoterInput(event.target.value);
+                }
+              }}
+            />
+          </Tooltip>
+          <Tooltip
+            title='Your Miner ID without the ‘f’ character. For example, if your miner id is f12345, you would input 1234.'
+            placement='top'
+          >
+            <TextField
+              id='outlined-controlled'
+              label='Miner ID'
+              value={minerIdInput}
+              error={inputError}
+              helperText={inputError ? 'Invalid Miner ID' : ''}
+              inputProps={{ inputMode: 'text', pattern: '[0-9]*' }}
+              onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                try {
+                  setMinerId(BigInt(event.target.value));
+                  setMinerIdInput(event.target.value);
+                  setInputError(false);
+                } catch {
+                  setMinerIdInput(event.target.value);
+                  setInputError(true);
+                }
+              }}
+            />
+          </Tooltip>
         </FormWithSpace>
         <CodeSnippet code={CODE} showOptions={true} />
         <DialogActions>
