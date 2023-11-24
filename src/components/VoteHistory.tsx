@@ -4,8 +4,8 @@ import ClipLoader from 'react-spinners/ClipLoader';
 
 import { getFip } from 'services/fipService';
 import { useFipDataContext } from 'common/FipDataContext';
+import ErrorMessage from 'common/ErrorMessage';
 import VoteData from 'components/VoteData';
-import { set } from 'react-hook-form';
 
 const VoteHistoryContainer = styled.div`
   display: flex;
@@ -42,10 +42,17 @@ function VoteHistory() {
     async function getFIPInfo() {
       setLoading(true);
       try {
-        const response = await Promise.all(fips.map((fip) => getFip(fip)));
-        setAllFipData(response);
+        const response = await Promise.all(
+          fips.map((fip) =>
+            getFip(fip).catch((error) => {
+              console.error(error);
+              return null;
+            }),
+          ),
+        );
+        setAllFipData(response.filter((a) => a));
       } catch (error: any) {
-        setErrorMessage(JSON.stringify(error));
+        setErrorMessage(error.message);
       }
       setLoading(false);
     }
@@ -56,6 +63,7 @@ function VoteHistory() {
   return (
     <VoteHistoryContainer>
       <Header>Vote History</Header>
+      {errorMessage && <ErrorMessage message={errorMessage} />}
       {(loading || loadingFipData) && (
         <LoaderContainer>
           <ClipLoader color='var(--primary)' />

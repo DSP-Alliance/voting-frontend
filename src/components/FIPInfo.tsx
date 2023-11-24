@@ -30,6 +30,7 @@ function FIPInfo() {
           const response = await getFip(num);
           setFipData(response);
         } catch (error: any) {
+          console.error({ error });
           setErrorMessage(JSON.stringify(error));
         }
       }

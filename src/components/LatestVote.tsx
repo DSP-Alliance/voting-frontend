@@ -43,7 +43,8 @@ function LatestVote({
           const response = await getFip(lastFipNum);
           setFipData(response);
         } catch (error: any) {
-          setErrorMessage(JSON.stringify(error));
+          console.error(error);
+          setErrorMessage(error.message);
         }
       }
     }
