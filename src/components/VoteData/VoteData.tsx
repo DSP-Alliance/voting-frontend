@@ -201,12 +201,13 @@ function VoteData({
   function renderEndTime() {
     if (!voteEndTime) return null;
 
-    if (voteEndTime > Date.now())
+    if (voteEndTime > Date.now()) {
       return (
         <span>
           Time left: <Countdown date={voteEndTime} />
         </span>
       );
+    }
 
     return (
       <VoteEndedLabel>

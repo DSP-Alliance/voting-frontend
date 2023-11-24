@@ -114,6 +114,7 @@ function Home() {
     }
 
     if (isConnected) getOwner();
+    if (!isConnected) localStorage.removeItem('lastFipVoted');
   }, [isConnected]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
