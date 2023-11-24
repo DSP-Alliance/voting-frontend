@@ -15,7 +15,9 @@ import { voteTrackerConfig } from 'constants/voteTrackerConfig';
 import { cbor_encode } from 'utilities/helpers';
 import CodeSnippet from 'common/CodeSnippet';
 import ErrorMessage from 'common/ErrorMessage';
+import Loading from 'common/Loading';
 import { useFipDataContext } from 'common/FipDataContext';
+import { publicClient } from 'services/clients';
 
 const Form = styled.form`
   display: flex;
@@ -27,6 +29,10 @@ const FormWithSpace = styled(FormControl)`
   gap: 12px;
 `;
 
+const QuestionSection = styled.div`
+  margin-bottom: 12px;
+`;
+
 function MultisigRegisterForm({ closeModal }: { closeModal: () => void }) {
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [vote, setVote] = useState<number | string>(0);
@@ -34,8 +40,12 @@ function MultisigRegisterForm({ closeModal }: { closeModal: () => void }) {
   const [msigAddress, setMsigAddress] = useState<string>('');
   const [txId, setTxId] = useState<string>('');
   const [proposerAddress, setProposerAddress] = useState<string>('');
+  const [questionText, setQuestionText] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [yesOptions, setYesOptions] = useState<string[]>([]);
 
-  const { lastFipAddress: currentVoteAddress } = useFipDataContext();
+  const { lastFipAddress: currentVoteAddress, lastFipAddress } =
+    useFipDataContext();
 
   useEffect(() => {
     async function getAddresses() {
@@ -52,6 +62,50 @@ function MultisigRegisterForm({ closeModal }: { closeModal: () => void }) {
     getAddresses();
   }, []);
 
+  useEffect(() => {
+    async function getVoteInfo() {
+      if (lastFipAddress) {
+        setLoading(true);
+        try {
+          const question = await publicClient.readContract({
+            address: lastFipAddress,
+            abi: voteTrackerConfig.abi,
+            functionName: 'question',
+          });
+          const yesOption1 = await publicClient.readContract({
+            address: lastFipAddress,
+            abi: voteTrackerConfig.abi,
+            functionName: 'yesOptions',
+            args: [BigInt(0)],
+          });
+          const yesOption2 = await publicClient.readContract({
+            address: lastFipAddress,
+            abi: voteTrackerConfig.abi,
+            functionName: 'yesOptions',
+            args: [BigInt(1)],
+          });
+
+          const newYesOptions = [
+            yesOption1,
+            ...(yesOption2 ? [yesOption2] : []),
+          ];
+
+          setQuestionText(question);
+
+          setYesOptions(newYesOptions);
+          setLoading(false);
+        } catch (err) {
+          console.error(err);
+          setYesOptions([]);
+        }
+      }
+    }
+
+    getVoteInfo();
+  }, [lastFipAddress]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  if (loading) return <Loading />;
+
   return (
     <>
       <Form>
@@ -61,6 +115,9 @@ function MultisigRegisterForm({ closeModal }: { closeModal: () => void }) {
           data to include in your proposal.
         </p>
         <p>1) Create the vote proposal</p>
+        <QuestionSection>
+          <b>Question:</b> {questionText}
+        </QuestionSection>
         <FormControl fullWidth>
           <InputLabel id='demo-simple-select-label'>Vote</InputLabel>
           <Select
@@ -72,8 +129,8 @@ function MultisigRegisterForm({ closeModal }: { closeModal: () => void }) {
               setVote(e.target.value);
             }}
           >
-            <MenuItem value={0}>Yes</MenuItem>
-            <MenuItem value={3}>Yes 2</MenuItem>
+            <MenuItem value={0}>{yesOptions[0] || 'Yes'}</MenuItem>
+            <MenuItem value={3}>{yesOptions[1] || 'Yes 2'}</MenuItem>
             <MenuItem value={1}>No</MenuItem>
             <MenuItem value={2}>Abstain</MenuItem>
           </Select>
