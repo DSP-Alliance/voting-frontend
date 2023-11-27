@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import ClipLoader from 'react-spinners/ClipLoader';
+import { useTranslation } from 'react-i18next';
 
 import { getFip } from 'services/fipService';
 import { useFipDataContext } from 'common/FipDataContext';
@@ -32,6 +33,7 @@ const LoaderContainer = styled.div`
 `;
 
 function VoteHistory() {
+  const { t } = useTranslation();
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [allFipData, setAllFipData] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
@@ -62,7 +64,7 @@ function VoteHistory() {
 
   return (
     <VoteHistoryContainer>
-      <Header>Vote History</Header>
+      <Header>{t('voteHistory')}</Header>
       {errorMessage && <ErrorMessage message={errorMessage} />}
       {(loading || loadingFipData) && (
         <LoaderContainer>

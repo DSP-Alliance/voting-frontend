@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { DialogActions, FormControl, TextField, Tooltip } from '@mui/material';
 import { encodeFunctionData, Address, getAddress } from 'viem';
 import axios from 'axios';
+import { useTranslation } from 'react-i18next';
 
 import CodeSnippet from 'common/CodeSnippet';
 import ErrorMessage from 'common/ErrorMessage';
@@ -20,6 +21,7 @@ const FormWithSpace = styled(FormControl)`
 `;
 
 function ManualMinerRegisterForm({ closeModal }: { closeModal: () => void }) {
+  const { t } = useTranslation();
   const [errorMessage, setErrorMessage] = useState<string>();
   const [factoryFilAddress, setFactoryFilAddress] = useState<string>('');
   const [voterInput, setVoterInput] = useState<string>(ZERO_ADDRESS);
@@ -53,22 +55,17 @@ function ManualMinerRegisterForm({ closeModal }: { closeModal: () => void }) {
     getAddress();
   }, []);
 
+  const i18nKey = 'modals.manualMinerRegister.form';
+
   return (
     <>
       <Form>
-        <p>
-          You can manually add miners to a registered voter by running a command
-          on your miner. Register as a voter using this site, and then insert
-          your ETH wallet address into this form.
-        </p>
+        <p>{t(`${i18nKey}.header`)}</p>
         <FormWithSpace fullWidth>
-          <Tooltip
-            title='Wallet Address you registered to vote with.'
-            placement='top'
-          >
+          <Tooltip title={t(`${i18nKey}.voteAddress.tooltip`)} placement='top'>
             <TextField
               id='outlined-controlled'
-              label='Voter Address'
+              label={t(`${i18nKey}.voteAddress.label`)}
               value={voterInput}
               onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
                 try {
@@ -80,16 +77,13 @@ function ManualMinerRegisterForm({ closeModal }: { closeModal: () => void }) {
               }}
             />
           </Tooltip>
-          <Tooltip
-            title='Your Miner ID without the ‘f’ character. For example, if your miner id is f12345, you would input 1234.'
-            placement='top'
-          >
+          <Tooltip title={t(`${i18nKey}.minerID.tooltip`)} placement='top'>
             <TextField
               id='outlined-controlled'
-              label='Miner ID'
+              label={t(`${i18nKey}.minerID.label`)}
               value={minerIdInput}
               error={inputError}
-              helperText={inputError ? 'Invalid Miner ID' : ''}
+              helperText={inputError ? t(`${i18nKey}.minerID.invalid`) : ''}
               inputProps={{ inputMode: 'text', pattern: '[0-9]*' }}
               onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
                 try {
@@ -106,7 +100,7 @@ function ManualMinerRegisterForm({ closeModal }: { closeModal: () => void }) {
         </FormWithSpace>
         <CodeSnippet code={CODE} showOptions={true} />
         <DialogActions>
-          <button onClick={closeModal}>Okay</button>
+          <button onClick={closeModal}>{t(`${i18nKey}.closeButton`)}</button>
         </DialogActions>
       </Form>
       {errorMessage && <ErrorMessage message={errorMessage} />}

@@ -1,7 +1,8 @@
 import React from 'react';
 import { Dialog, DialogTitle, DialogContent, IconButton } from '@mui/material';
-import MultisigRegisterForm from './MultisigRegisterForm';
+import { useTranslation } from 'react-i18next';
 import CloseIcon from '@mui/icons-material/Close';
+import MultisigRegisterForm from './MultisigRegisterForm';
 
 function MultisigRegisterModal({
   open,
@@ -10,6 +11,8 @@ function MultisigRegisterModal({
   open: boolean;
   closeModal: () => void;
 }) {
+  const { t } = useTranslation();
+
   return (
     <Dialog
       open={open}
@@ -22,7 +25,7 @@ function MultisigRegisterModal({
         },
       }}
     >
-      <DialogTitle>Register Multisig</DialogTitle>
+      <DialogTitle>{t('modals.multisigRegister.title')}</DialogTitle>
       <IconButton
         aria-label='close'
         onClick={closeModal}

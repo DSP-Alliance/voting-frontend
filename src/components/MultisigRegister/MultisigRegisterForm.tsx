@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { DialogActions, FormControl, TextField, Tooltip } from '@mui/material';
 import { encodeFunctionData } from 'viem';
 import axios from 'axios';
+import { useTranslation } from 'react-i18next';
 
 import { voteFactoryConfig } from 'constants/voteFactoryConfig';
 import { ZERO_ADDRESS, cbor_encode } from 'utilities/helpers';
@@ -20,6 +21,7 @@ const FormWithSpace = styled(FormControl)`
 `;
 
 function MultisigRegisterForm({ closeModal }: { closeModal: () => void }) {
+  const { t } = useTranslation();
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [factoryFilAddress, setFactoryFilAddress] = useState<string>('');
   const [msigAddress, setMsigAddress] = useState<string>('');
@@ -41,22 +43,21 @@ function MultisigRegisterForm({ closeModal }: { closeModal: () => void }) {
     getAddresses();
   }, []);
 
+  const i18nKey = 'modals.multisigRegister.form';
+
   return (
     <>
       <Form>
-        <p>
-          In order to use a multisignature wallet as a voter, you must propose a
-          new transaction in order to register as a voter.
-        </p>
-        <p>1) Create the registration proposal</p>
+        <p>{t(`${i18nKey}.header`)}</p>
+        <p>{t(`${i18nKey}.step1`)}</p>
         <FormControl fullWidth>
           <Tooltip
-            title='Input the multisig address you wish to register to vote with.'
+            title={t(`${i18nKey}.multisigAddress.tooltip`)}
             placement='top'
           >
             <TextField
               id='outlined-controlled'
-              label='Multisig Address'
+              label={t(`${i18nKey}.multisigAddress.label`)}
               value={msigAddress}
               onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
                 setMsigAddress(event.target.value);
@@ -76,19 +77,16 @@ function MultisigRegisterForm({ closeModal }: { closeModal: () => void }) {
             )
           }
         />
-        <p>
-          Depending on your multisig approval threshold, N of M signers must run
-          the approval command.
-        </p>
-        <p>2) Approve the registration proposal with signers</p>
+        <p>{t(`${i18nKey}.subheader`)}</p>
+        <p>{t(`${i18nKey}.step2`)}</p>
         <FormWithSpace fullWidth>
           <Tooltip
-            title='This will be displayed in the lotus cli after the proposal command was used and the transaction has completed.'
+            title={t(`${i18nKey}.transactionID.tooltip`)}
             placement='top'
           >
             <TextField
               id='outlined-controlled'
-              label='Transaction ID'
+              label={t(`${i18nKey}.transactionID.label`)}
               value={txId}
               onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
                 setTxId(event.target.value);
@@ -96,12 +94,12 @@ function MultisigRegisterForm({ closeModal }: { closeModal: () => void }) {
             />
           </Tooltip>
           <Tooltip
-            title='The address that sent the proposal on behalf of the multisig.'
+            title={t(`${i18nKey}.proposerAddress.tooltip`)}
             placement='top'
           >
             <TextField
               id='outlined-controlled'
-              label='Proposer Address'
+              label={t(`${i18nKey}.proposerAddress.label`)}
               value={proposerAddress}
               onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
                 setProposerAddress(event.target.value);
@@ -122,7 +120,7 @@ function MultisigRegisterForm({ closeModal }: { closeModal: () => void }) {
           }
         />
         <DialogActions>
-          <button onClick={closeModal}>Okay</button>
+          <button onClick={closeModal}>{t(`${i18nKey}.closeButton`)}</button>
         </DialogActions>
       </Form>
       {errorMessage && <ErrorMessage message={errorMessage} />}

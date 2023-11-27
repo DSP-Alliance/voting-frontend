@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Dialog, DialogTitle, DialogContent, IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import styled from 'styled-components';
+import { useTranslation } from 'react-i18next';
 
 import RoundedButton from 'components/common/RoundedButton';
 import MultisigRegisterModal from 'components/MultisigRegister';
@@ -52,12 +53,13 @@ function RegisterModal({
 }) {
   const [showMultisigRegister, setShowMultisigRegister] = useState(false);
   const [showMinerRegister, setShowMinerRegister] = useState(false);
+  const { t } = useTranslation();
 
   function renderRegisterStart() {
     return (
       <>
         <DialogContent dividers>
-          Please choose how you want to register.
+          {t('modals.register.start.header')}
           <Register
             setShowMultisigRegister={setShowMultisigRegister}
             setHasRegistered={setHasRegistered}
@@ -76,19 +78,19 @@ function RegisterModal({
     return (
       <>
         <DialogContent dividers>
-          Your wallet is registered. Choose an option below.
+          {t('modals.register.finished.header')}
           <ButtonContainer>
             <RoundedButton
               onClick={() => closeModal({ openVoteModal: true })}
               width={actionButtonWidth}
             >
-              Vote
+              {t('buttons.vote')}
             </RoundedButton>
             <ModalButton onClick={() => setShowMultisigRegister(true)}>
-              Register Multisig
+              {t('modals.register.buttons.multisig')}
             </ModalButton>
             <ModalButton onClick={() => setShowMinerRegister(true)}>
-              Register Miner
+              {t('modals.register.buttons.miner')}
             </ModalButton>
           </ButtonContainer>
         </DialogContent>
@@ -108,7 +110,7 @@ function RegisterModal({
           },
         }}
       >
-        <DialogTitle>Register</DialogTitle>
+        <DialogTitle>{t('modals.register.title')}</DialogTitle>
         <IconButton
           aria-label='close'
           onClick={() => closeModal({ openVoteModal: false })}

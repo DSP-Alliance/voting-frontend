@@ -2,6 +2,7 @@ import React from 'react';
 import { Cell, PieChart, Pie, Tooltip } from 'recharts';
 import styled from 'styled-components';
 import { formatEther } from 'viem';
+import { useTranslation } from 'react-i18next';
 
 import { formatBytesWithLabel } from 'utilities/helpers';
 import {
@@ -64,6 +65,7 @@ function ResultsChart({
   type: string;
   winning: string;
 }) {
+  const { t } = useTranslation();
   return (
     <ChartArea>
       <PieChart width={280} height={280}>
@@ -90,10 +92,12 @@ function ResultsChart({
         <div>
           <span>
             <Label>{type}</Label>
-            <InfoText>WINNING: {winning || '-'}</InfoText>
+            <InfoText>
+              {t('winning_upper')}: {winning || '-'}
+            </InfoText>
             <br />
             <DataText>
-              TOTAL:{' '}
+              {t('total_upper')}:{' '}
               <InfoText>
                 {formatValue(totalCount, { dataKey: type }) || '-'}
               </InfoText>

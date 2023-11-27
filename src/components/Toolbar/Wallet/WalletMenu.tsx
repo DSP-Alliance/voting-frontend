@@ -3,6 +3,7 @@ import { Menu, MenuItem } from '@mui/material';
 import { useDisconnect } from 'wagmi';
 import styled from 'styled-components';
 import { formatEther } from 'viem';
+import { useTranslation } from 'react-i18next';
 
 import KebabMenuIcon from 'assets/kebab-menu.svg';
 import RoundedButton from 'common/RoundedButton';
@@ -36,6 +37,7 @@ function WalletMenu({
   rawBytePower: bigint;
   tokenPower: bigint;
 }) {
+  const { t } = useTranslation();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
 
@@ -58,15 +60,18 @@ function WalletMenu({
   function renderWallerPower() {
     if (loadingVotingPower) return <Loading />;
     if (rawBytePower === 0n && tokenPower === 0n)
-      return 'No FIL or RBP registered to wallet at this time.';
+      return t('messages.noVotingPower');
     return (
       <>
-        <span>Voting Power registered to Wallet</span>
+        <span>{t('labels.votingPower')}</span>
         <ul>
           <li>
-            RBP: {formatBytesWithLabel(parseInt(rawBytePower.toString()))}
+            {t('labels.rbp')}:{' '}
+            {formatBytesWithLabel(parseInt(rawBytePower.toString()))}
           </li>
-          <li>{(+formatEther(tokenPower)).toFixed(4)} $FIL</li>
+          <li>
+            {(+formatEther(tokenPower)).toFixed(4)} ${t('labels.fil')}
+          </li>
         </ul>
       </>
     );
@@ -81,7 +86,7 @@ function WalletMenu({
         aria-expanded={open ? 'true' : undefined}
         onClick={handleClick}
       >
-        Wallet
+        {t('buttons.wallet')}
         <Image src={KebabMenuIcon} />
       </RoundedButton>
       <Menu
@@ -95,7 +100,7 @@ function WalletMenu({
       >
         <WalletPower>{renderWallerPower()}</WalletPower>
         <MenuItem onClick={handleDisconnect}>
-          <DisconnectText>Disconnect</DisconnectText>
+          <DisconnectText>{t('buttons.disconnect')}</DisconnectText>
         </MenuItem>
       </Menu>
     </>

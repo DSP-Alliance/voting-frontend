@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useAccount } from 'wagmi';
 import styled from 'styled-components';
+import { useTranslation } from 'react-i18next';
 
 import { voteFactoryConfig } from 'constants/voteFactoryConfig';
 import { publicClient } from 'services/clients';
@@ -83,6 +84,7 @@ const VoteContent = styled.div`
 
 function Home() {
   const { address, isConnected } = useAccount();
+  const { t } = useTranslation();
   const [isOwner, setIsOwner] = useState(false);
   const [hasRegistered, setHasRegistered] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
@@ -168,19 +170,19 @@ function Home() {
     <>
       <HomeContainer>
         <Header>
-          <HeaderText>FIP Voting Dashboard</HeaderText>
+          <HeaderText>{t('title')}</HeaderText>
           <ButtonContainer>
             {isOwner && (failedToLoadFIP || lastVoteHasFinished) && (
               <StartVoteButton onClick={() => setShowVoteFactory(true)}>
-                Start Vote
+                {t('buttons.startVote')}
               </StartVoteButton>
             )}
             <RegisterButton onClick={() => setShowRegister(true)}>
-              Register
+              {t('buttons.register')}
             </RegisterButton>
             {!isConnected && (
               <ConnectButton onClick={() => setShowConnectors(true)}>
-                Connect
+                {t('buttons.connect')}
               </ConnectButton>
             )}
             {isConnected && (

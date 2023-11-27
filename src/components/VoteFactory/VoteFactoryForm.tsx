@@ -8,6 +8,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { useContractWrite, useWaitForTransaction } from 'wagmi';
 import ClipLoader from 'react-spinners/ClipLoader';
+import { useTranslation } from 'react-i18next';
 
 import { publicClient } from 'services/clients';
 import { voteFactoryConfig } from 'constants/voteFactoryConfig';
@@ -48,6 +49,7 @@ const LoaderWithMargin = styled(ClipLoader)`
 const today = dayjs();
 
 function VoteFactoryForm({ closeModal }: { closeModal: () => void }) {
+  const { t } = useTranslation();
   const [allLsdTokens, setAllLsdTokens] = useState<Address[]>([]);
   const [errorMessage, setErrorMessage] = useState('');
   const [isCheckingForDeployed, setIsCheckingForDeployed] = useState(false);
@@ -177,6 +179,7 @@ function VoteFactoryForm({ closeModal }: { closeModal: () => void }) {
     setAllLsdTokens((prev) => [...prev, currentLsdToken as Address]);
     setValue(`lsdToken${allLsdTokens.length + 1}`, '');
   }
+  const i18nKey = 'modals.voteFactory.form';
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -184,24 +187,24 @@ function VoteFactoryForm({ closeModal }: { closeModal: () => void }) {
         <Controller
           name='fipNum'
           control={control}
-          rules={{ required: 'Required' }}
+          rules={{ required: t('required') }}
           render={({ field: { onChange, value }, fieldState: { error } }) => (
             <TextField
               required
               type='number'
-              helperText={error ? 'Enter the FIP number' : null}
+              helperText={error ? t(`${i18nKey}.fipNumber.invalid`) : null}
               error={!!error}
               onChange={onChange}
               onBlur={() => trigger('fipNum')}
               value={value || ''}
               fullWidth
-              label='FIP Number'
+              label={t(`${i18nKey}.fipNumber.label`)}
               variant='outlined'
             />
           )}
         />
         <DateTimePicker
-          label='End Date for the vote'
+          label={t(`${i18nKey}.endDate.label`)}
           value={endDate}
           onChange={(newValue) => setEndDate(newValue)}
           minDateTime={today}
@@ -209,19 +212,19 @@ function VoteFactoryForm({ closeModal }: { closeModal: () => void }) {
         <Controller
           name='question'
           control={control}
-          rules={{ required: 'Required' }}
+          rules={{ required: t('required') }}
           render={({ field: { onChange, value }, fieldState: { error } }) => (
             <TextField
               required
               type='text'
-              helperText={error ? 'Enter the question to ask' : null}
+              helperText={error ? t(`${i18nKey}.question.invalid`) : null}
               size='small'
               error={!!error}
               onChange={onChange}
               onBlur={() => trigger('question')}
               value={value || ''}
               fullWidth
-              label='Question'
+              label={t(`${i18nKey}.question.label`)}
               variant='outlined'
             />
           )}
@@ -229,18 +232,18 @@ function VoteFactoryForm({ closeModal }: { closeModal: () => void }) {
         <Controller
           name='yesOptionOne'
           control={control}
-          rules={{ required: 'Required' }}
+          rules={{ required: t('required') }}
           render={({ field: { onChange, value }, fieldState: { error } }) => (
             <TextField
               required
               type='text'
-              helperText={error ? 'Enter the text for the yes option' : null}
+              helperText={error ? t(`${i18nKey}.yesOptionOne.invalid`) : null}
               error={!!error}
               onChange={onChange}
               onBlur={() => trigger('yesOptionOne')}
               value={value || ''}
               fullWidth
-              label='Yes Option 1'
+              label={t(`${i18nKey}.yesOptionOne.label`)}
               variant='outlined'
             />
           )}
@@ -255,7 +258,7 @@ function VoteFactoryForm({ closeModal }: { closeModal: () => void }) {
               onBlur={() => trigger('yesOptionTwo')}
               value={value || ''}
               fullWidth
-              label='Yes Option 2 (optional)'
+              label={t(`${i18nKey}.yesOptionTwo.label`)}
               variant='outlined'
             />
           )}
@@ -269,36 +272,36 @@ function VoteFactoryForm({ closeModal }: { closeModal: () => void }) {
               <TextField
                 required
                 placeholder='0x0000...0000'
-                helperText={error ? 'Enter a token value' : null}
+                helperText={error ? t(`${i18nKey}.lsdToken.invalid`) : null}
                 error={!!error}
                 value={value || ''}
                 onChange={onChange}
                 onBlur={() => trigger(`lsdToken${allLsdTokens.length + 1}`)}
                 fullWidth
-                label='LSD Token'
+                label={t(`${i18nKey}.lsdToken.label`)}
                 variant='outlined'
                 margin='dense'
               />
             )}
             {...(!allLsdTokens.length
-              ? { rules: { required: 'Required' } }
+              ? { rules: { required: t('required') } }
               : {})}
           />
           <AddTokenButton
             onClick={addLsdTokenField}
             disabled={!watch(`lsdToken${allLsdTokens.length + 1}`)}
           >
-            Add LSD Token
+            {t(`${i18nKey}.lsdToken.addButton`)}
           </AddTokenButton>
         </LsdTokensContainer>
         <DialogActions>
-          <button onClick={closeModal}>Cancel</button>
+          <button onClick={closeModal}>{t('cancel')}</button>
           {(isLoadingWrite || isLoadingWait || isCheckingForDeployed) && (
             <LoaderWithMargin color='var(--primary)' size='20px' />
           )}
           {!isLoadingWrite && !isLoadingWait && !isCheckingForDeployed && (
             <button type='submit' onClick={onSubmit}>
-              Start Vote
+              {t('startVote')}
             </button>
           )}
         </DialogActions>

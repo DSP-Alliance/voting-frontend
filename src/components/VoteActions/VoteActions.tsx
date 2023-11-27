@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
+import { useTranslation } from 'react-i18next';
 
 import { publicClient } from 'services/clients';
 import { voteTrackerConfig } from 'constants/voteTrackerConfig';
@@ -39,6 +40,7 @@ function VoteActions({
   hasVoted,
   setHasVoted,
 }: VoteActionsProps) {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [questionText, setQuestionText] = useState('');
   const [winningVoteText, setWinningVoteText] = useState('');
@@ -108,9 +110,11 @@ function VoteActions({
   ) {
     return (
       <LatestVoteContent>
-        <Header>Latest Vote Results</Header>
+        <Header>{t('modals.voteActions.latestVoteResults')}</Header>
         <QuestionText>{questionText}</QuestionText>
-        <QuestionText>Winning vote: {winningVoteText}</QuestionText>
+        <QuestionText>
+          {t('modals.voteActions.winningVote')}: {winningVoteText}
+        </QuestionText>
         <VoteResults voteResultsData={voteResultsData} />
       </LatestVoteContent>
     );
@@ -119,7 +123,7 @@ function VoteActions({
   if (voteEndTime && voteEndTime > Date.now() && !hasVoted) {
     return (
       <Content>
-        <Header>Choose Vote</Header>
+        <Header>{t('modals.VoteActions.chooseVote')}</Header>
         <QuestionText>{questionText}</QuestionText>
         {hasRegistered && (
           <VotePicker
@@ -130,7 +134,7 @@ function VoteActions({
         )}
         {!hasRegistered && (
           <p>
-            <i>Register in order to vote</i>
+            <i>{t('modals.VoteActions.registerToVote')}</i>
           </p>
         )}
       </Content>

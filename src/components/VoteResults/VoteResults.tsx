@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import ClipLoader from 'react-spinners/ClipLoader';
+import { useTranslation } from 'react-i18next';
 
 import ResultsChart from 'components/VoteResults/ResultsChart';
 import type { VoteResultsData } from 'hooks/useVoteResults';
@@ -30,10 +31,11 @@ function VoteResults({
 }: {
   voteResultsData: VoteResultsData;
 }) {
+  const { t } = useTranslation();
   if (loading) return <ClipLoader color='var(--primary)' />;
 
   if (!Boolean(totalRbp) && !Boolean(totalTokens) && !Boolean(totalMinerTokens))
-    return <InfoText>No vote data</InfoText>;
+    return <InfoText>{t('noVoteData')}</InfoText>;
 
   return (
     <ChartContainer>

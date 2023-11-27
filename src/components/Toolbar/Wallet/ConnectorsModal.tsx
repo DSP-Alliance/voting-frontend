@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useConnect, useAccount } from 'wagmi';
 import styled from 'styled-components';
+import { useTranslation } from 'react-i18next';
 import {
   Button,
   Dialog,
@@ -48,6 +49,7 @@ function ConnectorsModal({
   closeModal: ({ openVoteModal }: { openVoteModal: boolean }) => void;
   registering: boolean;
 }) {
+  const { t } = useTranslation();
   const { connect, connectors, error, isLoading, pendingConnector } =
     useConnect();
   const [showAskToVoteModal, setShowAskToVoteModal] = useState(false);
@@ -77,21 +79,19 @@ function ConnectorsModal({
             },
           }}
         >
-          <DialogContent>
-            Would you like to cast a vote on the current FIP?
-          </DialogContent>
+          <DialogContent>{t('modals.connectors.header')}</DialogContent>
           <DialogActions>
             <Button
               onClick={() => closeModal({ openVoteModal: true })}
               variant='contained'
             >
-              Yes
+              ${t('yes')}
             </Button>
             <Button
               onClick={() => closeModal({ openVoteModal: false })}
               variant='outlined'
             >
-              No
+              ${t('no')}
             </Button>
           </DialogActions>
         </Dialog>
@@ -109,10 +109,10 @@ function ConnectorsModal({
           },
         }}
       >
-        <DialogTitle>Connect Wallet</DialogTitle>
+        <DialogTitle>{t('modals.connectors.title')}</DialogTitle>
         <DialogContent dividers>
           <OptionsContainer>
-            Choose a method to connect.
+            {t('modals.connectors.optionsLabel')}
             {error && <ErrorMessage message={error.message} />}
             <ConnectorsContainer>
               {connectors.map((connector) => (

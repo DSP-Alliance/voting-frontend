@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
+import { useTranslation } from 'react-i18next';
 
 import { getFip } from 'services/fipService';
 import type { FipData } from 'services/fipService';
@@ -33,6 +34,7 @@ function LatestVote({
   setShowVoteModal: React.Dispatch<React.SetStateAction<boolean>>;
   setFailedToLoadFIP: (value: boolean) => void;
 }) {
+  const { t } = useTranslation();
   const [fipData, setFipData] = useState<FipData>();
   const [errorMessage, setErrorMessage] = useState('');
 
@@ -58,7 +60,7 @@ function LatestVote({
 
   return (
     <VoteDataContainer>
-      <Header>Current Vote</Header>
+      <Header>{t('latestVote')}</Header>
       {loadingFipData && <Loading />}
       {errorMessage && <ErrorMessage message={errorMessage} />}
       {fipData && (

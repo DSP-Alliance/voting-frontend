@@ -1,5 +1,6 @@
 import React from 'react';
 import { Dialog, DialogTitle, DialogContent } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 
 import VoteFactoryForm from './VoteFactoryForm';
 
@@ -10,6 +11,7 @@ function VoteFactory({
   open: boolean;
   closeModal: () => void;
 }) {
+  const { t } = useTranslation();
   return (
     <Dialog
       open={open}
@@ -22,7 +24,7 @@ function VoteFactory({
         },
       }}
     >
-      <DialogTitle>Create Vote</DialogTitle>
+      <DialogTitle>{t('modals.voteFactory.title')}</DialogTitle>
       <DialogContent dividers>
         <VoteFactoryForm closeModal={closeModal} />
       </DialogContent>
