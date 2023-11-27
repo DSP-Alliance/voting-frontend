@@ -4,7 +4,7 @@ import en from './en/translation';
 import cn from './cn/translation';
 
 i18next.use(initReactI18next).init({
-  lng: 'cn',
+  lng: 'en',
   debug: true,
   resources: {
     en: {
