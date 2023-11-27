@@ -17,8 +17,11 @@ import { useVoteEndContext } from 'common/VoteEndContext';
 import { ZERO_ADDRESS } from 'utilities/helpers';
 import { useFipDataContext } from 'common/FipDataContext';
 import { voteTrackerConfig } from 'constants/voteTrackerConfig';
+import { set } from 'react-hook-form';
 
 export type Address = `0x${string}`;
+
+const LOCAL_STORAGE_LANG_KEY = 'FIP Voting tool - lang';
 
 const HomeContainer = styled.div`
   display: flex;
@@ -101,6 +104,16 @@ function Home() {
 
   const { voteEndTime } = useVoteEndContext();
   const { lastFipAddress } = useFipDataContext();
+
+  useEffect(() => {
+    const lang = localStorage.getItem(LOCAL_STORAGE_LANG_KEY);
+    if (lang) setSelectedLanguage(lang);
+  }, []);
+
+  useEffect(() => {
+    i18n.changeLanguage(selectedLanguage);
+    localStorage.setItem(LOCAL_STORAGE_LANG_KEY, selectedLanguage);
+  }, [selectedLanguage, i18n]);
 
   useEffect(() => {
     async function getOwner() {
@@ -199,7 +212,6 @@ function Home() {
               value={selectedLanguage}
               onChange={(e) => {
                 setSelectedLanguage(e.target.value);
-                i18n.changeLanguage(e.target.value);
               }}
             >
               <MenuItem value={'en'}>
