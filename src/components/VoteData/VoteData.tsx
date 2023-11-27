@@ -220,7 +220,10 @@ function VoteData({
     <div>
       <TitleWithActions>
         <TitleContainer>
-          <Title>{fipData?.title}</Title>{' '}
+          <Title>
+            #{parseInt(fipData?.fip?.replaceAll('"', '') || '')}{' '}
+            {fipData?.title}
+          </Title>{' '}
           <VoteStatus
             active={voteEndTime ? voteEndTime > Date.now() : false}
             voteResultsData={voteResultsData}
