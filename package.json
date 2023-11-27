@@ -68,6 +68,7 @@
     "axios": "^1.5.0",
     "buffer": "^6.0.3",
     "cbor-web": "^9.0.1",
+    "country-flag-icons": "^1.5.9",
     "dayjs": "^1.11.10",
     "i18next": "^23.7.6",
     "markdown-it": "^13.0.1",

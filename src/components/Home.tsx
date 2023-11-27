@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useAccount } from 'wagmi';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
+import { Select, MenuItem } from '@mui/material';
+import getUnicodeFlagIcon from 'country-flag-icons/unicode';
 
 import { voteFactoryConfig } from 'constants/voteFactoryConfig';
 import { publicClient } from 'services/clients';
@@ -84,7 +86,7 @@ const VoteContent = styled.div`
 
 function Home() {
   const { address, isConnected } = useAccount();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [isOwner, setIsOwner] = useState(false);
   const [hasRegistered, setHasRegistered] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
@@ -93,6 +95,7 @@ function Home() {
   const [showVoteModal, setShowVoteModal] = useState(false);
   const [failedToLoadFIP, setFailedToLoadFIP] = useState(false);
   const [loadingVotingPower, setLoadingVotingPower] = useState(false);
+  const [selectedLanguage, setSelectedLanguage] = useState('en');
   const [rawBytePower, setRawBytePower] = useState<bigint>(BigInt(0));
   const [tokenPower, setTokenPower] = useState<bigint>(BigInt(0));
 
@@ -192,6 +195,20 @@ function Home() {
                 tokenPower={tokenPower}
               />
             )}
+            <Select
+              value={selectedLanguage}
+              onChange={(e) => {
+                setSelectedLanguage(e.target.value);
+                i18n.changeLanguage(e.target.value);
+              }}
+            >
+              <MenuItem value={'en'}>
+                {getUnicodeFlagIcon('US')} English
+              </MenuItem>
+              <MenuItem value={'cn'}>
+                {getUnicodeFlagIcon('CN')} 普通话
+              </MenuItem>
+            </Select>
           </ButtonContainer>
         </Header>
         {showRegister && (
