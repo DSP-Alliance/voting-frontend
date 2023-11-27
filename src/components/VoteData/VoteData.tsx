@@ -221,7 +221,7 @@ function VoteData({
       <TitleWithActions>
         <TitleContainer>
           <Title>
-            #{parseInt(fipData?.fip?.replaceAll('"', '') || '')}{' '}
+            FIP #{parseInt(fipData?.fip?.replaceAll('"', '') || '')}:{' '}
             {fipData?.title}
           </Title>{' '}
           <VoteStatus
