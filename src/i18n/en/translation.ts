@@ -4,6 +4,8 @@ export default {
   yes2: 'Yes 2',
   no: 'No',
   abstain: 'Abstain',
+  active: 'Active',
+  passed: 'Passed',
   required: 'Required',
   cancel: 'Cancel',
   startVote: 'Start Vote',

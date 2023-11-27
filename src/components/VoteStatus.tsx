@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import type { VoteResultsData } from 'hooks/useVoteResults';
+import { useTranslation } from 'react-i18next';
 
 const StatusContainer = styled.span`
   border-radius: 4px;
@@ -35,7 +36,9 @@ function VoteStatus({
   voteResultsData: VoteResultsData;
   active: boolean;
 }) {
-  if (active) return <SuccessStatusContainer>Active</SuccessStatusContainer>;
+  const { t } = useTranslation();
+  if (active)
+    return <SuccessStatusContainer>{t('active')}</SuccessStatusContainer>;
   if (voteResultsData.loading) return null;
 
   let allAgreed = true;
@@ -55,9 +58,10 @@ function VoteStatus({
 
   if (!winningQuestion) return null;
 
-  if (allAgreed) return <SuccessStatusContainer>Passed</SuccessStatusContainer>;
+  if (allAgreed)
+    return <SuccessStatusContainer>{t('passed')}</SuccessStatusContainer>;
 
-  return <FailStatusContainer>Abstain</FailStatusContainer>;
+  return <FailStatusContainer>{t('abstain')}</FailStatusContainer>;
 }
 
 export default VoteStatus;
