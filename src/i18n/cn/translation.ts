@@ -111,10 +111,12 @@ export default {
       },
       title: '注册',
       start: {
-        header: '请选择您要注册的方式',
+        header:
+          '请选择您希望注册的方式。如果您有Glif代理地址，您必须立即选择与代理注册钱包，否则您将无法在以后进行注册',
       },
       finished: {
-        header: '您的钱包已注册。请选择下面的选项',
+        header:
+          '您的钱包已注册。请确保您已连接到创建Glif代理的钱包。在下方输入您代理的ETH地址。您可以在 https://filfox.info 上查找代理地址，在“ETH地址”旁边找到。请在下面选择一个选项。',
       },
     },
     voteFactory: {

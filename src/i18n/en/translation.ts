@@ -115,10 +115,12 @@ export default {
       },
       title: 'Register',
       start: {
-        header: 'Please choose how you want to register',
+        header:
+          'Please choose how you want to register. If you have a Glif Agent address, you must choose Register Wallet with Agent now or you will be unable to do so later.',
       },
       finished: {
-        header: 'Your wallet is registered. Choose an option below',
+        header:
+          'Your wallet is registered. Ensure you are connected with the wallet used to create your Glif Agent. Input the ETH address of your agent below. This can be found by looking up your agent address on https://filfox.info , to the right of where it says ‘ETH Address’. Choose an option below',
       },
     },
     voteFactory: {
