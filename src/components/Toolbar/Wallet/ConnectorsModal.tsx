@@ -85,13 +85,13 @@ function ConnectorsModal({
               onClick={() => closeModal({ openVoteModal: true })}
               variant='contained'
             >
-              ${t('yes')}
+              {t('yes')}
             </Button>
             <Button
               onClick={() => closeModal({ openVoteModal: false })}
               variant='outlined'
             >
-              ${t('no')}
+              {t('no')}
             </Button>
           </DialogActions>
         </Dialog>
