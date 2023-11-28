@@ -4,6 +4,7 @@ import { useAccount } from 'wagmi';
 import { getAddress } from 'viem';
 import axios from 'axios';
 import { Tooltip } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 
 import { voteTrackerConfig } from 'constants/voteTrackerConfig';
 import { ownableConfig } from 'constants/ownableConfig';
@@ -59,6 +60,7 @@ function Register({
   setRawBytePower,
   tokenPower,
   setTokenPower,
+  setShowMinerRegister,
   closeModal,
 }: {
   setShowMultisigRegister: React.Dispatch<React.SetStateAction<boolean>>;
@@ -67,8 +69,10 @@ function Register({
   setRawBytePower: React.Dispatch<React.SetStateAction<bigint>>;
   tokenPower: bigint;
   setTokenPower: React.Dispatch<React.SetStateAction<bigint>>;
+  setShowMinerRegister: React.Dispatch<React.SetStateAction<boolean>>;
   closeModal: ({ openVoteModal }: { openVoteModal: boolean }) => void;
 }) {
+  const { t } = useTranslation();
   const { address, isConnected } = useAccount();
   const [agentAddress, setAgentAddress] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
@@ -182,26 +186,27 @@ function Register({
         {!showAddressField && !showConfirmation && (
           <RegisterButtonContainer>
             <ModalButton disabled={loading} onClick={handleWalletConnect}>
-              {loading ? <Loading size={20} /> : 'Register Wallet'}
+              {loading ? (
+                <Loading size={20} />
+              ) : (
+                t('modals.register.buttons.wallet')
+              )}
             </ModalButton>
             <Tooltip
-              title={
-                <span>
-                  Select this option if you are staking your miners with{' '}
-                  <a href='https://glif.io'>glif.io</a> and have an agent
-                  address.
-                </span>
-              }
+              title={t('modals.register.buttons.walletWithAgentTooltip')}
             >
               <ModalButton
                 disabled={loading}
                 onClick={handleWalletWithAgentClick}
               >
-                Register Wallet With Agent
+                {t('modals.register.buttons.walletWithAgent')}
               </ModalButton>
             </Tooltip>
             <ModalButton onClick={() => setShowMultisigRegister(true)}>
-              Register Multisig
+              {t('modals.register.buttons.multisig')}
+            </ModalButton>
+            <ModalButton onClick={() => setShowMinerRegister(true)}>
+              {t('modals.register.buttons.miner')}
             </ModalButton>
           </RegisterButtonContainer>
         )}

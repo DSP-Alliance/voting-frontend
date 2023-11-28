@@ -24,7 +24,7 @@ function ManualMinerRegisterModal({
         },
       }}
     >
-      <DialogTitle>{t('modal.manualMinerRegister.title')}</DialogTitle>
+      <DialogTitle>{t('modals.manualMinerRegister.title')}</DialogTitle>
       <IconButton
         aria-label='close'
         onClick={closeModal}

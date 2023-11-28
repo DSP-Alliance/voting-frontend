@@ -12,7 +12,7 @@ export default {
   latestVote: '当前投票',
   voteHistory: '投票历史',
   vote: '投票',
-  voteWithMultisign: '使用多重签名投票',
+  voteWithMultisig: '使用多重签名投票',
   noVoteData: '无投票数据',
   timeLeft: '剩余时间',
   ended: '已结束',
@@ -108,6 +108,10 @@ export default {
       buttons: {
         multisig: '注册多重签名',
         miner: '注册矿工',
+        wallet: '注册钱包',
+        walletWithAgent: '注册带代理的钱包',
+        walletWithAgentTooltip:
+          '如果您正在将您的矿工与 https://glif.io 投注，并且有代理地址，请选择此选项。',
       },
       title: '注册',
       start: {

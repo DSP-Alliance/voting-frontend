@@ -12,7 +12,7 @@ export default {
   latestVote: 'Current Vote',
   voteHistory: 'Vote History',
   vote: 'Vote',
-  voteWithMultisign: 'Vote With Multisign',
+  voteWithMultisig: 'Vote With Multisig',
   noVoteData: 'No Vote Data',
   timeLeft: 'Time Left',
   ended: 'Ended',
@@ -112,6 +112,10 @@ export default {
       buttons: {
         multisig: 'Register Multisig',
         miner: 'Register Miner',
+        wallet: 'Register Wallet',
+        walletWithAgent: 'Register Wallet With Agent',
+        walletWithAgentTooltip:
+          'Select this option if you are staking your miners with https://glif.io and have an agent address.',
       },
       title: 'Register',
       start: {

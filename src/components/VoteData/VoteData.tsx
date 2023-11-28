@@ -104,7 +104,7 @@ function VoteData({
     fipAddress: currentAddress,
     yesOptions,
   });
-  const [showVoteWithMultisignModal, setShowVoteWithMultisignModal] =
+  const [showVoteWithMultisigModal, setShowVoteWithMultisigModal] =
     useState(false);
 
   useEffect(() => {
@@ -240,9 +240,9 @@ function VoteData({
                 </RoundedButton>
               )}
               <RoundedOutlineButton
-                onClick={() => setShowVoteWithMultisignModal(true)}
+                onClick={() => setShowVoteWithMultisigModal(true)}
               >
-                {t('voteWithMultisign')}
+                {t('voteWithMultisig')}
               </RoundedOutlineButton>
             </VoteContainer>
           )}
@@ -275,8 +275,8 @@ function VoteData({
         </div>
       )}
       <Dialog
-        open={showVoteWithMultisignModal}
-        onClose={() => setShowVoteWithMultisignModal(false)}
+        open={showVoteWithMultisigModal}
+        onClose={() => setShowVoteWithMultisigModal(false)}
         fullWidth
         maxWidth='sm'
         PaperProps={{
@@ -285,10 +285,10 @@ function VoteData({
           },
         }}
       >
-        <DialogTitle>{t('voteWithMultisign')}</DialogTitle>
+        <DialogTitle>{t('voteWithMultisig')}</DialogTitle>
         <IconButton
           aria-label='close'
-          onClick={() => setShowVoteWithMultisignModal(false)}
+          onClick={() => setShowVoteWithMultisigModal(false)}
           sx={{
             position: 'absolute',
             right: 8,
@@ -299,7 +299,7 @@ function VoteData({
         </IconButton>
         <DialogContent dividers>
           <MultisigVoteForm
-            closeModal={() => setShowVoteWithMultisignModal(false)}
+            closeModal={() => setShowVoteWithMultisigModal(false)}
           />
         </DialogContent>
       </Dialog>
