@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import dayjs from 'dayjs';
+import { useTranslation } from 'react-i18next';
 import { Dialog, DialogTitle, DialogContent, IconButton } from '@mui/material';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
@@ -89,6 +90,7 @@ function VoteData({
   showExpandButton?: boolean;
   setShowVoteModal?: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
+  const { t } = useTranslation();
   const [questionText, setQuestionText] = useState('');
   const [loadingVoteInfo, setLoadingVoteInfo] = useState(false);
   const [loadingAddress, setLoadingAddress] = useState(false);
@@ -204,14 +206,14 @@ function VoteData({
     if (voteEndTime > Date.now()) {
       return (
         <span>
-          Time left: <Countdown date={voteEndTime} />
+          {t('timeLeft')}: <Countdown date={voteEndTime} />
         </span>
       );
     }
 
     return (
       <VoteEndedLabel>
-        Ended {dayjs(voteEndTime).format('DD MMM YYYY')}
+        {t('ended')} {dayjs(voteEndTime).format('DD MMM YYYY')}
       </VoteEndedLabel>
     );
   }
@@ -234,13 +236,13 @@ function VoteData({
             <VoteContainer>
               {setShowVoteModal && (
                 <RoundedButton onClick={() => setShowVoteModal(true)}>
-                  Vote
+                  {t('vote')}
                 </RoundedButton>
               )}
               <RoundedOutlineButton
                 onClick={() => setShowVoteWithMultisignModal(true)}
               >
-                Vote With Multisign
+                {t('voteWithMultisign')}
               </RoundedOutlineButton>
             </VoteContainer>
           )}
@@ -260,11 +262,11 @@ function VoteData({
           <Content>
             <VoteResults voteResultsData={voteResultsData} />
             <div>
-              <Subheader>Authors</Subheader>
+              <Subheader>{t('authors')}</Subheader>
               <AuthorsContent>
                 {fipData?.author?.replace(/\"/g, '')}
               </AuthorsContent>
-              <Subheader>Discussions</Subheader>
+              <Subheader>{t('discussions')}</Subheader>
               <div>
                 {fipData && renderDiscussionLinks(fipData['discussions-to'])}
               </div>
@@ -283,7 +285,7 @@ function VoteData({
           },
         }}
       >
-        <DialogTitle>Vote with Multisig</DialogTitle>
+        <DialogTitle>{t('voteWithMultisign')}</DialogTitle>
         <IconButton
           aria-label='close'
           onClick={() => setShowVoteWithMultisignModal(false)}

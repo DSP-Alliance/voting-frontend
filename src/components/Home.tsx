@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useAccount } from 'wagmi';
 import styled from 'styled-components';
+import { useTranslation } from 'react-i18next';
+import { Select, MenuItem } from '@mui/material';
+import getUnicodeFlagIcon from 'country-flag-icons/unicode';
 
 import { voteFactoryConfig } from 'constants/voteFactoryConfig';
 import { publicClient } from 'services/clients';
@@ -14,8 +17,11 @@ import { useVoteEndContext } from 'common/VoteEndContext';
 import { ZERO_ADDRESS } from 'utilities/helpers';
 import { useFipDataContext } from 'common/FipDataContext';
 import { voteTrackerConfig } from 'constants/voteTrackerConfig';
+import { set } from 'react-hook-form';
 
 export type Address = `0x${string}`;
+
+const LOCAL_STORAGE_LANG_KEY = 'FIP Voting tool - lang';
 
 const HomeContainer = styled.div`
   display: flex;
@@ -83,6 +89,7 @@ const VoteContent = styled.div`
 
 function Home() {
   const { address, isConnected } = useAccount();
+  const { t, i18n } = useTranslation();
   const [isOwner, setIsOwner] = useState(false);
   const [hasRegistered, setHasRegistered] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
@@ -91,11 +98,22 @@ function Home() {
   const [showVoteModal, setShowVoteModal] = useState(false);
   const [failedToLoadFIP, setFailedToLoadFIP] = useState(false);
   const [loadingVotingPower, setLoadingVotingPower] = useState(false);
+  const [selectedLanguage, setSelectedLanguage] = useState('en');
   const [rawBytePower, setRawBytePower] = useState<bigint>(BigInt(0));
   const [tokenPower, setTokenPower] = useState<bigint>(BigInt(0));
 
   const { voteEndTime } = useVoteEndContext();
   const { lastFipAddress } = useFipDataContext();
+
+  useEffect(() => {
+    const lang = localStorage.getItem(LOCAL_STORAGE_LANG_KEY);
+    if (lang) setSelectedLanguage(lang);
+  }, []);
+
+  useEffect(() => {
+    i18n.changeLanguage(selectedLanguage);
+    localStorage.setItem(LOCAL_STORAGE_LANG_KEY, selectedLanguage);
+  }, [selectedLanguage, i18n]);
 
   useEffect(() => {
     async function getOwner() {
@@ -168,19 +186,19 @@ function Home() {
     <>
       <HomeContainer>
         <Header>
-          <HeaderText>FIP Voting Dashboard</HeaderText>
+          <HeaderText>{t('title')}</HeaderText>
           <ButtonContainer>
             {isOwner && (failedToLoadFIP || lastVoteHasFinished) && (
               <StartVoteButton onClick={() => setShowVoteFactory(true)}>
-                Start Vote
+                {t('buttons.startVote')}
               </StartVoteButton>
             )}
             <RegisterButton onClick={() => setShowRegister(true)}>
-              Register
+              {t('buttons.register')}
             </RegisterButton>
             {!isConnected && (
               <ConnectButton onClick={() => setShowConnectors(true)}>
-                Connect
+                {t('buttons.connect')}
               </ConnectButton>
             )}
             {isConnected && (
@@ -190,6 +208,19 @@ function Home() {
                 tokenPower={tokenPower}
               />
             )}
+            <Select
+              value={selectedLanguage}
+              onChange={(e) => {
+                setSelectedLanguage(e.target.value);
+              }}
+            >
+              <MenuItem value={'en'}>
+                {getUnicodeFlagIcon('US')} English
+              </MenuItem>
+              <MenuItem value={'cn'}>
+                {getUnicodeFlagIcon('CN')} 普通话
+              </MenuItem>
+            </Select>
           </ButtonContainer>
         </Header>
         {showRegister && (

@@ -8,6 +8,7 @@ import {
 } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 
+import './i18n/config';
 import GlobalStyle from './globalStyles';
 import { publicClient } from './services/clients';
 import Home from 'components/Home';

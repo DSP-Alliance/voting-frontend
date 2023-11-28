@@ -1,7 +1,8 @@
 import React from 'react';
 import { Dialog, DialogTitle, DialogContent, IconButton } from '@mui/material';
-import ManualMinerRegisterForm from './ManualMinerRegisterForm';
 import CloseIcon from '@mui/icons-material/Close';
+import { useTranslation } from 'react-i18next';
+import ManualMinerRegisterForm from './ManualMinerRegisterForm';
 
 function ManualMinerRegisterModal({
   open,
@@ -10,6 +11,7 @@ function ManualMinerRegisterModal({
   open: boolean;
   closeModal: () => void;
 }) {
+  const { t } = useTranslation();
   return (
     <Dialog
       open={open}
@@ -22,7 +24,7 @@ function ManualMinerRegisterModal({
         },
       }}
     >
-      <DialogTitle>Manual Miner Registration</DialogTitle>
+      <DialogTitle>{t('modal.manualMinerRegister.title')}</DialogTitle>
       <IconButton
         aria-label='close'
         onClick={closeModal}

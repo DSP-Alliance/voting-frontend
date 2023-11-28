@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
+import { useTranslation } from 'react-i18next';
 import {
   DialogActions,
   Select,
@@ -34,6 +35,7 @@ const QuestionSection = styled.div`
 `;
 
 function MultisigRegisterForm({ closeModal }: { closeModal: () => void }) {
+  const { t } = useTranslation();
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [vote, setVote] = useState<number | string>(0);
   const [voteFilAddress, setVoteFilAddress] = useState<string>('');
@@ -106,33 +108,31 @@ function MultisigRegisterForm({ closeModal }: { closeModal: () => void }) {
 
   if (loading) return <Loading />;
 
+  const i18nKey = 'modals.multisigVote.form';
+
   return (
     <>
       <Form>
-        <p>
-          After proposing and approving the registration transaction, propose
-          and approve another transaction. Use this form to generate the call
-          data to include in your proposal.
-        </p>
-        <p>1) Create the vote proposal</p>
+        <p>{t(`${i18nKey}.header`)}</p>
+        <p>{t(`${i18nKey}.step1`)}</p>
         <QuestionSection>
-          <b>Question:</b> {questionText}
+          <b>{t('question')}:</b> {questionText}
         </QuestionSection>
         <FormControl fullWidth>
-          <InputLabel id='demo-simple-select-label'>Vote</InputLabel>
+          <InputLabel id='demo-simple-select-label'>{t('vote')}</InputLabel>
           <Select
             labelId='demo-simple-select-label'
             id='demo-simple-select'
             value={vote}
-            label='Vote'
+            label={t('vote')}
             onChange={(e) => {
               setVote(e.target.value);
             }}
           >
-            <MenuItem value={0}>{yesOptions[0] || 'Yes'}</MenuItem>
-            <MenuItem value={3}>{yesOptions[1] || 'Yes 2'}</MenuItem>
-            <MenuItem value={1}>No</MenuItem>
-            <MenuItem value={2}>Abstain</MenuItem>
+            <MenuItem value={0}>{yesOptions[0] || t('yes')}</MenuItem>
+            <MenuItem value={3}>{yesOptions[1] || t('yes2')}</MenuItem>
+            <MenuItem value={1}>{t('no')}</MenuItem>
+            <MenuItem value={2}>{t('abstain')}</MenuItem>
           </Select>
         </FormControl>
         <CodeSnippet
@@ -147,16 +147,13 @@ function MultisigRegisterForm({ closeModal }: { closeModal: () => void }) {
             )
           }
         />
-        <p>
-          Once the proposer creates the proposal using the command above, N of M
-          signers must also approve the vote proposal.
-        </p>
-        <p>2) Approve the vote proposal</p>
+        <p>{t(`${i18nKey}.subheader`)}</p>
+        <p>{t(`${i18nKey}.step2`)}</p>
         <FormWithSpace fullWidth>
           <FormControl fullWidth>
             <TextField
               id='outlined-controlled'
-              label='Multisig Address'
+              label={t(`${i18nKey}.multisigAddress.label`)}
               value={msigAddress}
               onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
                 setMsigAddress(event.target.value);
@@ -165,7 +162,7 @@ function MultisigRegisterForm({ closeModal }: { closeModal: () => void }) {
           </FormControl>
           <TextField
             id='outlined-controlled'
-            label='Transaction ID'
+            label={t(`${i18nKey}.transactionID.label`)}
             value={txId}
             onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
               setTxId(event.target.value);
@@ -173,7 +170,7 @@ function MultisigRegisterForm({ closeModal }: { closeModal: () => void }) {
           />
           <TextField
             id='outlined-controlled'
-            label='Proposer Address'
+            label={t(`${i18nKey}.proposerAddress.label`)}
             value={proposerAddress}
             onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
               setProposerAddress(event.target.value);
@@ -193,7 +190,7 @@ function MultisigRegisterForm({ closeModal }: { closeModal: () => void }) {
           }
         />
         <DialogActions>
-          <button onClick={closeModal}>Okay</button>
+          <button onClick={closeModal}>{t(`${i18nKey}.closeButton`)}</button>
         </DialogActions>
       </Form>
       {errorMessage && <ErrorMessage message={errorMessage} />}
