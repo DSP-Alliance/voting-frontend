@@ -123,7 +123,7 @@ function VoteActions({
   if (voteEndTime && voteEndTime > Date.now() && !hasVoted) {
     return (
       <Content>
-        <Header>{t('modals.VoteActions.chooseVote')}</Header>
+        <Header>{t('modals.voteActions.chooseVote')}</Header>
         <QuestionText>{questionText}</QuestionText>
         {hasRegistered && (
           <VotePicker
@@ -134,7 +134,7 @@ function VoteActions({
         )}
         {!hasRegistered && (
           <p>
-            <i>{t('modals.VoteActions.registerToVote')}</i>
+            <i>{t('modals.voteActions.registerToVote')}</i>
           </p>
         )}
       </Content>
