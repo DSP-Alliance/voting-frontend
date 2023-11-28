@@ -53,9 +53,9 @@ export default {
           tooltip: 'Wallet Address you registered to vote with',
         },
         minerID: {
-          label:
+          label: 'Miner ID',
+          tooltip:
             'Your Miner ID without the ‘f’ character. For example, if your miner id is f12345, you would input 1234.',
-          tooltip: 'Miner ID',
           invalid: 'Invalid Miner ID',
         },
         closeButton: 'Okay',

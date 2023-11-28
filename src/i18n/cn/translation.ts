@@ -53,9 +53,9 @@ export default {
           tooltip: '您注册投票的钱包地址',
         },
         minerID: {
-          label:
+          label: '矿工 ID',
+          tooltip:
             '您的矿工 ID，不包含 ‘f’ 字符。例如，如果您的矿工 ID 是 f12345，则输入 1234。',
-          tooltip: '矿工 ID',
           invalid: '无效的矿工 ID',
         },
         closeButton: '确定',
