@@ -118,7 +118,7 @@ function Register({
         rawBytes = promiseArray.reduce(
           (acc, result) =>
             acc + parseInt(result.data.result.MinerPower.RawBytePower),
-          rawBytes,
+          0,
         );
       }
 
