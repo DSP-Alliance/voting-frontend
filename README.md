@@ -45,10 +45,9 @@ To synchronize your Glif Agent and any associated miners, import the wallet used
 
 ### Multisig
 For voting registration with a Multisig wallet, click “Register Multisig.” A popup entitled "Register Multisig" will appear, necessitating the following:
-
 #### Multisig Address & Command
+
 Input your multisig address in the designated field. Upon doing so, a command tailored to your address will be generated, which you will need to paste into the Lotus wallet CLI. This process enables each multisig holder to register the wallet for participation in the voting process.
 
 #### Vote Option and Command
 During active voting, each multisig signer must specify their voting preference. After selecting from the dropdown menu, signers can copy the command into the Lotus CLI, thereby validating their selection.
-
