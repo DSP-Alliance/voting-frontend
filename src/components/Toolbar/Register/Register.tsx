@@ -126,7 +126,7 @@ function Register({
 
       if (agent) {
         const glifOwner = await publicClient.readContract({
-          address: agentAddressToAdd,
+          address: lastFipAddress || ZERO_ADDRESS,
           abi: ownableConfig.abi,
           functionName: 'owner',
         });
