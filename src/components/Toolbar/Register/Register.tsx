@@ -122,7 +122,7 @@ function Register({
         );
       }
 
-      await getMiners(address as string);
+      await getMiners(agent as string);
 
       if (agent) {
         const glifOwner = await publicClient.readContract({
