@@ -40,7 +40,6 @@ export default {
   modals: {
     connectors: {
       title: '连接钱包',
-      header: '您是否想对当前 FIP 进行投票？',
       optionsLabel: '选择连接方法。',
     },
     manualMinerRegister: {

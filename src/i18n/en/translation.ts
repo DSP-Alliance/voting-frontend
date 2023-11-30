@@ -40,7 +40,6 @@ export default {
   modals: {
     connectors: {
       title: 'Connect Wallet',
-      header: 'Would you like to cast a vote on the current FIP?',
       optionsLabel: 'Choose a method to connect.',
     },
     manualMinerRegister: {
