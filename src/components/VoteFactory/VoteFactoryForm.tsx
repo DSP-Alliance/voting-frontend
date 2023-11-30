@@ -2,10 +2,18 @@ import React, { useEffect, useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import styled from 'styled-components';
 import dayjs, { Dayjs } from 'dayjs';
-import { DialogActions, TextField } from '@mui/material';
+import {
+  DialogActions,
+  TextField,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  Typography,
+} from '@mui/material';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { useContractWrite, useWaitForTransaction } from 'wagmi';
 import ClipLoader from 'react-spinners/ClipLoader';
 import { useTranslation } from 'react-i18next';
@@ -50,7 +58,14 @@ const today = dayjs();
 
 function VoteFactoryForm({ closeModal }: { closeModal: () => void }) {
   const { t } = useTranslation();
-  const [allLsdTokens, setAllLsdTokens] = useState<Address[]>([]);
+  const [allLsdTokens, setAllLsdTokens] = useState<Address[]>([
+    '0x690908f7fa93afC040CFbD9fE1dDd2C2668Aa0e0', //GLIF
+    '0xC5eA96Dd365983cfEc90E72b6A2daC9562f458Ba', //SFT Token
+    '0x97AAe66a1D2a41eAC573397B7a5656a9cF3E5616', //rSPD Token
+    '0x84B038DB0fCde4fae528108603C7376695dc217F', //HashKing
+    '0x587A7eaE9b461ad724391Aa7195210e0547eD11d', //HashMix FIL
+    '0xd0437765D1Dc0e2fA14E97d290F135eFdf1a8a9A', //Collectif DAO
+  ]);
   const [errorMessage, setErrorMessage] = useState('');
   const [isCheckingForDeployed, setIsCheckingForDeployed] = useState(false);
   const [endDate, setEndDate] = React.useState<Dayjs | null>(null);
@@ -67,7 +82,7 @@ function VoteFactoryForm({ closeModal }: { closeModal: () => void }) {
       [`lsdToken${allLsdTokens.length + 1}`]:
         '0x3C3501E6c353DbaEDDFA90376975Ce7aCe4Ac7a8',
       question: '',
-    },
+    } as Record<string, string>,
   });
 
   function getVoteLength() {
@@ -264,35 +279,45 @@ function VoteFactoryForm({ closeModal }: { closeModal: () => void }) {
           )}
         />
         <LsdTokensContainer>
-          {renderAllLsdTokens()}
-          <Controller
-            name={`lsdToken${allLsdTokens.length + 1}`}
-            control={control}
-            render={({ field: { onChange, value }, fieldState: { error } }) => (
-              <TextField
-                required
-                placeholder='0x0000...0000'
-                helperText={error ? t(`${i18nKey}.lsdToken.invalid`) : null}
-                error={!!error}
-                value={value || ''}
-                onChange={onChange}
-                onBlur={() => trigger(`lsdToken${allLsdTokens.length + 1}`)}
-                fullWidth
-                label={t(`${i18nKey}.lsdToken.label`)}
-                variant='outlined'
-                margin='dense'
+          <Accordion>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+              <Typography>LSD Tokens</Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              {renderAllLsdTokens()}
+              <Controller
+                name={`lsdToken${allLsdTokens.length + 1}`}
+                control={control}
+                render={({
+                  field: { onChange, value },
+                  fieldState: { error },
+                }) => (
+                  <TextField
+                    required
+                    placeholder='0x0000...0000'
+                    helperText={error ? t(`${i18nKey}.lsdToken.invalid`) : null}
+                    error={!!error}
+                    value={value || ''}
+                    onChange={onChange}
+                    onBlur={() => trigger(`lsdToken${allLsdTokens.length + 1}`)}
+                    fullWidth
+                    label={t(`${i18nKey}.lsdToken.label`)}
+                    variant='outlined'
+                    margin='dense'
+                  />
+                )}
+                {...(!allLsdTokens.length
+                  ? { rules: { required: t('required') } }
+                  : {})}
               />
-            )}
-            {...(!allLsdTokens.length
-              ? { rules: { required: t('required') } }
-              : {})}
-          />
-          <AddTokenButton
-            onClick={addLsdTokenField}
-            disabled={!watch(`lsdToken${allLsdTokens.length + 1}`)}
-          >
-            {t(`${i18nKey}.lsdToken.addButton`)}
-          </AddTokenButton>
+              <AddTokenButton
+                onClick={addLsdTokenField}
+                disabled={!watch(`lsdToken${allLsdTokens.length + 1}`)}
+              >
+                {t(`${i18nKey}.lsdToken.addButton`)}
+              </AddTokenButton>
+            </AccordionDetails>
+          </Accordion>
         </LsdTokensContainer>
         <DialogActions>
           <button onClick={closeModal}>{t('cancel')}</button>

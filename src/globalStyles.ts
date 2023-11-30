@@ -67,10 +67,8 @@ const GlobalStyle = createGlobalStyle`
     }
   }
 
-  .MuiMenuItem-root {
-    color: var(--font-color) !important;
-  }
-
+  .MuiMenuItem-root,
+  .MuiTypography-root,
   .MuiPickersLayout-root {
     color: var(--font-color) !important;
   }
