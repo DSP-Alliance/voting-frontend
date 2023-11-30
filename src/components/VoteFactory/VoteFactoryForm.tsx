@@ -65,6 +65,7 @@ function VoteFactoryForm({ closeModal }: { closeModal: () => void }) {
     '0x84B038DB0fCde4fae528108603C7376695dc217F', //HashKing
     '0x587A7eaE9b461ad724391Aa7195210e0547eD11d', //HashMix FIL
     '0xd0437765D1Dc0e2fA14E97d290F135eFdf1a8a9A', //Collectif DAO
+    '0x60E1773636CF5E4A227d9AC24F20fEca034ee25A', //WFIL
   ]);
   const [errorMessage, setErrorMessage] = useState('');
   const [isCheckingForDeployed, setIsCheckingForDeployed] = useState(false);
