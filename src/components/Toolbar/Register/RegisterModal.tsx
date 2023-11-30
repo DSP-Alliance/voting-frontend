@@ -67,7 +67,6 @@ function RegisterModal({
             setRawBytePower={setRawBytePower}
             tokenPower={tokenPower}
             setTokenPower={setTokenPower}
-            setShowMinerRegister={setShowMinerRegister}
             closeModal={closeModal}
           />
         </DialogContent>

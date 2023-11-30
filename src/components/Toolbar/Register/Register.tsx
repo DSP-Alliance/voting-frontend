@@ -60,7 +60,6 @@ function Register({
   setRawBytePower,
   tokenPower,
   setTokenPower,
-  setShowMinerRegister,
   closeModal,
 }: {
   setShowMultisigRegister: React.Dispatch<React.SetStateAction<boolean>>;
@@ -69,7 +68,6 @@ function Register({
   setRawBytePower: React.Dispatch<React.SetStateAction<bigint>>;
   tokenPower: bigint;
   setTokenPower: React.Dispatch<React.SetStateAction<bigint>>;
-  setShowMinerRegister: React.Dispatch<React.SetStateAction<boolean>>;
   closeModal: ({ openVoteModal }: { openVoteModal: boolean }) => void;
 }) {
   const { t } = useTranslation();
@@ -87,8 +85,6 @@ function Register({
 
   async function addVotingPower(agent: string | undefined) {
     setLoading(true);
-
-    const agentAddressToAdd = agent ? getAddress(agent) : ZERO_ADDRESS;
 
     try {
       let rawBytes = rawBytePower;
@@ -204,9 +200,6 @@ function Register({
             </Tooltip>
             <ModalButton onClick={() => setShowMultisigRegister(true)}>
               {t('modals.register.buttons.multisig')}
-            </ModalButton>
-            <ModalButton onClick={() => setShowMinerRegister(true)}>
-              {t('modals.register.buttons.miner')}
             </ModalButton>
           </RegisterButtonContainer>
         )}
