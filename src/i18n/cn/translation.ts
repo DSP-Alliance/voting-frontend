@@ -47,7 +47,7 @@ export default {
       form: {
         header:
           '您可以通过在矿工上运行命令，将矿工手动添加到已注册的选民。在此站点上注册为选民，然后将您的 ETH 钱包地址插入此表单。',
-        voterAddress: {
+        voteAddress: {
           label: '选民地址',
           tooltip: '您注册投票的钱包地址',
         },
