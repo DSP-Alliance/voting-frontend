@@ -118,9 +118,9 @@ function Register({
         );
       }
 
-      await getMiners(agent as string);
-
       if (agent) {
+        await getMiners(agent as string);
+
         const glifOwner = await publicClient.readContract({
           address: lastFipAddress || ZERO_ADDRESS,
           abi: ownableConfig.abi,
