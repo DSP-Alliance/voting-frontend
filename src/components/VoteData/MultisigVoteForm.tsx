@@ -8,7 +8,13 @@ import {
   FormControl,
   MenuItem,
   TextField,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  Typography,
 } from '@mui/material';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import WarningIcon from '@mui/icons-material/Warning';
 import { encodeFunctionData } from 'viem';
 import axios from 'axios';
 
@@ -19,11 +25,18 @@ import ErrorMessage from 'common/ErrorMessage';
 import Loading from 'common/Loading';
 import { useFipDataContext } from 'common/FipDataContext';
 import { publicClient } from 'services/clients';
+import MultisigRegisterForm from 'components/MultisigRegister/MultisigRegisterForm';
 
 const Form = styled.form`
   display: flex;
   flex-direction: column;
   gap: 2px;
+`;
+
+const AccordionHeading = styled.div`
+  align-items: center;
+  display: flex;
+  gap: 10px;
 `;
 
 const FormWithSpace = styled(FormControl)`
@@ -34,7 +47,7 @@ const QuestionSection = styled.div`
   margin-bottom: 12px;
 `;
 
-function MultisigRegisterForm({ closeModal }: { closeModal: () => void }) {
+function MultisigVoteForm({ closeModal }: { closeModal: () => void }) {
   const { t } = useTranslation();
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [vote, setVote] = useState<number | string>(0);
@@ -113,6 +126,23 @@ function MultisigRegisterForm({ closeModal }: { closeModal: () => void }) {
   return (
     <>
       <Form>
+        <Accordion>
+          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+            <AccordionHeading>
+              <WarningIcon />
+              <Typography>
+                <div>
+                  In order to vote with multisig, you must register to vote
+                  first.
+                </div>
+                <div>Check here the instructions</div>
+              </Typography>
+            </AccordionHeading>
+          </AccordionSummary>
+          <AccordionDetails>
+            <MultisigRegisterForm />
+          </AccordionDetails>
+        </Accordion>
         <p>{t(`${i18nKey}.header`)}</p>
         <p>{t(`${i18nKey}.step1`)}</p>
         <QuestionSection>
@@ -137,7 +167,7 @@ function MultisigRegisterForm({ closeModal }: { closeModal: () => void }) {
         </FormControl>
         <CodeSnippet
           code={
-            `lotus msig propose ${msigAddress} ${voteFilAddress} 0 3844450837 ` +
+            `lotus msig propose ${msigAddress}${voteFilAddress} 0 3844450837 ` +
             cbor_encode(
               encodeFunctionData({
                 abi: voteTrackerConfig.abi,
@@ -198,4 +228,4 @@ function MultisigRegisterForm({ closeModal }: { closeModal: () => void }) {
   );
 }
 
-export default MultisigRegisterForm;
+export default MultisigVoteForm;

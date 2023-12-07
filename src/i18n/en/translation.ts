@@ -40,7 +40,6 @@ export default {
   modals: {
     connectors: {
       title: 'Connect Wallet',
-      header: 'Would you like to cast a vote on the current FIP?',
       optionsLabel: 'Choose a method to connect.',
     },
     manualMinerRegister: {
@@ -48,7 +47,7 @@ export default {
       form: {
         header:
           'You can manually add miners to a registered voter by running a command on your miner. Register as a voter using this site, and then insert your ETH wallet address into this form.',
-        voterAddress: {
+        voteAddress: {
           label: 'Voter Address',
           tooltip: 'Wallet Address you registered to vote with',
         },

@@ -1,16 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useConnect, useAccount } from 'wagmi';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
-import {
-  Button,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-} from '@mui/material';
+import { Button, Dialog, DialogTitle, DialogContent } from '@mui/material';
 
-import { useFipDataContext } from 'common/FipDataContext';
 import ErrorMessage from 'common/ErrorMessage';
 import CoinbaseLogo from 'assets/Logo_Coinbase.png';
 import MetaMaskLogo from 'assets/Logo_MetaMask.png';
@@ -52,51 +45,13 @@ function ConnectorsModal({
   const { t } = useTranslation();
   const { connect, connectors, error, isLoading, pendingConnector } =
     useConnect();
-  const [showAskToVoteModal, setShowAskToVoteModal] = useState(false);
   const { isConnected } = useAccount();
-  const { lastFipVoteEnd } = useFipDataContext();
 
   useEffect(() => {
-    if (isConnected) {
-      if (!registering && lastFipVoteEnd && lastFipVoteEnd > Date.now()) {
-        setShowAskToVoteModal(true);
-      } else {
-        closeModal({ openVoteModal: false });
-      }
-    }
+    if (isConnected) closeModal({ openVoteModal: false });
   }, [isConnected, registering]);
 
   function renderContent() {
-    if (showAskToVoteModal) {
-      return (
-        <Dialog
-          open
-          fullWidth
-          maxWidth='sm'
-          PaperProps={{
-            style: {
-              color: 'var(--font-color)',
-            },
-          }}
-        >
-          <DialogContent>{t('modals.connectors.header')}</DialogContent>
-          <DialogActions>
-            <Button
-              onClick={() => closeModal({ openVoteModal: true })}
-              variant='contained'
-            >
-              {t('yes')}
-            </Button>
-            <Button
-              onClick={() => closeModal({ openVoteModal: false })}
-              variant='outlined'
-            >
-              {t('no')}
-            </Button>
-          </DialogActions>
-        </Dialog>
-      );
-    }
     return (
       <Dialog
         open={open}

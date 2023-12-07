@@ -17,7 +17,6 @@ import { useVoteEndContext } from 'common/VoteEndContext';
 import { ZERO_ADDRESS } from 'utilities/helpers';
 import { useFipDataContext } from 'common/FipDataContext';
 import { voteTrackerConfig } from 'constants/voteTrackerConfig';
-import { set } from 'react-hook-form';
 
 export type Address = `0x${string}`;
 

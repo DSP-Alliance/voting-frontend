@@ -20,7 +20,7 @@ const FormWithSpace = styled(FormControl)`
   gap: 12px;
 `;
 
-function MultisigRegisterForm({ closeModal }: { closeModal: () => void }) {
+function MultisigRegisterForm({ closeModal }: { closeModal?: () => void }) {
   const { t } = useTranslation();
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [factoryFilAddress, setFactoryFilAddress] = useState<string>('');
@@ -67,7 +67,7 @@ function MultisigRegisterForm({ closeModal }: { closeModal: () => void }) {
         </FormControl>
         <CodeSnippet
           code={
-            `lotus msig propose ${msigAddress} ${factoryFilAddress} 0 3844450837 ` +
+            `lotus msig propose ${msigAddress}${factoryFilAddress} 0 3844450837 ` +
             cbor_encode(
               encodeFunctionData({
                 abi: voteFactoryConfig.abi,
@@ -119,9 +119,11 @@ function MultisigRegisterForm({ closeModal }: { closeModal: () => void }) {
             )
           }
         />
-        <DialogActions>
-          <button onClick={closeModal}>{t(`${i18nKey}.closeButton`)}</button>
-        </DialogActions>
+        {closeModal && (
+          <DialogActions>
+            <button onClick={closeModal}>{t(`${i18nKey}.closeButton`)}</button>
+          </DialogActions>
+        )}
       </Form>
       {errorMessage && <ErrorMessage message={errorMessage} />}
     </>
