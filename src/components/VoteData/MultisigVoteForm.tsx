@@ -167,7 +167,7 @@ function MultisigVoteForm({ closeModal }: { closeModal: () => void }) {
         </FormControl>
         <CodeSnippet
           code={
-            `lotus msig propose ${msigAddress} ${voteFilAddress} 0 3844450837 ` +
+            `lotus msig propose ${msigAddress}${voteFilAddress} 0 3844450837 ` +
             cbor_encode(
               encodeFunctionData({
                 abi: voteTrackerConfig.abi,
