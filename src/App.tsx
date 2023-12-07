@@ -34,7 +34,7 @@ const theme = createTheme({
     },
     text: {
       // Have to specify hex here to prevent breakage on MUI Toggles
-      primary: '#fcfdff',
+      primary: '#212121',
     },
   },
   components: {

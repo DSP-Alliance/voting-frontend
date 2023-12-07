@@ -48,16 +48,8 @@ const GlobalStyle = createGlobalStyle`
     border-color: var(--font-color) !important;
   }
 
-  .MuiInputBase-input {
-    color: var(--font-color) !important;
-  }
-
   .MuiFormLabel-root {
     color: var(--dark-primary) !important;
-  }
-
-  .MuiList-root {
-    color: var(--font-color) !important;
   }
   
   .MuiSvgIcon-root {
@@ -65,12 +57,6 @@ const GlobalStyle = createGlobalStyle`
     &:hover {
       fill: var(--white) !important;
     }
-  }
-
-  .MuiMenuItem-root,
-  .MuiTypography-root,
-  .MuiPickersLayout-root {
-    color: var(--font-color) !important;
   }
 
   .MuiPickersDay-root {
