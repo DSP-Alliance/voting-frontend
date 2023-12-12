@@ -51,5 +51,3 @@ Input your multisig address in the designated field. Upon doing so, a command ta
 
 #### Vote Option and Command
 During active voting, each multisig signer must specify their voting preference. After selecting from the dropdown menu, signers can copy the command into the Lotus CLI, thereby validating their selection.
-
-
