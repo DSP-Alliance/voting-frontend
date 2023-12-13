@@ -59,7 +59,6 @@ function RegisterModal({
     return (
       <>
         <DialogContent dividers>
-          {t('modals.register.start.header')}
           <Register
             setShowMultisigRegister={setShowMultisigRegister}
             setHasRegistered={setHasRegistered}
@@ -78,9 +77,7 @@ function RegisterModal({
     return (
       <>
         <DialogContent dividers>
-          {rawBytePower === 0n
-            ? t('modals.register.finished.header')
-            : t('modals.register.finished.headerAgent')}
+          {t('modals.register.finished.header')}
           <ButtonContainer>
             <RoundedButton
               onClick={() => closeModal({ openVoteModal: true })}

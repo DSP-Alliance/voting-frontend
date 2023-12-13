@@ -168,6 +168,9 @@ function Register({
 
   return (
     <div>
+      {!showAddressField
+        ? t('modals.register.start.header')
+        : t('modals.register.start.headerAgent')}
       {showConnectorsModal && (
         <ConnectorsModal
           open
