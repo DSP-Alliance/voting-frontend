@@ -78,7 +78,9 @@ function RegisterModal({
     return (
       <>
         <DialogContent dividers>
-          {t('modals.register.finished.header')}
+          {rawBytePower === 0n
+            ? t('modals.register.finished.header')
+            : t('modals.register.finished.headerAgent')}
           <ButtonContainer>
             <RoundedButton
               onClick={() => closeModal({ openVoteModal: true })}

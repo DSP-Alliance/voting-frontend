@@ -123,6 +123,8 @@ export default {
       },
       finished: {
         header:
+          'Your wallet is already registered. If you would like to register an additional miner to your wallet or register a multisig wallet to vote. Please click the buttons below',
+        headerAgent:
           'Your wallet is registered. Ensure you are connected with the wallet used to create your Glif Agent. Input the ETH address of your agent below. This can be found by looking up your agent address on https://filfox.info , to the right of where it says ‘ETH Address’. Choose an option below',
       },
     },
