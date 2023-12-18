@@ -100,7 +100,7 @@ function VoteActions({
     }
 
     getVoteInfo();
-  }, [lastFipAddress]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [lastFipAddress, hasVoted]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (loadingFipData || loading) return <Loading />;
 

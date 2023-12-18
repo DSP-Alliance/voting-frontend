@@ -12,38 +12,30 @@ function VoteActionsModal({
   onClose,
   address,
   hasRegistered,
+  hasVoted,
+  setHasVoted,
 }: {
   open: boolean;
   onClose: () => void;
   address: Address;
   hasRegistered: boolean;
+  hasVoted: boolean;
+  setHasVoted: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
-  const [hasVoted, setHasVoted] = useState(false);
   const { lastFipAddress } = useFipDataContext();
-  const { isConnected } = useAccount();
+  const { address: walletAddress, isConnected } = useAccount();
 
   async function getHasVoted() {
-    if (
-      lastFipAddress &&
-      lastFipAddress !== localStorage.getItem('lastFipVoted')
-    ) {
-      try {
-        const userHasVoted = await publicClient.readContract({
-          address: lastFipAddress,
-          abi: voteTrackerConfig.abi,
-          functionName: 'hasVoted',
-          args: [address || `0x`],
-        });
-
-        setHasVoted(userHasVoted);
-      } catch {
-        setHasVoted(false);
-      }
-    } else if (
-      lastFipAddress &&
-      lastFipAddress === localStorage.getItem('lastFipVoted')
-    ) {
-      setHasVoted(true);
+    try {
+      const userHasVoted = await publicClient.readContract({
+        address: lastFipAddress as Address,
+        abi: voteTrackerConfig.abi,
+        functionName: 'hasVoted',
+        args: [walletAddress || `0x`],
+      });
+      setHasVoted(userHasVoted);
+    } catch {
+      setHasVoted(false);
     }
   }
 
@@ -51,7 +43,7 @@ function VoteActionsModal({
     if (isConnected) {
       getHasVoted();
     }
-  }, [lastFipAddress, address, isConnected]);
+  }, [lastFipAddress, address, walletAddress, isConnected]);
 
   return (
     <Dialog

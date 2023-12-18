@@ -37,6 +37,7 @@ function LatestVote({
   const { t } = useTranslation();
   const [fipData, setFipData] = useState<FipData>();
   const [errorMessage, setErrorMessage] = useState('');
+  const [hasVoted, setHasVoted] = useState(false);
 
   const { loadingFipData, lastFipAddress, lastFipNum } = useFipDataContext();
 
@@ -56,7 +57,7 @@ function LatestVote({
     }
 
     getFIPInfo();
-  }, [lastFipNum]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [lastFipNum, hasVoted]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <VoteDataContainer>
@@ -76,6 +77,8 @@ function LatestVote({
           onClose={() => setShowVoteModal(false)}
           address={lastFipAddress}
           hasRegistered={hasRegistered}
+          hasVoted={hasVoted}
+          setHasVoted={setHasVoted}
         />
       )}
     </VoteDataContainer>
