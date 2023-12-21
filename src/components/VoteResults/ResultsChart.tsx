@@ -11,10 +11,13 @@ import {
   ValueType,
 } from 'recharts/types/component/DefaultTooltipContent';
 
+import ProgressBar from './ProgressBar';
+
 const ChartArea = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  width: 100%;
 `;
 
 const Legend = styled.div`
@@ -38,6 +41,13 @@ const InfoText = styled.span`
   font-weight: 600;
 `;
 
+const ProgressChart = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin-bottom: 8px;
+`;
+
 function formatValue(
   value: ValueType,
   props: Payload<ValueType, NameType>,
@@ -59,35 +69,63 @@ function ResultsChart({
   totalCount,
   type,
   winning,
+  isActive,
 }: {
   data: { [key: string]: string | number }[];
   totalCount: number;
   type: string;
   winning: string;
+  isActive: boolean;
 }) {
   const { t } = useTranslation();
+  const bgColor = ['#42a5f5', '#3f51b5', '#f44336', '#d1c4e9'];
+
   return (
     <ChartArea>
-      <PieChart width={280} height={280}>
-        <Tooltip
-          separator=': '
-          formatter={(value, name, props) => [formatValue(value, props), name]}
-        />
-        <Pie
-          data={data}
-          dataKey={type}
-          nameKey='name'
-          cx='50%'
-          cy='50%'
-          innerRadius={0}
-          outerRadius={100}
-        >
-          {data.map((entry: any, index: number) => (
-            <Cell key={index} fill={`var(--votecount${index}`} />
+      {!isActive ? (
+        <PieChart width={280} height={280}>
+          <Tooltip
+            separator=': '
+            formatter={(value, name, props) => [
+              formatValue(value, props),
+              name,
+            ]}
+          />
+          <Pie
+            data={data}
+            dataKey={type}
+            nameKey='name'
+            cx='50%'
+            cy='50%'
+            innerRadius={0}
+            outerRadius={100}
+          >
+            {data.map((entry: any, index: number) => (
+              <Cell key={index} fill={`var(--votecount${index}`} />
+            ))}
+          </Pie>
+          <Tooltip />
+        </PieChart>
+      ) : (
+        <ProgressChart>
+          {data.map((item: any, index: number) => (
+            <div style={{ marginTop: '8px' }}>
+              <div>{item.name}</div>
+              <ProgressBar
+                progress={Math.round(
+                  (((item.RBP as number) ??
+                    (item.Tokens as number) ??
+                    (item['Miner Tokens'] as number)) /
+                    totalCount) *
+                    100,
+                )}
+                bgcolor={bgColor[index]}
+              />
+            </div>
           ))}
-        </Pie>
-        <Tooltip />
-      </PieChart>
+        </ProgressChart>
+      )}
+
       <Legend>
         <div>
           <span>

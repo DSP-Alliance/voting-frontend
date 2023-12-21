@@ -11,8 +11,10 @@ const InfoText = styled.span`
 `;
 
 const ChartContainer = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  // display: grid;
+  // grid-template-columns: 1fr 1fr 1fr;
+  display: flex;
+  gap: 12px;
 `;
 
 function VoteResults({
@@ -28,8 +30,10 @@ function VoteResults({
     winningTokens,
     winningMinerTokens,
   },
+  isActive,
 }: {
   voteResultsData: VoteResultsData;
+  isActive: boolean;
 }) {
   const { t } = useTranslation();
   if (loading) return <ClipLoader color='var(--primary)' />;
@@ -45,6 +49,7 @@ function VoteResults({
           data={rbpData}
           totalCount={totalRbp}
           winning={winningRbp}
+          isActive={isActive}
         />
       )}
       {Boolean(totalTokens) && (
@@ -53,6 +58,7 @@ function VoteResults({
           data={tokenData}
           totalCount={Number(totalTokens)}
           winning={winningTokens}
+          isActive={isActive}
         />
       )}
       {Boolean(totalMinerTokens) && (
@@ -61,6 +67,7 @@ function VoteResults({
           data={minerTokenData}
           totalCount={Number(totalMinerTokens)}
           winning={winningMinerTokens}
+          isActive={isActive}
         />
       )}
     </ChartContainer>

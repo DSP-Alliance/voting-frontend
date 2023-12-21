@@ -260,7 +260,10 @@ function VoteData({
         <div>
           <QuestionText>{questionText}</QuestionText>
           <Content>
-            <VoteResults voteResultsData={voteResultsData} />
+            <VoteResults
+              voteResultsData={voteResultsData}
+              isActive={voteEndTime ? voteEndTime > Date.now() : false}
+            />
             <div>
               <Subheader>{t('authors')}</Subheader>
               <AuthorsContent>
