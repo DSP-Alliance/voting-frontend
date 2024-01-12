@@ -44,7 +44,7 @@ function VoteResults({
 
   return (
     <ChartContainer>
-      {isActive ? (
+      {!isActive ? (
         <>
           {Boolean(totalRbp) && (
             <ResultsChart
