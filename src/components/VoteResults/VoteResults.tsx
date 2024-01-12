@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 import ResultsChart from 'components/VoteResults/ResultsChart';
 import type { VoteResultsData } from 'hooks/useVoteResults';
+import MultipleChart from './MultipleChart';
 
 const InfoText = styled.span`
   font-style: italic;
@@ -43,32 +44,47 @@ function VoteResults({
 
   return (
     <ChartContainer>
-      {Boolean(totalRbp) && (
-        <ResultsChart
-          type='RBP'
-          data={rbpData}
-          totalCount={totalRbp}
-          winning={winningRbp}
-          isActive={isActive}
-        />
-      )}
-      {Boolean(totalTokens) && (
-        <ResultsChart
-          type='Tokens'
-          data={tokenData}
-          totalCount={Number(totalTokens)}
-          winning={winningTokens}
-          isActive={isActive}
-        />
-      )}
-      {Boolean(totalMinerTokens) && (
-        <ResultsChart
-          type='Miner Tokens'
-          data={minerTokenData}
-          totalCount={Number(totalMinerTokens)}
-          winning={winningMinerTokens}
-          isActive={isActive}
-        />
+      {isActive ? (
+        <>
+          {Boolean(totalRbp) && (
+            <ResultsChart
+              type='RBP'
+              data={rbpData}
+              totalCount={totalRbp}
+              winning={winningRbp}
+              isActive={isActive}
+            />
+          )}
+          {Boolean(totalTokens) && (
+            <ResultsChart
+              type='Tokens'
+              data={tokenData}
+              totalCount={Number(totalTokens)}
+              winning={winningTokens}
+              isActive={isActive}
+            />
+          )}
+          {Boolean(totalMinerTokens) && (
+            <ResultsChart
+              type='Miner Tokens'
+              data={minerTokenData}
+              totalCount={Number(totalMinerTokens)}
+              winning={winningMinerTokens}
+              isActive={isActive}
+            />
+          )}
+        </>
+      ) : (
+        <>
+          <MultipleChart
+            rbpData={rbpData}
+            totalRbp={Number(totalRbp)}
+            tokenData={tokenData}
+            totalTokens={Number(totalTokens)}
+            minerTokenData={minerTokenData}
+            totalMinerTokens={Number(totalMinerTokens)}
+          ></MultipleChart>
+        </>
       )}
     </ChartContainer>
   );
