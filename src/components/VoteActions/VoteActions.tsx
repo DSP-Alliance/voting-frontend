@@ -115,7 +115,7 @@ function VoteActions({
         <QuestionText>
           {t('modals.voteActions.winningVote')}: {winningVoteText}
         </QuestionText>
-        <VoteResults voteResultsData={voteResultsData} isActive={false} />
+        <VoteResults voteResultsData={voteResultsData} isActive={true} />
       </LatestVoteContent>
     );
   }
