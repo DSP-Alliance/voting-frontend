@@ -140,16 +140,14 @@ function MultipleChart({
           <div style={{ marginTop: '8px' }}>
             <div>{item.name}</div>
             <MultiProgress>
-              {totalRbp > 0 && (
-                <ProgressBar
-                  data-tooltip-id={`my-tooltip-${3 * index + 0}`}
-                  progress={
-                    Math.round(((item.RBP as number) / totalRbp) * 100) /
-                    calculateNumber()
-                  }
-                  bgcolor={bgColor[3 * index + 0]}
-                />
-              )}
+              <ProgressBar
+                data-tooltip-id={`my-tooltip-${3 * index + 0}`}
+                progress={
+                  Math.round(((item.RBP as number) / totalRbp) * 100) /
+                  calculateNumber()
+                }
+                bgcolor={bgColor[3 * index + 0]}
+              />
               <ProgressBar
                 data-tooltip-id={`my-tooltip-${3 * index + 1}`}
                 progress={
