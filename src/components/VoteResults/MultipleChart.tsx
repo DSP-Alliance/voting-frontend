@@ -110,6 +110,29 @@ function MultipleChart({
 }) {
   const { t } = useTranslation();
 
+  const bgColor = [
+    '#3584c4',
+    '#42a5f5',
+    '#68b7f7',
+    '#324191',
+    '#3f51b5',
+    '#6574c4',
+    '#c3362b',
+    '#f44336',
+    '#f6695e',
+    '#a79dba',
+    '#d1c4e9',
+    '#dad0ed',
+  ];
+
+  const calculateNumber = () => {
+    let result = 0;
+    if (totalRbp > 0) result += 1;
+    if (totalTokens > 0) result += 1;
+    if (totalMinerTokens > 0) result += 1;
+    return result;
+  };
+
   return (
     <ChartArea>
       <ProgressChart>
@@ -117,21 +140,24 @@ function MultipleChart({
           <div style={{ marginTop: '8px' }}>
             <div>{item.name}</div>
             <MultiProgress>
-              <ProgressBar
-                data-tooltip-id={`my-tooltip-${3 * index + 0}`}
-                progress={
-                  Math.round(((item.RBP as number) / totalRbp) * 100) / 3
-                }
-                bgcolor={'#ff0000'}
-              />
+              {totalRbp > 0 && (
+                <ProgressBar
+                  data-tooltip-id={`my-tooltip-${3 * index + 0}`}
+                  progress={
+                    Math.round(((item.RBP as number) / totalRbp) * 100) /
+                    calculateNumber()
+                  }
+                  bgcolor={bgColor[3 * index + 0]}
+                />
+              )}
               <ProgressBar
                 data-tooltip-id={`my-tooltip-${3 * index + 1}`}
                 progress={
                   Math.round(
                     ((tokenData[index].Tokens as number) / totalTokens) * 100,
-                  ) / 3
+                  ) / calculateNumber()
                 }
-                bgcolor={'#00ff00'}
+                bgcolor={bgColor[3 * index + 1]}
               />
               <ProgressBar
                 data-tooltip-id={`my-tooltip-${3 * index + 2}`}
@@ -140,21 +166,21 @@ function MultipleChart({
                     ((minerTokenData[index]['Miner Tokens'] as number) /
                       totalMinerTokens) *
                       100,
-                  ) / 3
+                  ) / calculateNumber()
                 }
-                bgcolor={'#0000ff'}
+                bgcolor={bgColor[3 * index + 2]}
               />
             </MultiProgress>
             <ReactTooltip
               id={`my-tooltip-${3 * index + 0}`}
               place='bottom'
-              variant='error'
+              style={{ backgroundColor: bgColor[3 * index + 0] }}
               content={`RBP: ${formatBytesWithLabel(Number(item.RBP))}`}
             />
             <ReactTooltip
               id={`my-tooltip-${3 * index + 1}`}
               place='bottom'
-              variant='success'
+              style={{ backgroundColor: bgColor[3 * index + 1] }}
               content={`Tokens: ${formatEther(
                 BigInt(tokenData[index].Tokens.toString()),
               ).slice(0, 8)} $FIL`}
@@ -162,7 +188,7 @@ function MultipleChart({
             <ReactTooltip
               id={`my-tooltip-${3 * index + 2}`}
               place='bottom'
-              variant='info'
+              style={{ backgroundColor: bgColor[3 * index + 2] }}
               content={`Miner Tokens: ${formatEther(
                 BigInt(minerTokenData[index]['Miner Tokens'].toString()),
               ).slice(0, 8)} $FIL`}
