@@ -29,6 +29,8 @@ const Legend = styled.div`
 const Label = styled.div`
   color: var(--font-color);
   font-weight: 600;
+  font-size: 20px;
+  text-align: center;
 `;
 
 const DataText = styled.div`
@@ -204,6 +206,7 @@ function MultipleChart({
             />
           </div>
         ))} */}
+        <Label>Voting Activity</Label>
         <InfoText>
           Total RBP: {formatValue(totalRbp, { dataKey: 'RBP' }) || '-'}
         </InfoText>
