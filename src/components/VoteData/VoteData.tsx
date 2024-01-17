@@ -43,7 +43,7 @@ const QuestionText = styled.div`
   color: var(--font-color);
   margin: 12px 0;
   font-weight: 600;
-  font-size: 18px;
+  font-size: 20px;
 `;
 
 const Content = styled.div`

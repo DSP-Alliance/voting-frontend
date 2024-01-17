@@ -33,6 +33,7 @@ const Content = styled.div`
 
 const QuestionText = styled.div`
   margin: 12px 0;
+  font-size: 20px;
 `;
 
 function VoteActions({

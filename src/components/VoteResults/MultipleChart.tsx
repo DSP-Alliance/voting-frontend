@@ -29,7 +29,7 @@ const Legend = styled.div`
 const Label = styled.div`
   color: var(--font-color);
   font-weight: 600;
-  font-size: 20px;
+  font-size: 18px;
   text-align: center;
 `;
 
