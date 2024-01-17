@@ -17,6 +17,7 @@ const ChartArea = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   width: 100%;
 `;
 
@@ -45,7 +46,7 @@ const ProgressChart = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
-  margin-bottom: 8px;
+  gap: 4px;
 `;
 
 const MultiProgress = styled.span`
@@ -110,20 +111,22 @@ function MultipleChart({
 }) {
   const { t } = useTranslation();
 
-  const bgColor = [
-    '#3584c4',
-    '#42a5f5',
-    '#68b7f7',
-    '#324191',
-    '#3f51b5',
-    '#6574c4',
-    '#c3362b',
-    '#f44336',
-    '#f6695e',
-    '#a79dba',
-    '#d1c4e9',
-    '#dad0ed',
-  ];
+  // const bgColor = [
+  //   '#3584c4',
+  //   '#42a5f5',
+  //   '#68b7f7',
+  //   '#324191',
+  //   '#3f51b5',
+  //   '#6574c4',
+  //   '#c3362b',
+  //   '#f44336',
+  //   '#f6695e',
+  //   '#a79dba',
+  //   '#d1c4e9',
+  //   '#dad0ed',
+  // ];
+
+  const bgColor = ['#42a5f5', '#3f51b5', '#f44336', '#d1c4e9'];
 
   const calculateNumber = () => {
     let result = 0;
@@ -133,10 +136,18 @@ function MultipleChart({
     return result;
   };
 
+  const totalVote = () => {
+    return (
+      parseFloat(formatBytesWithLabel(totalRbp).split(' ')[0]) +
+      parseFloat(formatEther(BigInt(totalTokens.toString()))) +
+      parseFloat(formatEther(BigInt(totalMinerTokens.toString())))
+    );
+  };
+
   return (
     <ChartArea>
       <ProgressChart>
-        {rbpData.map((item: any, index: number) => (
+        {/* {rbpData.map((item: any, index: number) => (
           <div style={{ marginTop: '8px' }}>
             <div>{item.name}</div>
             <MultiProgress>
@@ -192,7 +203,72 @@ function MultipleChart({
               ).slice(0, 8)} $FIL`}
             />
           </div>
-        ))}
+        ))} */}
+        <InfoText>
+          Total RBP: {formatValue(totalRbp, { dataKey: 'RBP' }) || '-'}
+        </InfoText>
+        <MultiProgress>
+          <ProgressBar
+            data-tooltip-id={`my-tooltip-0`}
+            progress={
+              (parseFloat(formatBytesWithLabel(totalRbp).split(' ')[0]) /
+                totalVote()) *
+              100
+            }
+            bgcolor={bgColor[0]}
+          />
+        </MultiProgress>
+        {/* <ReactTooltip
+          id={`my-tooltip-0`}
+          place='bottom'
+          style={{ backgroundColor: bgColor[0] }}
+          content={`RBP: ${formatBytesWithLabel(Number(totalRbp))}`}
+        /> */}
+        <InfoText>
+          Total Tokens: {formatValue(totalTokens, { dataKey: 'Tokens' }) || '-'}
+        </InfoText>
+        <MultiProgress>
+          <ProgressBar
+            data-tooltip-id={`my-tooltip-1`}
+            progress={
+              (parseFloat(formatEther(BigInt(totalTokens.toString()))) /
+                totalVote()) *
+              100
+            }
+            bgcolor={bgColor[1]}
+          />
+        </MultiProgress>
+        {/* <ReactTooltip
+          id={`my-tooltip-1`}
+          place='bottom'
+          style={{ backgroundColor: bgColor[1] }}
+          content={`Tokens: ${
+            formatValue(totalTokens, { dataKey: 'Tokens' }) || '-'
+          }`}
+        /> */}
+        <InfoText>
+          Total Miner Tokens:{' '}
+          {formatValue(totalMinerTokens, { dataKey: 'Miner Tokens' }) || '-'}
+        </InfoText>
+        <MultiProgress>
+          <ProgressBar
+            data-tooltip-id={`my-tooltip-2`}
+            progress={
+              (parseFloat(formatEther(BigInt(totalMinerTokens.toString()))) /
+                totalVote()) *
+              100
+            }
+            bgcolor={bgColor[2]}
+          />
+        </MultiProgress>
+        {/* <ReactTooltip
+          id={`my-tooltip-2`}
+          place='bottom'
+          style={{ backgroundColor: bgColor[2] }}
+          content={`Miner Tokens: ${
+            formatValue(totalMinerTokens, { dataKey: 'Miner Tokens' }) || '-'
+          }`}
+        /> */}
       </ProgressChart>
     </ChartArea>
   );

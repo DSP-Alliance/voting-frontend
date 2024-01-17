@@ -157,7 +157,7 @@ export default {
       },
     },
     voteActions: {
-      latestVoteResults: 'Currente Vote Results',
+      latestVoteResults: 'Current Vote Results',
       winningVote: 'Winning Vote',
       chooseVote: 'Choose Vote',
       registerToVote: 'Register in order to vote',
