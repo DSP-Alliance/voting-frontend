@@ -130,6 +130,9 @@ function MultipleChart({
 
   const bgColor = ['#42a5f5', '#3f51b5', '#f44336', '#d1c4e9'];
 
+  const thresholdRBP = 10;
+  const thresholdTokens = 100;
+
   const calculateNumber = () => {
     let result = 0;
     if (totalRbp > 0) result += 1;
@@ -215,18 +218,23 @@ function MultipleChart({
             data-tooltip-id={`my-tooltip-0`}
             progress={
               (parseFloat(formatBytesWithLabel(totalRbp).split(' ')[0]) /
-                totalVote()) *
+                ((Math.floor(
+                  parseFloat(formatBytesWithLabel(totalRbp).split(' ')[0]) /
+                    thresholdRBP,
+                ) +
+                  1) *
+                  thresholdRBP)) *
               100
             }
             bgcolor={bgColor[0]}
           />
         </MultiProgress>
-        {/* <ReactTooltip
+        <ReactTooltip
           id={`my-tooltip-0`}
           place='bottom'
           style={{ backgroundColor: bgColor[0] }}
           content={`RBP: ${formatBytesWithLabel(Number(totalRbp))}`}
-        /> */}
+        />
         <InfoText>
           Total Tokens: {formatValue(totalTokens, { dataKey: 'Tokens' }) || '-'}
         </InfoText>
@@ -235,20 +243,25 @@ function MultipleChart({
             data-tooltip-id={`my-tooltip-1`}
             progress={
               (parseFloat(formatEther(BigInt(totalTokens.toString()))) /
-                totalVote()) *
+                ((Math.floor(
+                  parseFloat(formatEther(BigInt(totalTokens.toString()))) /
+                    thresholdTokens,
+                ) +
+                  1) *
+                  thresholdTokens)) *
               100
             }
             bgcolor={bgColor[1]}
           />
         </MultiProgress>
-        {/* <ReactTooltip
+        <ReactTooltip
           id={`my-tooltip-1`}
           place='bottom'
           style={{ backgroundColor: bgColor[1] }}
           content={`Tokens: ${
             formatValue(totalTokens, { dataKey: 'Tokens' }) || '-'
           }`}
-        /> */}
+        />
         <InfoText>
           Total Miner Tokens:{' '}
           {formatValue(totalMinerTokens, { dataKey: 'Miner Tokens' }) || '-'}
@@ -258,20 +271,25 @@ function MultipleChart({
             data-tooltip-id={`my-tooltip-2`}
             progress={
               (parseFloat(formatEther(BigInt(totalMinerTokens.toString()))) /
-                totalVote()) *
+                ((Math.floor(
+                  parseFloat(formatEther(BigInt(totalMinerTokens.toString()))) /
+                    thresholdTokens,
+                ) +
+                  1) *
+                  thresholdTokens)) *
               100
             }
             bgcolor={bgColor[2]}
           />
         </MultiProgress>
-        {/* <ReactTooltip
+        <ReactTooltip
           id={`my-tooltip-2`}
           place='bottom'
           style={{ backgroundColor: bgColor[2] }}
           content={`Miner Tokens: ${
             formatValue(totalMinerTokens, { dataKey: 'Miner Tokens' }) || '-'
           }`}
-        /> */}
+        />
       </ProgressChart>
     </ChartArea>
   );
