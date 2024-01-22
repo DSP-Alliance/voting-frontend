@@ -130,25 +130,6 @@ function MultipleChart({
 
   const bgColor = ['#42a5f5', '#3f51b5', '#f44336', '#d1c4e9'];
 
-  const thresholdRBP = 10;
-  const thresholdTokens = 100;
-
-  const calculateNumber = () => {
-    let result = 0;
-    if (totalRbp > 0) result += 1;
-    if (totalTokens > 0) result += 1;
-    if (totalMinerTokens > 0) result += 1;
-    return result;
-  };
-
-  const totalVote = () => {
-    return (
-      parseFloat(formatBytesWithLabel(totalRbp).split(' ')[0]) +
-      parseFloat(formatEther(BigInt(totalTokens.toString()))) +
-      parseFloat(formatEther(BigInt(totalMinerTokens.toString())))
-    );
-  };
-
   return (
     <ChartArea>
       <ProgressChart>
@@ -218,12 +199,12 @@ function MultipleChart({
             data-tooltip-id={`my-tooltip-0`}
             progress={
               (parseFloat(formatBytesWithLabel(totalRbp).split(' ')[0]) /
-                ((Math.floor(
-                  parseFloat(formatBytesWithLabel(totalRbp).split(' ')[0]) /
-                    thresholdRBP,
-                ) +
-                  1) *
-                  thresholdRBP)) *
+                Math.pow(
+                  10,
+                  parseInt(
+                    formatBytesWithLabel(totalRbp).split(' ')[0],
+                  ).toString().length,
+                )) *
               100
             }
             bgcolor={bgColor[0]}
@@ -243,12 +224,12 @@ function MultipleChart({
             data-tooltip-id={`my-tooltip-1`}
             progress={
               (parseFloat(formatEther(BigInt(totalTokens.toString()))) /
-                ((Math.floor(
-                  parseFloat(formatEther(BigInt(totalTokens.toString()))) /
-                    thresholdTokens,
-                ) +
-                  1) *
-                  thresholdTokens)) *
+                Math.pow(
+                  10,
+                  parseInt(
+                    formatEther(BigInt(totalTokens.toString())),
+                  ).toString().length,
+                )) *
               100
             }
             bgcolor={bgColor[1]}
@@ -271,12 +252,12 @@ function MultipleChart({
             data-tooltip-id={`my-tooltip-2`}
             progress={
               (parseFloat(formatEther(BigInt(totalMinerTokens.toString()))) /
-                ((Math.floor(
-                  parseFloat(formatEther(BigInt(totalMinerTokens.toString()))) /
-                    thresholdTokens,
-                ) +
-                  1) *
-                  thresholdTokens)) *
+                Math.pow(
+                  10,
+                  parseInt(
+                    formatEther(BigInt(totalMinerTokens.toString())),
+                  ).toString().length,
+                )) *
               100
             }
             bgcolor={bgColor[2]}
