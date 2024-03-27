@@ -15,6 +15,7 @@ import { useFipDataContext } from 'common/FipDataContext';
 import Loading from 'common/Loading';
 import ConnectorsModal from '../Wallet/ConnectorsModal';
 import RegisterAgent from './RegisterAgent';
+import { useWeb3Modal } from '@web3modal/wagmi/react'
 
 const ActionArea = styled.div`
   display: flex;
@@ -82,6 +83,7 @@ function Register({
   const [showConfirmation, setShowConfirmation] = useState(false);
 
   const { lastFipAddress } = useFipDataContext();
+  const { open } = useWeb3Modal()
 
   async function addVotingPower(agent: string | undefined) {
     setLoading(true);
@@ -152,6 +154,7 @@ function Register({
   function handleWalletConnect() {
     if (!isConnected) {
       setShowConnectorsModal(true);
+      open();
     } else {
       addVotingPower('');
       setShowConfirmation(true);
@@ -161,6 +164,7 @@ function Register({
   function handleWalletWithAgentClick() {
     if (!isConnected) {
       setShowConnectorsModal(true);
+      open();
     } else {
       setShowAddressField(true);
     }
@@ -171,7 +175,7 @@ function Register({
       {!showAddressField
         ? t('modals.register.start.header')
         : t('modals.register.start.headerAgent')}
-      {showConnectorsModal && (
+      {false && (
         <ConnectorsModal
           open
           registering

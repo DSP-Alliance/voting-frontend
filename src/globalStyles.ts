@@ -65,6 +65,10 @@ const GlobalStyle = createGlobalStyle`
       color: var(--white) !important;
     }
   }
+
+  .MuiDialog-root {
+    z-index: 99 !important;
+  }
 `;
 
 export default GlobalStyle;

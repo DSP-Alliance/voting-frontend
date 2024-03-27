@@ -1,7 +1,7 @@
 import React from 'react';
-import { WagmiConfig, createConfig } from 'wagmi';
-import { CoinbaseWalletConnector } from 'wagmi/connectors/coinbaseWallet';
-import { MetaMaskConnector } from 'wagmi/connectors/metaMask';
+// import { WagmiConfig, createConfig } from 'wagmi';
+// import { CoinbaseWalletConnector } from 'wagmi/connectors/coinbaseWallet';
+// import { MetaMaskConnector } from 'wagmi/connectors/metaMask';
 import {
   createTheme,
   ThemeProvider as MuiThemeProvider,
@@ -15,16 +15,43 @@ import Home from 'components/Home';
 import { FipDataContextProvider } from 'common/FipDataContext';
 import { VoteEndContextProvider } from 'common/VoteEndContext';
 
-const config = createConfig({
-  autoConnect: true,
-  connectors: [
-    new MetaMaskConnector(),
-    new CoinbaseWalletConnector({
-      options: { appName: 'FIP Voting Dashboard' },
-    }),
-  ],
-  publicClient,
-});
+import { createWeb3Modal, defaultWagmiConfig } from '@web3modal/wagmi/react'
+
+import { WagmiConfig } from 'wagmi'
+import { arbitrum, mainnet } from 'viem/chains'
+
+// 1. Get projectId at https://cloud.walletconnect.com
+const projectId = '0d2844110aa5ef90fb205c145d2d643e'
+
+// 2. Create wagmiConfig
+const metadata = {
+  name: 'Web3Modal',
+  description: 'Web3Modal Example',
+  url: 'https://web3modal.com',
+  icons: ['https://avatars.githubusercontent.com/u/37784886']
+}
+
+const chains = [mainnet, arbitrum]
+const wagmiConfig = defaultWagmiConfig({
+  chains,
+  projectId,
+  metadata,
+  // enableAnalytics: true // Optional - defaults to your Cloud configuration
+})
+
+// 3. Create modal
+createWeb3Modal({ wagmiConfig, projectId, chains })
+
+// const config = createConfig({
+//   autoConnect: true,
+//   connectors: [
+//     new MetaMaskConnector(),
+//     new CoinbaseWalletConnector({
+//       options: { appName: 'FIP Voting Dashboard' },
+//     }),
+//   ],
+//   publicClient,
+// });
 
 const theme = createTheme({
   palette: {
@@ -56,7 +83,7 @@ function App() {
           <MuiThemeProvider theme={theme}>
             <CssBaseline />
             <GlobalStyle />
-            <WagmiConfig config={config}>
+            <WagmiConfig config={wagmiConfig}>
               <Home />
             </WagmiConfig>
           </MuiThemeProvider>

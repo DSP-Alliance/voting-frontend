@@ -17,6 +17,7 @@ import { useVoteEndContext } from 'common/VoteEndContext';
 import { ZERO_ADDRESS } from 'utilities/helpers';
 import { useFipDataContext } from 'common/FipDataContext';
 import { voteTrackerConfig } from 'constants/voteTrackerConfig';
+import { useWeb3Modal } from '@web3modal/wagmi/react'
 
 export type Address = `0x${string}`;
 
@@ -103,6 +104,7 @@ function Home() {
 
   const { voteEndTime } = useVoteEndContext();
   const { lastFipAddress } = useFipDataContext();
+  const { open } = useWeb3Modal()
 
   useEffect(() => {
     const lang = localStorage.getItem(LOCAL_STORAGE_LANG_KEY);
@@ -187,7 +189,7 @@ function Home() {
         <Header>
           <HeaderText>{t('title')}</HeaderText>
           <ButtonContainer>
-            {isOwner && (failedToLoadFIP || lastVoteHasFinished) && (
+            {isConnected && isOwner && (failedToLoadFIP || lastVoteHasFinished) && (
               <StartVoteButton onClick={() => setShowVoteFactory(true)}>
                 {t('buttons.startVote')}
               </StartVoteButton>
@@ -196,7 +198,7 @@ function Home() {
               {t('buttons.register')}
             </RegisterButton>
             {!isConnected && (
-              <ConnectButton onClick={() => setShowConnectors(true)}>
+              <ConnectButton onClick={() => open()}>
                 {t('buttons.connect')}
               </ConnectButton>
             )}
